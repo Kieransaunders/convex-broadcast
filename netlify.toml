@@ -8,50 +8,12 @@ NODE_VERSION = "22"
 [functions]
 directory = "netlify/functions"
 
-[[redirects]]
-from = "/assets/*"
-to = "/assets/:splat"
-status = 200
-
-[[redirects]]
-from = "/robots.txt"
-to = "/robots.txt"
-status = 200
-
-[[redirects]]
-from = "/favicon.ico"
-to = "/favicon.ico"
-status = 200
-
-[[redirects]]
-from = "/manifest.json"
-to = "/manifest.json"
-status = 200
-
-[[redirects]]
-from = "/sw.js"
-to = "/sw.js"
-status = 200
-
-[[redirects]]
-from = "/icon-*.png"
-to = "/icon-:splat.png"
-status = 200
-
-[[redirects]]
-from = "/apple-touch-icon.png"
-to = "/apple-touch-icon.png"
-status = 200
-
-[[redirects]]
-from = "/favicon-*.png"
-to = "/favicon-:splat.png"
-status = 200
-
+# Redirect all requests to SSR, but allow existing static files to be served
 [[redirects]]
 from = "/*"
 to = "/.netlify/functions/ssr"
 status = 200
+force = false
 
 [context.production.environment]
 SITE_URL = "https://org-comms-pwa.netlify.app"
