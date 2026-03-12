@@ -1,0 +1,12 @@
+# Static assets - serve directly
+/assets/* /assets/:splat 200
+/robots.txt /robots.txt 200
+/favicon.ico /favicon.ico 200
+/manifest.json /manifest.json 200
+/sw.js /sw.js 200
+/icon-*.png /icon-:splat.png 200
+/apple-touch-icon.png /apple-touch-icon.png 200
+/favicon-*.png /favicon-:splat.png 200
+
+# All other routes to SSR
+/* /.netlify/functions/ssr 200
