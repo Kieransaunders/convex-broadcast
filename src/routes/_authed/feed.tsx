@@ -26,7 +26,10 @@ function FeedPage() {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
-  } = useQuery(convexQuery(api.messages.feed, {}));
+  } = useQuery({
+    ...convexQuery(api.messages.feed, {}),
+    enabled: !!user,
+  });
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
 
@@ -98,7 +101,7 @@ function FeedPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationStatus />
+            <NotificationStatus userId={user?._id} />
             <Link to="/settings">
               <Button
                 variant="ghost"
@@ -142,10 +145,11 @@ function FeedPage() {
   );
 }
 
-function NotificationStatus() {
-  const { data: subscription, isLoading } = useQuery(
-    convexQuery(api.push.getMySubscription, {}),
-  );
+function NotificationStatus({ userId }: { userId?: string }) {
+  const { data: subscription, isLoading } = useQuery({
+    ...convexQuery(api.push.getMySubscription, {}),
+    enabled: !!userId,
+  });
   const { data: vapidKey } = useQuery(
     convexQuery(api.push.getVapidPublicKey, {}),
   );

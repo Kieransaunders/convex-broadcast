@@ -28,6 +28,10 @@ export const authComponent: ReturnType<
           .filter((q) => q.eq(q.field("status"), "pending"))
           .unique();
 
+        // Check if this is the first user (bootstrap scenario)
+        const existingUsers = await ctx.db.query("users").take(1);
+        const isFirstUser = existingUsers.length === 0;
+
         let role: "member" | "admin" | "super_admin";
 
         if (authUser.email === superAdminEmail) {
@@ -37,6 +41,9 @@ export const authComponent: ReturnType<
           role = pendingInvite.role;
           // Mark invite as accepted
           await ctx.db.patch(pendingInvite._id, { status: "accepted" });
+        } else if (isFirstUser) {
+          // First user to sign up becomes super_admin automatically
+          role = "super_admin";
         } else {
           role = "member";
         }
