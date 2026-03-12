@@ -92,3 +92,69 @@ export const changeStatus = mutation({
     await ctx.db.patch(args.id, { status: args.status })
   },
 })
+
+// --- Event-Group Linking ---
+
+export const getGroups = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    await getUser(ctx)
+    const links = await ctx.db
+      .query("eventGroupLinks")
+      .withIndex("by_eventId", (q) => q.eq("eventId", args.eventId))
+      .collect()
+    const groups = await Promise.all(
+      links.map(async (link) => {
+        const group = await ctx.db.get(link.groupId)
+        return group ? { ...group, linkId: link._id } : null
+      }),
+    )
+    return groups.filter(Boolean)
+  },
+})
+
+export const linkGroup = mutation({
+  args: {
+    eventId: v.id("events"),
+    groupId: v.id("groups"),
+  },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx)
+    // Check if already linked
+    const existing = await ctx.db
+      .query("eventGroupLinks")
+      .withIndex("by_eventId_groupId", (q) =>
+        q.eq("eventId", args.eventId).eq("groupId", args.groupId),
+      )
+      .unique()
+    if (existing) return existing._id
+    return await ctx.db.insert("eventGroupLinks", {
+      eventId: args.eventId,
+      groupId: args.groupId,
+      createdAt: Date.now(),
+    })
+  },
+})
+
+export const unlinkGroup = mutation({
+  args: { linkId: v.id("eventGroupLinks") },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx)
+    await ctx.db.delete(args.linkId)
+  },
+})
+
+export const getByGroup = query({
+  args: { groupId: v.id("groups") },
+  handler: async (ctx, args) => {
+    await getUser(ctx)
+    const links = await ctx.db
+      .query("eventGroupLinks")
+      .withIndex("by_groupId", (q) => q.eq("groupId", args.groupId))
+      .collect()
+    const events = await Promise.all(
+      links.map(async (link) => await ctx.db.get(link.eventId)),
+    )
+    return events.filter(Boolean)
+  },
+})
