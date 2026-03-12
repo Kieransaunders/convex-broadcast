@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
 import { api } from "../../../../../convex/_generated/api.js"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
-import { CalendarDays, ArrowRight, Calendar } from "lucide-react"
+import { CreateEventDialog } from "~/components/events/create-event-dialog"
+import { ArrowRight, Calendar, CalendarDays } from "lucide-react"
 
 export const Route = createFileRoute("/_authed/_admin/events/")({
   component: EventsPage,
@@ -36,10 +36,7 @@ function EventsPage() {
           <h1 className="text-3xl font-bold text-[#1E1B4B]">Events</h1>
           <p className="text-[#1E1B4B]/60 mt-1">Manage organization events and announcements.</p>
         </div>
-        <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
-          <CalendarDays className="mr-2 h-4 w-4" />
-          Create Event
-        </Button>
+        <CreateEventDialog />
       </div>
 
       {isLoading ? (
