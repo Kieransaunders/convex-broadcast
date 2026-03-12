@@ -30,9 +30,11 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
-import { Plus, Mail, User, Trash2, Loader2 } from "lucide-react";
+import { Plus, Mail, User, Trash2, Loader2, Eye } from "lucide-react";
 import { useState } from "react";
 import { useConvex } from "convex/react";
+import { authClient } from "~/lib/auth-client";
+import { useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authed/_admin/users/")({
   component: UsersPage,
@@ -40,6 +42,7 @@ export const Route = createFileRoute("/_authed/_admin/users/")({
 
 function UsersPage() {
   const convex = useConvex();
+  const router = useRouter();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"member" | "admin">("member");
@@ -88,6 +91,16 @@ function UsersPage() {
       ) {
         return await convex.mutation(api.users.remove, { userId });
       }
+    },
+  });
+
+  const impersonateMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await authClient.admin.impersonateUser({ userId });
+      await convex.mutation(api.impersonation.logStart, { impersonatedUserId: userId as any });
+    },
+    onSuccess: () => {
+      router.navigate({ to: "/" });
     },
   });
 
@@ -244,22 +257,41 @@ function UsersPage() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right pr-6">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8"
-                        onClick={() => deleteUserMutation.mutate(user._id)}
-                        disabled={
-                          deleteUserMutation.isPending ||
-                          user._id === currentUser?._id
-                        }
-                      >
-                        {deleteUserMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-[#6366F1] hover:text-[#6366F1]/80 hover:bg-[#6366F1]/10 h-8"
+                          onClick={() => impersonateMutation.mutate(user._id)}
+                          disabled={
+                            impersonateMutation.isPending ||
+                            user._id === currentUser?._id
+                          }
+                          title="Impersonate user"
+                        >
+                          {impersonateMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8"
+                          onClick={() => deleteUserMutation.mutate(user._id)}
+                          disabled={
+                            deleteUserMutation.isPending ||
+                            user._id === currentUser?._id
+                          }
+                        >
+                          {deleteUserMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
