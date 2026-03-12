@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import {
@@ -10,6 +11,8 @@ import {
   Globe,
   ArrowRight,
   CheckCircle,
+  Github,
+  Star,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -17,6 +20,28 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const [stars, setStars] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("https://api.github.com/repos/Kieransaunders/convex-broadcast")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.stargazers_count !== undefined) {
+          setStars(data.stargazers_count);
+        }
+      })
+      .catch(() => {
+        // Silently fail - stars are not critical
+      });
+  }, []);
+
+  const formatStars = (count: number) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k`;
+    }
+    return count.toString();
+  };
+
   return (
     <div className="min-h-screen bg-[#F5F3FF]">
       {/* Navigation */}
@@ -168,6 +193,36 @@ function LandingPage() {
             </span>
           </div>
           <p className="text-sm text-[#1E1B4B]/60">
+            © {new Date().getFullYear()} Org Comms. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow">
+      <CardContent className="pt-6">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366F1]/10">
+          <Icon className="h-5 w-5 text-[#6366F1]" />
+        </div>
+        <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">{title}</h3>
+        <p className="text-sm text-[#1E1B4B]/70">{description}</p>
+      </CardContent>
+    </Card>
+  );
+}
+m text-[#1E1B4B]/60">
             © {new Date().getFullYear()} Org Comms. All rights reserved.
           </p>
         </div>

@@ -30,6 +30,18 @@ function FeedPage() {
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
 
+  // Calculate unread count
+  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  // Update PWA app badge
+  useEffect(() => {
+    if ("setAppBadge" in navigator && unreadCount > 0) {
+      navigator.setAppBadge(unreadCount);
+    } else if ("clearAppBadge" in navigator) {
+      navigator.clearAppBadge();
+    }
+  }, [unreadCount]);
+
   useEffect(() => {
     if (messagesError) {
       console.error("Feed Query Error:", messagesError);
@@ -98,7 +110,7 @@ function FeedPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationStatus userId={user?._id} />
+            <NotificationStatus userId={user?._id} unreadCount={unreadCount} />
             <Link to="/settings">
               <Button
                 variant="ghost"
@@ -142,7 +154,7 @@ function FeedPage() {
   );
 }
 
-function NotificationStatus({ userId }: { userId?: string }) {
+function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCount?: number }) {
   const { data: subscription, isLoading } = useQuery(
     convexQuery(api.push.getMySubscription, userId ? {} : "skip"),
   );
@@ -152,6 +164,7 @@ function NotificationStatus({ userId }: { userId?: string }) {
   const subscribe = useConvexMutation(api.push.subscribe);
   const unsubscribe = useConvexMutation(api.push.unsubscribe);
   const isEnabled = !!subscription;
+  const hasUnread = (unreadCount ?? 0) > 0;
 
   const handleToggle = async (checked: boolean) => {
     if (checked) {
@@ -221,7 +234,14 @@ function NotificationStatus({ userId }: { userId?: string }) {
         className="flex items-center gap-1.5 text-xs font-bold pointer-events-none"
       >
         {isEnabled ? (
-          <Bell className="h-3 w-3" />
+          <div className="relative">
+            <Bell className="h-3 w-3" />
+            {hasUnread && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                {unreadCount! > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </div>
         ) : (
           <BellOff className="h-3 w-3" />
         )}
