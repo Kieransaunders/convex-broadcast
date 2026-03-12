@@ -8,8 +8,8 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
-import { Settings, Bell, BellOff, Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { Settings, Bell, BellOff, Loader2, CheckCheck } from "lucide-react";
+import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 
 export const Route = createFileRoute("/_authed/feed")({
@@ -29,6 +29,8 @@ function FeedPage() {
   } = useQuery(convexQuery(api.messages.feed, user ? {} : "skip"));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
+  const markAllAsRead = useConvexMutation(api.messages.markAllAsRead);
+  const [markingAll, setMarkingAll] = useState(false);
 
   // Calculate unread count
   const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
@@ -133,9 +135,34 @@ function FeedPage() {
             </CardContent>
           </Card>
         )}
-        <h2 className="mb-4 text-lg font-semibold text-[#1E1B4B]">
-          Your Messages
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-[#1E1B4B]">
+            Your Messages
+          </h2>
+          {unreadCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
+              onClick={async () => {
+                setMarkingAll(true);
+                try {
+                  await markAllAsRead();
+                } finally {
+                  setMarkingAll(false);
+                }
+              }}
+              disabled={markingAll}
+            >
+              {markingAll ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCheck className="mr-2 h-4 w-4" />
+              )}
+              Mark all as read
+            </Button>
+          )}
+        </div>
         <div className="space-y-4">
           {messages?.length === 0 && (
             <Card className="p-8 text-center">

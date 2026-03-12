@@ -356,6 +356,27 @@ export const markRead = mutation({
   },
 });
 
+export const markAllAsRead = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getUser(ctx);
+    // Get all deliveries for the user and filter unread in memory
+    // since Convex doesn't support filtering by field existence
+    const deliveries = await ctx.db
+      .query("deliveries")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .collect();
+
+    const unreadDeliveries = deliveries.filter((d) => d.readAt === undefined);
+
+    for (const delivery of unreadDeliveries) {
+      await ctx.db.patch(delivery._id, { readAt: Date.now() });
+    }
+
+    return { markedAsRead: unreadDeliveries.length };
+  },
+});
+
 // --- Delivery Stats ---
 
 export const getDeliveryStats = query({

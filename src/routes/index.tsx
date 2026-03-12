@@ -57,6 +57,19 @@ function LandingPage() {
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/Kieransaunders/convex-broadcast"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg border border-[#6366F1]/20 bg-white px-3 py-1.5 text-sm font-medium text-[#1E1B4B] hover:border-[#6366F1]/40 hover:bg-[#6366F1]/5 transition-colors"
+              >
+                <Github className="h-4 w-4" />
+                <span className="hidden sm:inline">Star</span>
+                <span className="flex items-center gap-1 rounded bg-[#6366F1]/10 px-1.5 py-0.5 text-xs font-semibold text-[#6366F1]">
+                  <Star className="h-3 w-3 fill-[#6366F1]" />
+                  {stars !== null ? formatStars(stars) : "—"}
+                </span>
+              </a>
               <Link
                 to="/sign-in"
                 className="text-sm font-medium text-[#1E1B4B] hover:text-[#6366F1]"
@@ -193,36 +206,6 @@ function LandingPage() {
             </span>
           </div>
           <p className="text-sm text-[#1E1B4B]/60">
-            © {new Date().getFullYear()} Org Comms. All rights reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow">
-      <CardContent className="pt-6">
-        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366F1]/10">
-          <Icon className="h-5 w-5 text-[#6366F1]" />
-        </div>
-        <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">{title}</h3>
-        <p className="text-sm text-[#1E1B4B]/70">{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
-m text-[#1E1B4B]/60">
             © {new Date().getFullYear()} Org Comms. All rights reserved.
           </p>
         </div>
