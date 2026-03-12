@@ -8,6 +8,49 @@
 [functions]
   directory = "netlify/functions"
 
+# Serve static assets directly from dist/client
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Serve other static files directly
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicon.ico"
+  status = 200
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+
+[[redirects]]
+  from = "/sw.js"
+  to = "/sw.js"
+  status = 200
+
+[[redirects]]
+  from = "/icon-*.png"
+  to = "/icon-:splat.png"
+  status = 200
+
+[[redirects]]
+  from = "/apple-touch-icon.png"
+  to = "/apple-touch-icon.png"
+  status = 200
+
+[[redirects]]
+  from = "/favicon-*.png"
+  to = "/favicon-:splat.png"
+  status = 200
+
+# All other routes go to SSR
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/ssr"
