@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
 import { EditEventDialog } from "~/components/events/edit-event-dialog"
+import { CancelEventDialog } from "~/components/events/cancel-event-dialog"
 import { ArrowLeft, CalendarDays, MapPin, Clock, Calendar } from "lucide-react"
 import type { Id } from "../../../../../convex/_generated/dataModel.js"
 
@@ -157,12 +158,7 @@ function EventDetailPage() {
               Send Update
             </Button>
             {event.status !== "cancelled" && (
-              <Button
-                variant="outline"
-                className="w-full border-red-200 text-red-600 hover:bg-red-50"
-              >
-                Cancel Event
-              </Button>
+              <CancelEventDialog eventId={id as Id<"events">} eventTitle={event.title} />
             )}
           </CardContent>
         </Card>
