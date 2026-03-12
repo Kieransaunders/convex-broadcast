@@ -19,14 +19,12 @@ export const Route = createFileRoute("/_authed/settings")({
 
 function SettingsPage() {
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-  const { data: subscription } = useQuery({
-    ...convexQuery(api.push.getMySubscription, {}),
-    enabled: !!user,
-  });
-  const { data: vapidKey } = useQuery({
-    ...convexQuery(api.push.getVapidPublicKey, {}),
-    enabled: !!user,
-  });
+  const { data: subscription } = useQuery(
+    convexQuery(api.push.getMySubscription, user ? {} : "skip"),
+  );
+  const { data: vapidKey } = useQuery(
+    convexQuery(api.push.getVapidPublicKey, user ? {} : "skip"),
+  );
   const updatePreference = useMutation(api.push.updatePreference);
   const subscribe = useMutation(api.push.subscribe);
   const unsubscribe = useMutation(api.push.unsubscribe);

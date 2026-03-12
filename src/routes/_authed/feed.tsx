@@ -26,10 +26,7 @@ function FeedPage() {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
-  } = useQuery({
-    ...convexQuery(api.messages.feed, {}),
-    enabled: !!user,
-  });
+  } = useQuery(convexQuery(api.messages.feed, user ? {} : "skip"));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
 
@@ -146,10 +143,9 @@ function FeedPage() {
 }
 
 function NotificationStatus({ userId }: { userId?: string }) {
-  const { data: subscription, isLoading } = useQuery({
-    ...convexQuery(api.push.getMySubscription, {}),
-    enabled: !!userId,
-  });
+  const { data: subscription, isLoading } = useQuery(
+    convexQuery(api.push.getMySubscription, userId ? {} : "skip"),
+  );
   const { data: vapidKey } = useQuery(
     convexQuery(api.push.getVapidPublicKey, {}),
   );
