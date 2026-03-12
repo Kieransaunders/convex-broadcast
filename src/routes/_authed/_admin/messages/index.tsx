@@ -1,12 +1,13 @@
+import { AlertTriangle, ArrowRight, Clock, FileText, Loader2, Mail, Plus, Send, Trash2 } from "lucide-react"
+import { useState } from "react"
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
 import { useConvex } from "convex/react"
 import { api } from "../../../../../convex/_generated/api.js"
-import { Card, CardContent } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -15,8 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Mail, Plus, ArrowRight, FileText, Send, Clock, Loader2, Trash2, AlertTriangle } from "lucide-react"
-import { useState } from "react"
 import { cn } from "~/lib/utils"
 
 export const Route = createFileRoute("/_authed/_admin/messages/")({
@@ -35,13 +34,17 @@ type Message = {
   sentAt?: number
 }
 
+type FilterTab = "drafts" | "scheduled" | "sent"
+
 function MessagesPage() {
   const convex = useConvex()
   const { data: allMessages, isLoading, refetch } = useQuery(convexQuery(api.messages.list, {}))
 
-  const drafts = (allMessages?.filter((m) => m.status === "draft") || []) as Message[]
-  const scheduled = (allMessages?.filter((m) => m.status === "scheduled") || []) as Message[]
-  const sent = (allMessages?.filter((m) => m.status === "sent" || m.status === "archived") || []) as Message[]
+  const drafts = (allMessages?.filter((m) => m.status === "draft") || []) as Array<Message>
+  const scheduled = (allMessages?.filter((m) => m.status === "scheduled") || []) as Array<Message>
+  const sent = (allMessages?.filter((m) => m.status === "sent" || m.status === "archived") || []) as Array<Message>
+
+  const [activeTab, setActiveTab] = useState<FilterTab>("drafts")
 
   const [confirmDialog, setConfirmDialog] = useState<{
     type: "send" | "delete" | "cancel"
@@ -258,48 +261,58 @@ function MessagesPage() {
         </Link>
       </div>
 
-      <Tabs defaultValue="drafts" className="space-y-6">
-        <TabsList className="bg-white border border-[#6366F1]/10">
-          <TabsTrigger value="drafts" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
-            <FileText className="mr-2 h-4 w-4" />
-            Drafts
-            {drafts.length > 0 && <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">{drafts.length}</span>}
-          </TabsTrigger>
-          <TabsTrigger value="scheduled" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
-            <Clock className="mr-2 h-4 w-4" />
-            Scheduled
-            {scheduled.length > 0 && <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">{scheduled.length}</span>}
-          </TabsTrigger>
-          <TabsTrigger value="sent" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
-            <Send className="mr-2 h-4 w-4" />
-            Sent
-          </TabsTrigger>
-        </TabsList>
+      {/* Filter bar */}
+      <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
+        {([
+          { key: "drafts" as const, label: "Drafts", icon: FileText, count: drafts.length },
+          { key: "scheduled" as const, label: "Scheduled", icon: Clock, count: scheduled.length },
+          { key: "sent" as const, label: "Sent", icon: Send, count: sent.length },
+        ] as const).map(({ key, label, icon: Icon, count }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setActiveTab(key)}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
+              activeTab === key
+                ? "bg-white text-[#1E1B4B] shadow-sm"
+                : "text-[#1E1B4B]/50 hover:text-[#1E1B4B]/80"
+            )}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            <span>{label}</span>
+            {count > 0 && (
+              <span className={cn(
+                "rounded-full px-1.5 py-0.5 text-xs font-semibold leading-none tabular-nums",
+                activeTab === key
+                  ? "bg-[#6366F1] text-white"
+                  : "bg-[#1E1B4B]/10 text-[#1E1B4B]/60"
+              )}>
+                {count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
-        <TabsContent value="drafts">
-          {isLoading ? <LoadingSkeleton /> : drafts.length === 0 ? <EmptyState text="No draft messages" /> : (
-            <div className="space-y-4">
-              {drafts.map(m => <MessageCard key={m._id} message={m} showDraftActions />)}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="scheduled">
-          {isLoading ? <LoadingSkeleton /> : scheduled.length === 0 ? <EmptyState text="No scheduled messages" /> : (
-            <div className="space-y-4">
-              {scheduled.map(m => <MessageCard key={m._id} message={m} showScheduledActions />)}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="sent">
-          {isLoading ? <LoadingSkeleton /> : sent.length === 0 ? <EmptyState text="No sent messages yet" /> : (
-            <div className="space-y-4">
-              {sent.map(m => <MessageCard key={m._id} message={m} />)}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+      {/* Content */}
+      <div className="space-y-4">
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : activeTab === "drafts" ? (
+          drafts.length === 0
+            ? <EmptyState text="No draft messages" />
+            : drafts.map(m => <MessageCard key={m._id} message={m} showDraftActions />)
+        ) : activeTab === "scheduled" ? (
+          scheduled.length === 0
+            ? <EmptyState text="No scheduled messages" />
+            : scheduled.map(m => <MessageCard key={m._id} message={m} showScheduledActions />)
+        ) : (
+          sent.length === 0
+            ? <EmptyState text="No sent messages yet" />
+            : sent.map(m => <MessageCard key={m._id} message={m} />)
+        )}
+      </div>
 
       {/* Confirmation dialog */}
       <Dialog open={!!confirmDialog} onOpenChange={(open) => !open && setConfirmDialog(null)}>
