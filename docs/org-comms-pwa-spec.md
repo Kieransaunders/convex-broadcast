@@ -1,8 +1,9 @@
-
 # Organisation Communications PWA Boilerplate
+
 ## Specification Document
 
 ## Overview
+
 This project is an open-source boilerplate for building **single‑organisation communication apps** using:
 
 - **React + TanStack Start**
@@ -27,6 +28,7 @@ The system focuses on **admin‑led broadcast messaging with audience targeting*
 # Core Design Principles
 
 ## 1. Single Organisation Model
+
 The boilerplate assumes **one organisation per deployment**.
 
 There is no multi‑tenant SaaS architecture.
@@ -34,6 +36,7 @@ There is no multi‑tenant SaaS architecture.
 Configuration such as branding and settings apply to the entire app.
 
 ## 2. Broadcast Communication First
+
 The primary feature is **one‑way communication from administrators to members**.
 
 Messages can be targeted to:
@@ -43,6 +46,7 @@ Messages can be targeted to:
 - Event audiences
 
 ## 3. Simple Roles
+
 A minimal role system avoids unnecessary complexity.
 
 Roles:
@@ -52,12 +56,14 @@ Roles:
 - `super_admin`
 
 ## 4. PWA Notification Delivery
+
 Messages appear:
 
 - Inside the app feed
 - As browser/device push notifications (if enabled)
 
 ## 5. Admin‑Centric Control
+
 Administrators manage:
 
 - Users
@@ -72,18 +78,22 @@ Administrators manage:
 # Technology Stack
 
 Frontend
+
 - React
 - TanStack Start
 - TypeScript
 
 Backend
+
 - Convex database and functions
 
 Authentication
+
 - Better Auth
 - Better Auth Admin plugin
 
 PWA
+
 - Web App Manifest
 - Service Worker
 - Push Notifications API
@@ -109,6 +119,7 @@ Features:
 ## User Roles
 
 ### Member
+
 Can:
 
 - Login
@@ -117,6 +128,7 @@ Can:
 - Manage personal notification preferences
 
 ### Admin
+
 Can:
 
 - Create messages
@@ -127,6 +139,7 @@ Can:
 - Impersonate users for testing
 
 ### Super Admin
+
 Can:
 
 - Manage admins
@@ -321,27 +334,32 @@ Security rules:
 The admin dashboard includes five areas.
 
 ## Users
+
 - list users
 - invite users
 - manage roles
 - impersonate users
 
 ## Groups
+
 - create groups
 - assign members
 - manage memberships
 
 ## Events
+
 - create and edit events
 - link events to groups
 
 ## Messages
+
 - create messages
 - schedule messages
 - manage drafts
 - view sent messages
 
 ## Reporting
+
 - delivery status
 - read counts
 - push notification status
@@ -351,6 +369,7 @@ The admin dashboard includes five areas.
 # Database Schema Overview
 
 ## Users
+
 - id
 - name
 - email
@@ -359,17 +378,20 @@ The admin dashboard includes five areas.
 - createdAt
 
 ## Groups
+
 - id
 - name
 - description
 
 ## GroupMemberships
+
 - id
 - userId
 - groupId
 - role
 
 ## Events
+
 - id
 - title
 - startsAt
@@ -378,6 +400,7 @@ The admin dashboard includes five areas.
 - status
 
 ## Messages
+
 - id
 - title
 - body
@@ -389,12 +412,14 @@ The admin dashboard includes five areas.
 - createdBy
 
 ## MessageTargets
+
 - id
 - messageId
 - targetType
 - targetId
 
 ## Deliveries
+
 - id
 - messageId
 - userId
@@ -403,6 +428,7 @@ The admin dashboard includes five areas.
 - pushStatus
 
 ## Invites
+
 - id
 - email
 - role
@@ -411,6 +437,7 @@ The admin dashboard includes five areas.
 - status
 
 ## ImpersonationLogs
+
 - id
 - adminUserId
 - impersonatedUserId
@@ -424,19 +451,19 @@ The admin dashboard includes five areas.
 Suggested repository layout:
 
 apps/
-    demo-app/
+demo-app/
 
 packages/
-    convex-org-comms/
-    ui/
+convex-org-comms/
+ui/
 
 convex/
-    schema.ts
-    functions/
+schema.ts
+functions/
 
 pwa/
-    service-worker.ts
-    manifest.json
+service-worker.ts
+manifest.json
 
 ---
 

@@ -1,9 +1,9 @@
-import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
-import { useConvex } from "convex/react"
-import { api } from "../../../convex/_generated/api.js"
-import type { Id } from "../../../convex/_generated/dataModel.js"
-import { useNavigate } from "@tanstack/react-router"
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
+import { api } from "../../../convex/_generated/api.js";
+import type { Id } from "../../../convex/_generated/dataModel.js";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -11,49 +11,54 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Textarea } from "~/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import { Send, Bell } from "lucide-react"
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Send, Bell } from "lucide-react";
 
 interface SendEventUpdateDialogProps {
-  eventId: Id<"events">
-  eventTitle: string
+  eventId: Id<"events">;
+  eventTitle: string;
 }
 
-export function SendEventUpdateDialog({ eventId, eventTitle }: SendEventUpdateDialogProps) {
-  const convex = useConvex()
-  const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState(`Update: ${eventTitle}`)
-  const [body, setBody] = useState("")
-  const [category, setCategory] = useState<"notice" | "reminder" | "event_update" | "urgent">("event_update")
-  const [pushEnabled, setPushEnabled] = useState(true)
+export function SendEventUpdateDialog({
+  eventId,
+  eventTitle,
+}: SendEventUpdateDialogProps) {
+  const convex = useConvex();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState(`Update: ${eventTitle}`);
+  const [body, setBody] = useState("");
+  const [category, setCategory] = useState<
+    "notice" | "reminder" | "event_update" | "urgent"
+  >("event_update");
+  const [pushEnabled, setPushEnabled] = useState(true);
 
   const createMessage = useMutation({
     mutationFn: async (data: {
-      title: string
-      body: string
-      category: "notice" | "reminder" | "event_update" | "urgent"
-      audienceType: "all" | "groups" | "event"
-      linkedEventId?: Id<"events">
-      pushEnabled: boolean
+      title: string;
+      body: string;
+      category: "notice" | "reminder" | "event_update" | "urgent";
+      audienceType: "all" | "groups" | "event";
+      linkedEventId?: Id<"events">;
+      pushEnabled: boolean;
     }) => {
-      return await convex.mutation(api.messages.create, data)
+      return await convex.mutation(api.messages.create, data);
     },
     onSuccess: (messageId) => {
-      setOpen(false)
+      setOpen(false);
       // Navigate to the message detail to send/schedule
-      navigate({ to: "/messages/$id", params: { id: messageId } })
+      navigate({ to: "/messages/$id", params: { id: messageId } });
     },
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title || !body) return
+    e.preventDefault();
+    if (!title || !body) return;
     createMessage.mutate({
       title,
       body,
@@ -61,14 +66,17 @@ export function SendEventUpdateDialog({ eventId, eventTitle }: SendEventUpdateDi
       audienceType: "event",
       linkedEventId: eventId,
       pushEnabled,
-    })
-  }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button variant="outline" className="w-full border-[#6366F1]/20 text-[#6366F1]">
+          <Button
+            variant="outline"
+            className="w-full border-[#6366F1]/20 text-[#6366F1]"
+          >
             <Send className="mr-2 h-4 w-4" />
             Send Update
           </Button>
@@ -115,19 +123,27 @@ export function SendEventUpdateDialog({ eventId, eventTitle }: SendEventUpdateDi
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="event_update" id="cat-event" />
-                <Label htmlFor="cat-event" className="cursor-pointer">Event Update</Label>
+                <Label htmlFor="cat-event" className="cursor-pointer">
+                  Event Update
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="reminder" id="cat-reminder" />
-                <Label htmlFor="cat-reminder" className="cursor-pointer">Reminder</Label>
+                <Label htmlFor="cat-reminder" className="cursor-pointer">
+                  Reminder
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="notice" id="cat-notice" />
-                <Label htmlFor="cat-notice" className="cursor-pointer">Notice</Label>
+                <Label htmlFor="cat-notice" className="cursor-pointer">
+                  Notice
+                </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="urgent" id="cat-urgent" />
-                <Label htmlFor="cat-urgent" className="cursor-pointer">Urgent</Label>
+                <Label htmlFor="cat-urgent" className="cursor-pointer">
+                  Urgent
+                </Label>
               </div>
             </RadioGroup>
           </div>
@@ -139,13 +155,20 @@ export function SendEventUpdateDialog({ eventId, eventTitle }: SendEventUpdateDi
               onChange={(e) => setPushEnabled(e.target.checked)}
               className="rounded border-gray-300"
             />
-            <Label htmlFor="push-enabled" className="flex items-center gap-2 cursor-pointer">
+            <Label
+              htmlFor="push-enabled"
+              className="flex items-center gap-2 cursor-pointer"
+            >
               <Bell className="h-4 w-4" />
               Send push notification
             </Label>
           </div>
           <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -159,5 +182,5 @@ export function SendEventUpdateDialog({ eventId, eventTitle }: SendEventUpdateDi
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

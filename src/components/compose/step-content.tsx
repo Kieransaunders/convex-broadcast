@@ -1,13 +1,26 @@
-import { FileText } from "lucide-react"
-import type { ComposeFormValues } from "./use-compose-form"
-import type { UseFormReturn } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form"
-import { Input } from "~/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
-import { Textarea } from "~/components/ui/textarea"
+import { FileText } from "lucide-react";
+import type { ComposeFormValues } from "./use-compose-form";
+import type { UseFormReturn } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Textarea } from "~/components/ui/textarea";
 
 interface StepContentProps {
-  form: UseFormReturn<ComposeFormValues>
+  form: UseFormReturn<ComposeFormValues>;
 }
 
 export function StepContent({ form }: StepContentProps) {
@@ -19,7 +32,9 @@ export function StepContent({ form }: StepContentProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#1E1B4B] font-medium">Title</FormLabel>
+              <FormLabel className="text-[#1E1B4B] font-medium">
+                Title
+              </FormLabel>
               <FormControl>
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1E1B4B]/40" />
@@ -32,7 +47,9 @@ export function StepContent({ form }: StepContentProps) {
               </FormControl>
               <div className="flex justify-between items-center">
                 <FormMessage />
-                <span className="text-xs text-[#1E1B4B]/40 ml-auto">{field.value.length}/200</span>
+                <span className="text-xs text-[#1E1B4B]/40 ml-auto">
+                  {field.value.length}/200
+                </span>
               </div>
             </FormItem>
           )}
@@ -43,7 +60,9 @@ export function StepContent({ form }: StepContentProps) {
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#1E1B4B] font-medium">Message Body</FormLabel>
+              <FormLabel className="text-[#1E1B4B] font-medium">
+                Message Body
+              </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Write your message here..."
@@ -53,7 +72,9 @@ export function StepContent({ form }: StepContentProps) {
               </FormControl>
               <div className="flex justify-between items-center">
                 <FormMessage />
-                <span className="text-xs text-[#1E1B4B]/40 ml-auto">{field.value.length}/5000</span>
+                <span className="text-xs text-[#1E1B4B]/40 ml-auto">
+                  {field.value.length}/5000
+                </span>
               </div>
             </FormItem>
           )}
@@ -64,7 +85,9 @@ export function StepContent({ form }: StepContentProps) {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[#1E1B4B] font-medium">Category</FormLabel>
+              <FormLabel className="text-[#1E1B4B] font-medium">
+                Category
+              </FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="border-[#6366F1]/20">
@@ -84,5 +107,5 @@ export function StepContent({ form }: StepContentProps) {
         />
       </div>
     </Form>
-  )
+  );
 }

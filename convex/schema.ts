@@ -1,11 +1,15 @@
-import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
     email: v.string(),
     name: v.string(),
-    role: v.union(v.literal("member"), v.literal("admin"), v.literal("super_admin")),
+    role: v.union(
+      v.literal("member"),
+      v.literal("admin"),
+      v.literal("super_admin"),
+    ),
     status: v.union(v.literal("active"), v.literal("inactive")),
     createdAt: v.number(),
   })
@@ -19,8 +23,7 @@ export default defineSchema({
     active: v.boolean(),
     createdBy: v.id("users"),
     createdAt: v.number(),
-  })
-    .index("by_active", ["active"]),
+  }).index("by_active", ["active"]),
 
   groupMemberships: defineTable({
     userId: v.id("users"),
@@ -96,8 +99,7 @@ export default defineSchema({
     messageId: v.id("messages"),
     targetType: v.union(v.literal("group"), v.literal("event")),
     targetId: v.string(),
-  })
-    .index("by_messageId", ["messageId"]),
+  }).index("by_messageId", ["messageId"]),
 
   deliveries: defineTable({
     messageId: v.id("messages"),
@@ -135,8 +137,7 @@ export default defineSchema({
     impersonatedUserId: v.id("users"),
     startedAt: v.number(),
     endedAt: v.optional(v.number()),
-  })
-    .index("by_adminUserId", ["adminUserId"]),
+  }).index("by_adminUserId", ["adminUserId"]),
 
   pushSubscriptions: defineTable({
     userId: v.id("users"),
@@ -149,8 +150,7 @@ export default defineSchema({
       v.literal("none"),
     ),
     createdAt: v.number(),
-  })
-    .index("by_userId", ["userId"]),
+  }).index("by_userId", ["userId"]),
 
   settings: defineTable({
     key: v.string(),
@@ -159,4 +159,4 @@ export default defineSchema({
     updatedBy: v.id("users"),
     updatedAt: v.number(),
   }).index("by_key", ["key"]),
-})
+});

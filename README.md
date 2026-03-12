@@ -17,15 +17,15 @@ An open-source boilerplate for building **organisation communication Progressive
 
 ## 🚀 Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | [TanStack Start](https://tanstack.com/start) (React + SSR) |
-| **Backend** | [Convex](https://convex.dev) (serverless database + functions) |
-| **Auth** | [Better Auth](https://www.better-auth.com/) with Convex adapter |
-| **Styling** | Tailwind CSS v4 |
-| **UI Components** | Base UI + shadcn/ui |
-| **Email** | Resend |
-| **Push Notifications** | Web Push API |
+| Layer                  | Technology                                                      |
+| ---------------------- | --------------------------------------------------------------- |
+| **Frontend**           | [TanStack Start](https://tanstack.com/start) (React + SSR)      |
+| **Backend**            | [Convex](https://convex.dev) (serverless database + functions)  |
+| **Auth**               | [Better Auth](https://www.better-auth.com/) with Convex adapter |
+| **Styling**            | Tailwind CSS v4                                                 |
+| **UI Components**      | Base UI + shadcn/ui                                             |
+| **Email**              | Resend                                                          |
+| **Push Notifications** | Web Push API                                                    |
 
 ## 📦 Installation
 
@@ -114,16 +114,16 @@ Your app will be available at `http://localhost:3000` (or similar).
 
 ## 🛠️ Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start both Convex and Vite dev servers |
-| `npm run dev:web` | Start Vite dev server only |
-| `npm run dev:convex` | Start Convex dev server only |
-| `npm run dev:ts` | Type checking in watch mode |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run format` | Format code with Prettier |
-| `npm run lint` | Run ESLint |
+| Command              | Description                            |
+| -------------------- | -------------------------------------- |
+| `npm run dev`        | Start both Convex and Vite dev servers |
+| `npm run dev:web`    | Start Vite dev server only             |
+| `npm run dev:convex` | Start Convex dev server only           |
+| `npm run dev:ts`     | Type checking in watch mode            |
+| `npm run build`      | Build for production                   |
+| `npm start`          | Start production server                |
+| `npm run format`     | Format code with Prettier              |
+| `npm run lint`       | Run ESLint                             |
 
 ## 📁 Project Structure
 
@@ -164,6 +164,7 @@ The included `vercel.json` handles the Convex deployment during the build:
 ### Production Environment Setup
 
 1. Create a Convex production deployment:
+
    ```bash
    npx convex deploy
    ```

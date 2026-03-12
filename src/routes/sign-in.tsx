@@ -1,52 +1,58 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
-import { Input } from "~/components/ui/input"
-import { Button } from "~/components/ui/button"
-import { Label } from "~/components/ui/label"
-import { authClient } from "~/lib/auth-client"
-import { Mail, Lock, Loader2 } from "lucide-react"
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
+import { Label } from "~/components/ui/label";
+import { authClient } from "~/lib/auth-client";
+import { Mail, Lock, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/sign-in")({
   component: SignInPage,
-})
+});
 
 function SignInPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
       const result = await authClient.signIn.email({
         email,
         password,
-      })
+      });
 
       if (result.error) {
-        setError(result.error.message || "Invalid credentials")
+        setError(result.error.message || "Invalid credentials");
       } else {
-        router.invalidate()
-        const session = await authClient.getSession()
-        const role = (session?.data?.user as any)?.role
+        router.invalidate();
+        const session = await authClient.getSession();
+        const role = (session?.data?.user as any)?.role;
         if (role === "admin" || role === "super_admin") {
-          router.navigate({ to: "/dashboard" })
+          router.navigate({ to: "/dashboard" });
         } else {
-          router.navigate({ to: "/feed" })
+          router.navigate({ to: "/feed" });
         }
       }
     } catch {
-      setError("Something went wrong. Please try again.")
+      setError("Something went wrong. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F5F3FF] p-4">
@@ -57,7 +63,9 @@ function SignInPage() {
               <Mail className="h-6 w-6 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-[#1E1B4B]">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-[#1E1B4B]">
+            Welcome back
+          </CardTitle>
           <CardDescription className="text-[#1E1B4B]/60">
             Sign in to your Org Comms account
           </CardDescription>
@@ -65,7 +73,9 @@ function SignInPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#1E1B4B]">Email</Label>
+              <Label htmlFor="email" className="text-[#1E1B4B]">
+                Email
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1E1B4B]/40" />
                 <Input
@@ -80,7 +90,9 @@ function SignInPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#1E1B4B]">Password</Label>
+              <Label htmlFor="password" className="text-[#1E1B4B]">
+                Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1E1B4B]/40" />
                 <Input
@@ -116,12 +128,15 @@ function SignInPage() {
           </form>
           <div className="mt-6 text-center text-sm text-[#1E1B4B]/60">
             Don&apos;t have an account?{" "}
-            <Link to="/sign-up" className="font-medium text-[#6366F1] hover:underline">
+            <Link
+              to="/sign-up"
+              className="font-medium text-[#6366F1] hover:underline"
+            >
               Sign up
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

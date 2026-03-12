@@ -1,74 +1,78 @@
-import { useState, useEffect } from "react"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { useConvex } from "convex/react"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../convex/_generated/api.js"
-import type { Id } from "../../../convex/_generated/dataModel.js"
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../convex/_generated/api.js";
+import type { Id } from "../../../convex/_generated/dataModel.js";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Textarea } from "~/components/ui/textarea"
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select"
-import { Pencil } from "lucide-react"
+} from "~/components/ui/select";
+import { Pencil } from "lucide-react";
 
 interface EditEventDialogProps {
-  eventId: Id<"events">
+  eventId: Id<"events">;
 }
 
 export function EditEventDialog({ eventId }: EditEventDialogProps) {
-  const convex = useConvex()
-  const [open, setOpen] = useState(false)
-  const { data: event } = useQuery(convexQuery(api.events.getById, { id: eventId }))
+  const convex = useConvex();
+  const [open, setOpen] = useState(false);
+  const { data: event } = useQuery(
+    convexQuery(api.events.getById, { id: eventId }),
+  );
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [location, setLocation] = useState("")
-  const [startsAt, setStartsAt] = useState("")
-  const [endsAt, setEndsAt] = useState("")
-  const [status, setStatus] = useState<"scheduled" | "changed" | "cancelled" | "completed">("scheduled")
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [startsAt, setStartsAt] = useState("");
+  const [endsAt, setEndsAt] = useState("");
+  const [status, setStatus] = useState<
+    "scheduled" | "changed" | "cancelled" | "completed"
+  >("scheduled");
 
   useEffect(() => {
     if (event && open) {
-      setTitle(event.title)
-      setDescription(event.description)
-      setLocation(event.location)
-      setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16))
-      setEndsAt(new Date(event.endsAt).toISOString().slice(0, 16))
-      setStatus(event.status)
+      setTitle(event.title);
+      setDescription(event.description);
+      setLocation(event.location);
+      setStartsAt(new Date(event.startsAt).toISOString().slice(0, 16));
+      setEndsAt(new Date(event.endsAt).toISOString().slice(0, 16));
+      setStatus(event.status);
     }
-  }, [event, open])
+  }, [event, open]);
 
   const updateEvent = useMutation({
     mutationFn: async (data: {
-      id: Id<"events">
-      title: string
-      description: string
-      location: string
-      startsAt: number
-      endsAt: number
-      status: "scheduled" | "changed" | "cancelled" | "completed"
+      id: Id<"events">;
+      title: string;
+      description: string;
+      location: string;
+      startsAt: number;
+      endsAt: number;
+      status: "scheduled" | "changed" | "cancelled" | "completed";
     }) => {
-      return await convex.mutation(api.events.update, data)
+      return await convex.mutation(api.events.update, data);
     },
     onSuccess: () => setOpen(false),
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title || !startsAt || !endsAt) return
+    e.preventDefault();
+    if (!title || !startsAt || !endsAt) return;
     updateEvent.mutate({
       id: eventId,
       title,
@@ -77,8 +81,8 @@ export function EditEventDialog({ eventId }: EditEventDialogProps) {
       startsAt: new Date(startsAt).getTime(),
       endsAt: new Date(endsAt).getTime(),
       status,
-    })
-  }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -148,7 +152,10 @@ export function EditEventDialog({ eventId }: EditEventDialogProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="edit-status">Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as typeof status)}>
+            <Select
+              value={status}
+              onValueChange={(v) => setStatus(v as typeof status)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -179,5 +186,5 @@ export function EditEventDialog({ eventId }: EditEventDialogProps) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

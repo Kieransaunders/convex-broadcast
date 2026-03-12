@@ -1,8 +1,8 @@
-import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
-import { useConvex } from "convex/react"
-import { api } from "../../../convex/_generated/api.js"
-import type { Id } from "../../../convex/_generated/dataModel.js"
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
+import { api } from "../../../convex/_generated/api.js";
+import type { Id } from "../../../convex/_generated/dataModel.js";
 import {
   Dialog,
   DialogContent,
@@ -10,29 +10,35 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { AlertTriangle } from "lucide-react"
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 interface CancelEventDialogProps {
-  eventId: Id<"events">
-  eventTitle: string
+  eventId: Id<"events">;
+  eventTitle: string;
 }
 
-export function CancelEventDialog({ eventId, eventTitle }: CancelEventDialogProps) {
-  const convex = useConvex()
-  const [open, setOpen] = useState(false)
+export function CancelEventDialog({
+  eventId,
+  eventTitle,
+}: CancelEventDialogProps) {
+  const convex = useConvex();
+  const [open, setOpen] = useState(false);
 
   const cancelEvent = useMutation({
     mutationFn: async () => {
-      return await convex.mutation(api.events.changeStatus, { id: eventId, status: "cancelled" })
+      return await convex.mutation(api.events.changeStatus, {
+        id: eventId,
+        status: "cancelled",
+      });
     },
     onSuccess: () => setOpen(false),
-  })
+  });
 
   const handleCancel = () => {
-    cancelEvent.mutate()
-  }
+    cancelEvent.mutate();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,7 +60,8 @@ export function CancelEventDialog({ eventId, eventTitle }: CancelEventDialogProp
             Cancel Event
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to cancel <strong>{eventTitle}</strong>? This will update the event status to cancelled.
+            Are you sure you want to cancel <strong>{eventTitle}</strong>? This
+            will update the event status to cancelled.
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-3 pt-4">
@@ -71,5 +78,5 @@ export function CancelEventDialog({ eventId, eventTitle }: CancelEventDialogProp
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

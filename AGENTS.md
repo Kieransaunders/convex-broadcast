@@ -24,19 +24,19 @@ The system focuses on **admin-led broadcast messaging with audience targeting** 
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|------------|
+| Layer                  | Technology                                                      |
+| ---------------------- | --------------------------------------------------------------- |
 | **Frontend Framework** | [TanStack Start](https://tanstack.com/start) (full-stack React) |
-| **UI Library** | React 19 |
-| **Language** | TypeScript 5.9 |
-| **Styling** | Tailwind CSS v4 |
-| **UI Components** | Base UI + shadcn/ui |
-| **Backend** | [Convex](https://convex.dev) (serverless database + functions) |
-| **Authentication** | Better Auth with Convex adapter |
-| **Email** | Resend (via `@convex-dev/resend`) |
-| **Push Notifications** | Web Push API |
-| **Build Tool** | Vite 7 |
-| **Query Client** | TanStack Query + Convex React Query |
+| **UI Library**         | React 19                                                        |
+| **Language**           | TypeScript 5.9                                                  |
+| **Styling**            | Tailwind CSS v4                                                 |
+| **UI Components**      | Base UI + shadcn/ui                                             |
+| **Backend**            | [Convex](https://convex.dev) (serverless database + functions)  |
+| **Authentication**     | Better Auth with Convex adapter                                 |
+| **Email**              | Resend (via `@convex-dev/resend`)                               |
+| **Push Notifications** | Web Push API                                                    |
+| **Build Tool**         | Vite 7                                                          |
+| **Query Client**       | TanStack Query + Convex React Query                             |
 
 ---
 
@@ -173,18 +173,18 @@ VAPID_PRIVATE_KEY=xxx
 
 ### Core Tables
 
-| Table | Purpose |
-|-------|---------|
-| `users` | App users with roles (member/admin/super_admin) |
-| `groups` | User groups for audience targeting |
-| `groupMemberships` | Many-to-many user-group relationships |
-| `events` | Events that messages can be linked to |
-| `messages` | Broadcast messages with scheduling |
-| `messageTargets` | Target groups/events for messages |
-| `deliveries` | Per-user message delivery records |
-| `invites` | Pending user invitations |
-| `impersonationLogs` | Admin impersonation audit trail |
-| `pushSubscriptions` | Web Push API subscriptions |
+| Table               | Purpose                                         |
+| ------------------- | ----------------------------------------------- |
+| `users`             | App users with roles (member/admin/super_admin) |
+| `groups`            | User groups for audience targeting              |
+| `groupMemberships`  | Many-to-many user-group relationships           |
+| `events`            | Events that messages can be linked to           |
+| `messages`          | Broadcast messages with scheduling              |
+| `messageTargets`    | Target groups/events for messages               |
+| `deliveries`        | Per-user message delivery records               |
+| `invites`           | Pending user invitations                        |
+| `impersonationLogs` | Admin impersonation audit trail                 |
+| `pushSubscriptions` | Web Push API subscriptions                      |
 
 ### Role Hierarchy
 
@@ -216,7 +216,7 @@ This project uses **Better Auth** with the Convex adapter:
 ### File Organization
 
 - **Routes**: File-based routing via TanStack Start. Route files use `createFileRoute` export.
-- **Route Guards**: 
+- **Route Guards**:
   - `_authed.tsx` - Requires authentication
   - `_authed/_admin.tsx` - Requires admin role
   - `_authed/_admin/layout.tsx` - Admin dashboard layout
@@ -234,11 +234,11 @@ This project uses **Better Auth** with the Convex adapter:
 
 ```typescript
 // Use ~/* alias for src imports
-import { Button } from "~/components/ui/button"
-import { authClient } from "~/lib/auth-client"
+import { Button } from "~/components/ui/button";
+import { authClient } from "~/lib/auth-client";
 
 // For Convex, use relative imports within convex/ or api import
-import { api } from "../../convex/_generated/api"
+import { api } from "../../convex/_generated/api";
 ```
 
 ### Styling with Tailwind CSS v4
@@ -253,8 +253,8 @@ import { api } from "../../convex/_generated/api"
 Components are built on **Base UI** primitives with Tailwind styling:
 
 ```typescript
-import { Button } from "@base-ui/react/button"
-import { cva } from "class-variance-authority"
+import { Button } from "@base-ui/react/button";
+import { cva } from "class-variance-authority";
 ```
 
 Available components in `src/components/ui/`: button, card, dialog, input, select, table, tabs, and more.
@@ -266,18 +266,20 @@ Available components in `src/components/ui/`: button, card, dialog, input, selec
 ### Query/Mutation Structure
 
 ```typescript
-import { v } from "convex/values"
-import { query, mutation } from "./_generated/server"
-import { getUser, getAdminUser } from "./auth"
+import { v } from "convex/values";
+import { query, mutation } from "./_generated/server";
+import { getUser, getAdminUser } from "./auth";
 
 export const list = query({
-  args: { /* validation schema */ },
+  args: {
+    /* validation schema */
+  },
   handler: async (ctx, args) => {
     // Authentication check
-    await getUser(ctx)
+    await getUser(ctx);
     // ... query logic
   },
-})
+});
 ```
 
 ### Auth Helpers in Convex
@@ -291,16 +293,20 @@ export const list = query({
 Use `internalMutation` and `internalAction` for functions called by other Convex functions:
 
 ```typescript
-import { internalMutation } from "./_generated/server"
-import { internal } from "./_generated/api"
+import { internalMutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 export const myInternalFn = internalMutation({
-  args: { /* ... */ },
-  handler: async (ctx, args) => { /* ... */ },
-})
+  args: {
+    /* ... */
+  },
+  handler: async (ctx, args) => {
+    /* ... */
+  },
+});
 
 // Called via:
-await ctx.scheduler.runAfter(0, internal.moduleName.functionName, args)
+await ctx.scheduler.runAfter(0, internal.moduleName.functionName, args);
 ```
 
 ---
@@ -317,6 +323,7 @@ await ctx.scheduler.runAfter(0, internal.moduleName.functionName, args)
 ### Preferences
 
 Users can set notification preferences per subscription:
+
 - `all` - All notifications
 - `urgent` - Only urgent category messages
 - `none` - No push notifications

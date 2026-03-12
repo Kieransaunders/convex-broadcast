@@ -18,22 +18,23 @@ Build a single-organisation broadcast communication PWA using React + TanStack S
 ## Schema
 
 ### Better Auth managed tables (auto-generated in `convex/betterAuth/schema.ts`)
+
 - `user`, `session`, `account`, `verification`
 
 ### Application tables (`convex/schema.ts`)
 
-| Table | Key Fields |
-|-------|-----------|
-| `users` | email, name, role (`member`/`admin`/`super_admin`), status, createdAt |
-| `groups` | name, description, active, createdBy, createdAt |
-| `groupMemberships` | userId, groupId, role (`member`/`manager`), addedBy, addedAt |
-| `events` | title, description, location, startsAt, endsAt, status (`scheduled`/`changed`/`cancelled`/`completed`), createdBy |
-| `messages` | title, body, category (`notice`/`reminder`/`event_update`/`urgent`), audienceType (`all`/`groups`/`event`), linkedEventId?, pushEnabled, status (`draft`/`scheduled`/`sent`/`archived`), scheduledFor?, sentAt?, createdBy |
-| `messageTargets` | messageId, targetType (`group`/`event`), targetId |
-| `deliveries` | messageId, userId, deliveredAt, readAt?, pushStatus (`pending`/`sent`/`failed`/`none`) |
-| `invites` | email, role, expiresAt, invitedBy, status (`pending`/`accepted`/`expired`) |
-| `impersonationLogs` | adminUserId, impersonatedUserId, startedAt, endedAt? |
-| `pushSubscriptions` | userId, endpoint, p256dh, auth, preference (`all`/`urgent`/`none`), createdAt |
+| Table               | Key Fields                                                                                                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`             | email, name, role (`member`/`admin`/`super_admin`), status, createdAt                                                                                                                                                      |
+| `groups`            | name, description, active, createdBy, createdAt                                                                                                                                                                            |
+| `groupMemberships`  | userId, groupId, role (`member`/`manager`), addedBy, addedAt                                                                                                                                                               |
+| `events`            | title, description, location, startsAt, endsAt, status (`scheduled`/`changed`/`cancelled`/`completed`), createdBy                                                                                                          |
+| `messages`          | title, body, category (`notice`/`reminder`/`event_update`/`urgent`), audienceType (`all`/`groups`/`event`), linkedEventId?, pushEnabled, status (`draft`/`scheduled`/`sent`/`archived`), scheduledFor?, sentAt?, createdBy |
+| `messageTargets`    | messageId, targetType (`group`/`event`), targetId                                                                                                                                                                          |
+| `deliveries`        | messageId, userId, deliveredAt, readAt?, pushStatus (`pending`/`sent`/`failed`/`none`)                                                                                                                                     |
+| `invites`           | email, role, expiresAt, invitedBy, status (`pending`/`accepted`/`expired`)                                                                                                                                                 |
+| `impersonationLogs` | adminUserId, impersonatedUserId, startedAt, endedAt?                                                                                                                                                                       |
+| `pushSubscriptions` | userId, endpoint, p256dh, auth, preference (`all`/`urgent`/`none`), createdAt                                                                                                                                              |
 
 Indexes: userId on most tables, messageId on deliveries/targets, groupId on memberships, status on messages/events/invites.
 

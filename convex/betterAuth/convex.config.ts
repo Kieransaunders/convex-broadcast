@@ -1,2 +1,2 @@
-import { defineComponent } from "convex/server"
-export default defineComponent("betterAuth")
+import { defineComponent } from "convex/server";
+export default defineComponent("betterAuth");

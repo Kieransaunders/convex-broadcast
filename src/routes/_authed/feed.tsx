@@ -1,52 +1,63 @@
-import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { useMutation as useConvexMutation } from "convex/react"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../convex/_generated/api"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Label } from "~/components/ui/label"
-import { Settings, Bell, BellOff, Loader2 } from "lucide-react"
-import { useEffect } from "react"
-import { authClient } from "~/lib/auth-client"
+import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation as useConvexMutation } from "convex/react";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../convex/_generated/api";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Label } from "~/components/ui/label";
+import { Settings, Bell, BellOff, Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { authClient } from "~/lib/auth-client";
 
 export const Route = createFileRoute("/_authed/feed")({
   component: FeedPage,
-})
+});
 
-const routeApi = getRouteApi("/_authed/feed")
+const routeApi = getRouteApi("/_authed/feed");
 
 function FeedPage() {
-  const search = routeApi.useSearch()
-  const notice = (search as { notice?: string }).notice
-  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}))
-  const { data: messages, isLoading: messagesLoading, error: messagesError } = useQuery(convexQuery(api.messages.feed, {}))
-  const isAdmin = user && (user.role === "admin" || user.role === "super_admin")
+  const search = routeApi.useSearch();
+  const notice = (search as { notice?: string }).notice;
+  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+  const {
+    data: messages,
+    isLoading: messagesLoading,
+    error: messagesError,
+  } = useQuery(convexQuery(api.messages.feed, {}));
+  const isAdmin =
+    user && (user.role === "admin" || user.role === "super_admin");
 
   useEffect(() => {
     if (messagesError) {
-      console.error("Feed Query Error:", messagesError)
+      console.error("Feed Query Error:", messagesError);
     }
-  }, [messagesError])
+  }, [messagesError]);
 
   if (messagesError) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F5F3FF] p-4">
         <Card className="max-w-md w-full border-red-200 bg-red-50">
           <CardContent className="p-6 text-center">
-            <h2 className="text-lg font-semibold text-red-900 mb-2">Something went wrong</h2>
+            <h2 className="text-lg font-semibold text-red-900 mb-2">
+              Something went wrong
+            </h2>
             <p className="text-sm text-red-800 mb-4">
-              {messagesError instanceof Error ? messagesError.message : "Failed to load your feed."}
+              {messagesError instanceof Error
+                ? messagesError.message
+                : "Failed to load your feed."}
             </p>
             <Button
               onClick={() => {
                 authClient.signOut({
                   fetchOptions: {
-                    onSuccess: () => { window.location.href = "/sign-in" }
-                  }
-                })
+                    onSuccess: () => {
+                      window.location.href = "/sign-in";
+                    },
+                  },
+                });
               }}
               variant="outline"
               className="border-red-300 text-red-700"
@@ -56,7 +67,7 @@ function FeedPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (messagesLoading) {
@@ -64,7 +75,7 @@ function FeedPage() {
       <div className="flex min-h-screen items-center justify-center bg-[#F5F3FF]">
         <Loader2 className="h-8 w-8 animate-spin text-[#6366F1]" />
       </div>
-    )
+    );
   }
 
   return (
@@ -75,7 +86,11 @@ function FeedPage() {
             <h1 className="text-xl font-bold text-[#1E1B4B]">Org Comms</h1>
             {isAdmin && (
               <Link to="/dashboard">
-                <Button variant="outline" size="sm" className="hidden border-[#6366F1] text-[#6366F1] sm:inline-flex">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden border-[#6366F1] text-[#6366F1] sm:inline-flex"
+                >
                   Admin Dashboard
                 </Button>
               </Link>
@@ -85,7 +100,11 @@ function FeedPage() {
           <div className="flex items-center gap-3">
             <NotificationStatus />
             <Link to="/settings">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-[#1E1B4B]/60">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-[#1E1B4B]/60"
+              >
                 <Settings className="h-5 w-5" />
               </Button>
             </Link>
@@ -97,16 +116,21 @@ function FeedPage() {
         {notice === "admin_only" && (
           <Card className="mb-4 border-amber-200 bg-amber-50">
             <CardContent className="p-4 text-sm text-amber-900">
-              Admin access is only available to admin or super admin accounts. You are signed in successfully, and this is your member feed.
+              Admin access is only available to admin or super admin accounts.
+              You are signed in successfully, and this is your member feed.
             </CardContent>
           </Card>
         )}
-        <h2 className="mb-4 text-lg font-semibold text-[#1E1B4B]">Your Messages</h2>
+        <h2 className="mb-4 text-lg font-semibold text-[#1E1B4B]">
+          Your Messages
+        </h2>
         <div className="space-y-4">
           {messages?.length === 0 && (
             <Card className="p-8 text-center">
               <Bell className="mx-auto mb-4 h-12 w-12 text-[#818CF8]" />
-              <p className="text-gray-600">No messages yet. Check back later!</p>
+              <p className="text-gray-600">
+                No messages yet. Check back later!
+              </p>
             </Card>
           )}
           {messages?.map((msg: any) => (
@@ -115,102 +139,121 @@ function FeedPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 function NotificationStatus() {
-  const { data: subscription, isLoading } = useQuery(convexQuery(api.push.getMySubscription, {}))
-  const { data: vapidKey } = useQuery(convexQuery(api.push.getVapidPublicKey, {}))
-  const subscribe = useConvexMutation(api.push.subscribe)
-  const unsubscribe = useConvexMutation(api.push.unsubscribe)
-  const isEnabled = !!subscription
+  const { data: subscription, isLoading } = useQuery(
+    convexQuery(api.push.getMySubscription, {}),
+  );
+  const { data: vapidKey } = useQuery(
+    convexQuery(api.push.getVapidPublicKey, {}),
+  );
+  const subscribe = useConvexMutation(api.push.subscribe);
+  const unsubscribe = useConvexMutation(api.push.unsubscribe);
+  const isEnabled = !!subscription;
 
   const handleToggle = async (checked: boolean) => {
     if (checked) {
       try {
-        const permission = await Notification.requestPermission()
+        const permission = await Notification.requestPermission();
         if (permission === "granted") {
-          const key = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY
+          const key = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY;
           if (!key) {
-            alert("Notification system not ready. Please try again in a moment.")
-            return
+            alert(
+              "Notification system not ready. Please try again in a moment.",
+            );
+            return;
           }
 
-          const registration = await navigator.serviceWorker.ready
+          const registration = await navigator.serviceWorker.ready;
           const pushSubscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(key) as BufferSource,
-          })
+          });
 
           await subscribe({
             endpoint: pushSubscription.endpoint,
             p256dh: arrayBufferToBase64(pushSubscription.getKey("p256dh")!),
             auth: arrayBufferToBase64(pushSubscription.getKey("auth")!),
             preference: "all",
-          })
+          });
         }
       } catch (err) {
-        console.error("Failed to enable notifications", err)
-        alert("Failed to enable notifications. Is your browser blocking them?")
+        console.error("Failed to enable notifications", err);
+        alert("Failed to enable notifications. Is your browser blocking them?");
       }
     } else {
       try {
-        const registration = await navigator.serviceWorker.ready
-        const pushSubscription = await registration.pushManager.getSubscription()
+        const registration = await navigator.serviceWorker.ready;
+        const pushSubscription =
+          await registration.pushManager.getSubscription();
         if (pushSubscription) {
-          await unsubscribe({ endpoint: pushSubscription.endpoint })
-          await pushSubscription.unsubscribe()
+          await unsubscribe({ endpoint: pushSubscription.endpoint });
+          await pushSubscription.unsubscribe();
         }
       } catch (err) {
-        console.error("Failed to disable notifications", err)
+        console.error("Failed to disable notifications", err);
       }
     }
-  }
+  };
 
-  if (isLoading) return <div className="h-9 w-24 animate-pulse rounded-full bg-gray-200" />
+  if (isLoading)
+    return <div className="h-9 w-24 animate-pulse rounded-full bg-gray-200" />;
 
   return (
     <div
       onClick={() => handleToggle(!isEnabled)}
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none ${isEnabled
-        ? "bg-green-50 border-green-200 text-green-700"
-        : "bg-amber-50 border-amber-200 text-amber-700 animate-pulse outline outline-2 outline-amber-400/20"
-        }`}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none ${
+        isEnabled
+          ? "bg-green-50 border-green-200 text-green-700"
+          : "bg-amber-50 border-amber-200 text-amber-700 animate-pulse outline outline-2 outline-amber-400/20"
+      }`}
     >
       <Checkbox
         id="push-toggle-header"
         checked={isEnabled}
-        onCheckedChange={() => { }} // Controlled by parent div click
+        onCheckedChange={() => {}} // Controlled by parent div click
         className={`pointer-events-none ${isEnabled ? "border-green-400" : "border-amber-400"}`}
       />
       <Label
         htmlFor="push-toggle-header"
         className="flex items-center gap-1.5 text-xs font-bold pointer-events-none"
       >
-        {isEnabled ? <Bell className="h-3 w-3" /> : <BellOff className="h-3 w-3" />}
-        <span className="hidden sm:inline">{isEnabled ? "Alerts ON" : "Enable Alerts"}</span>
+        {isEnabled ? (
+          <Bell className="h-3 w-3" />
+        ) : (
+          <BellOff className="h-3 w-3" />
+        )}
+        <span className="hidden sm:inline">
+          {isEnabled ? "Alerts ON" : "Enable Alerts"}
+        </span>
         <span className="sm:hidden">{isEnabled ? "ON" : "OFF"}</span>
       </Label>
     </div>
-  )
+  );
 }
 
 function MessageCard({ message }: { message: any }) {
-  const isUnread = !message.delivery?.readAt
+  const isUnread = !message.delivery?.readAt;
   const categoryColors: Record<string, string> = {
     notice: "bg-blue-100 text-blue-800",
     reminder: "bg-yellow-100 text-yellow-800",
     event_update: "bg-purple-100 text-purple-800",
     urgent: "bg-red-100 text-red-800",
-  }
+  };
 
   return (
     <Link to="/messages/$id" params={{ id: message._id }}>
-      <Card className={`transition-shadow hover:shadow-md ${isUnread ? "border-l-4 border-l-[#6366F1]" : ""}`}>
+      <Card
+        className={`transition-shadow hover:shadow-md ${isUnread ? "border-l-4 border-l-[#6366F1]" : ""}`}
+      >
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              {isUnread && <span className="h-2 w-2 rounded-full bg-[#6366F1]" />}
+              {isUnread && (
+                <span className="h-2 w-2 rounded-full bg-[#6366F1]" />
+              )}
               <CardTitle className="text-base">{message.title}</CardTitle>
             </div>
             <Badge className={categoryColors[message.category] || ""}>
@@ -226,21 +269,21 @@ function MessageCard({ message }: { message: any }) {
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
-  const rawData = window.atob(base64)
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)))
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  let binary = ""
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
   for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i])
+    binary += String.fromCharCode(bytes[i]);
   }
-  return window.btoa(binary)
+  return window.btoa(binary);
 }

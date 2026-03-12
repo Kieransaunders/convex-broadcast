@@ -1,40 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { useMutation } from "convex/react"
-import { api } from "../../../convex/_generated/api"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import { Link } from "@tanstack/react-router"
-import { useEffect } from "react"
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
-})
+});
 
 function MessageDetailPage() {
-  const { id } = Route.useParams()
-  const { data: message } = useQuery(convexQuery(api.messages.getById, { id: id as any }))
-  const { data: delivery } = useQuery(convexQuery(api.messages.getMyDelivery, { messageId: id as any }))
-  const markRead = useMutation(api.messages.markRead)
+  const { id } = Route.useParams();
+  const { data: message } = useQuery(
+    convexQuery(api.messages.getById, { id: id as any }),
+  );
+  const { data: delivery } = useQuery(
+    convexQuery(api.messages.getMyDelivery, { messageId: id as any }),
+  );
+  const markRead = useMutation(api.messages.markRead);
 
   // Auto-mark as read when viewing
   useEffect(() => {
     if (delivery && !delivery.readAt) {
-      markRead({ deliveryId: delivery._id })
+      markRead({ deliveryId: delivery._id });
     }
-  }, [delivery, markRead])
+  }, [delivery, markRead]);
 
   const categoryColors: Record<string, string> = {
     notice: "bg-blue-100 text-blue-800",
     reminder: "bg-yellow-100 text-yellow-800",
     event_update: "bg-purple-100 text-purple-800",
     urgent: "bg-red-100 text-red-800",
-  }
+  };
 
-  if (!message) return <div>Loading...</div>
+  if (!message) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-[#F5F3FF]">
@@ -52,7 +56,9 @@ function MessageDetailPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl text-[#1E1B4B]">{message.title}</CardTitle>
+              <CardTitle className="text-xl text-[#1E1B4B]">
+                {message.title}
+              </CardTitle>
               <Badge className={categoryColors[message.category] || ""}>
                 {message.category}
               </Badge>
@@ -67,5 +73,5 @@ function MessageDetailPage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

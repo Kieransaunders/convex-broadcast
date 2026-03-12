@@ -1,18 +1,18 @@
-import { createFileRoute, useSearch, Link } from "@tanstack/react-router"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../../../convex/_generated/api.js"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Badge } from "~/components/ui/badge"
-import { Separator } from "~/components/ui/separator"
-import { 
-  ArrowLeft, 
-  Send, 
-  Trash2, 
-  Loader2, 
-  FileText, 
-  Bell, 
+import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../../../convex/_generated/api.js";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
+import {
+  ArrowLeft,
+  Send,
+  Trash2,
+  Loader2,
+  FileText,
+  Bell,
   CheckCircle,
   Users,
   FolderOpen,
@@ -21,14 +21,14 @@ import {
   Clock,
   AlertCircle,
   MessageSquare,
-  BarChart3
-} from "lucide-react"
-import { useConvex } from "convex/react"
-import type { Id } from "../../../../../convex/_generated/dataModel.js"
+  BarChart3,
+} from "lucide-react";
+import { useConvex } from "convex/react";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 type SearchParams = {
-  id: string
-}
+  id: string;
+};
 
 const CATEGORY_CONFIG = {
   urgent: {
@@ -51,7 +51,7 @@ const CATEGORY_CONFIG = {
     icon: MessageSquare,
     label: "Notice",
   },
-} as const
+} as const;
 
 const STATUS_CONFIG = {
   draft: {
@@ -74,7 +74,7 @@ const STATUS_CONFIG = {
     icon: FolderOpen,
     label: "Archived",
   },
-} as const
+} as const;
 
 const AUDIENCE_CONFIG = {
   all: {
@@ -92,32 +92,36 @@ const AUDIENCE_CONFIG = {
     label: "Event Attendees",
     description: "Linked to an event",
   },
-} as const
+} as const;
 
 export const Route = createFileRoute("/_authed/_admin/messages/detail")({
   component: MessageDetailPage,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
     id: search.id as string,
   }),
-})
+});
 
 function MessageDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/messages/detail" })
-  const convex = useConvex()
+  const { id } = useSearch({ from: "/_authed/_admin/messages/detail" });
+  const convex = useConvex();
 
   const { data: message, isLoading } = useQuery(
-    convexQuery(api.messages.getById, { id: id as Id<"messages"> })
-  )
+    convexQuery(api.messages.getById, { id: id as Id<"messages"> }),
+  );
   const { data: deliveryStats } = useQuery({
-    ...convexQuery(api.messages.getDeliveryStats, { messageId: id as Id<"messages"> }),
+    ...convexQuery(api.messages.getDeliveryStats, {
+      messageId: id as Id<"messages">,
+    }),
     enabled: message?.status === "sent",
-  })
+  });
 
   const sendMutation = useMutation({
     mutationFn: async () => {
-      return await convex.mutation(api.messages.sendNow, { id: id as Id<"messages"> })
+      return await convex.mutation(api.messages.sendNow, {
+        id: id as Id<"messages">,
+      });
     },
-  })
+  });
 
   if (isLoading) {
     return (
@@ -128,7 +132,7 @@ function MessageDetailPage() {
           <div className="h-64 bg-gray-100 rounded animate-pulse" />
         </div>
       </div>
-    )
+    );
   }
 
   if (!message) {
@@ -137,49 +141,65 @@ function MessageDetailPage() {
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
           <FileText className="h-10 w-10 text-gray-400" />
         </div>
-        <h2 className="mt-6 text-2xl font-semibold text-[#1E1B4B]">Message not found</h2>
-        <p className="mt-2 text-[#1E1B4B]/60">The message you're looking for doesn't exist or has been deleted.</p>
+        <h2 className="mt-6 text-2xl font-semibold text-[#1E1B4B]">
+          Message not found
+        </h2>
+        <p className="mt-2 text-[#1E1B4B]/60">
+          The message you're looking for doesn't exist or has been deleted.
+        </p>
         <Link to="/messages">
           <Button className="mt-6 bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
             Back to Messages
           </Button>
         </Link>
       </div>
-    )
+    );
   }
 
-  const category = CATEGORY_CONFIG[message.category] || CATEGORY_CONFIG.notice
-  const status = STATUS_CONFIG[message.status] || STATUS_CONFIG.draft
-  const audience = AUDIENCE_CONFIG[message.audienceType] || AUDIENCE_CONFIG.all
-  const CategoryIcon = category.icon
-  const StatusIcon = status.icon
-  const AudienceIcon = audience.icon
+  const category = CATEGORY_CONFIG[message.category] || CATEGORY_CONFIG.notice;
+  const status = STATUS_CONFIG[message.status] || STATUS_CONFIG.draft;
+  const audience = AUDIENCE_CONFIG[message.audienceType] || AUDIENCE_CONFIG.all;
+  const CategoryIcon = category.icon;
+  const StatusIcon = status.icon;
+  const AudienceIcon = audience.icon;
 
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="shrink-0 text-[#1E1B4B] hover:bg-[#6366F1]/10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-[#1E1B4B] hover:bg-[#6366F1]/10"
+          >
             <Link to="/messages">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#1E1B4B]">{message.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1E1B4B]">
+                {message.title}
+              </h1>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline" className={`${status.color} capitalize`}>
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {status.label}
               </Badge>
-              <Badge variant="outline" className={`${category.color} capitalize`}>
+              <Badge
+                variant="outline"
+                className={`${category.color} capitalize`}
+              >
                 <CategoryIcon className="h-3 w-3 mr-1" />
                 {category.label}
               </Badge>
               {message.pushEnabled && (
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Badge
+                  variant="outline"
+                  className="bg-green-50 text-green-700 border-green-200"
+                >
                   <Bell className="h-3 w-3 mr-1" />
                   Push
                 </Badge>
@@ -222,7 +242,9 @@ function MessageDetailPage() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="prose prose-slate max-w-none">
-                <p className="text-[#1E1B4B] whitespace-pre-wrap leading-relaxed">{message.body}</p>
+                <p className="text-[#1E1B4B] whitespace-pre-wrap leading-relaxed">
+                  {message.body}
+                </p>
               </div>
 
               {(message.sentAt || message.scheduledFor) && (
@@ -285,7 +307,13 @@ function MessageDetailPage() {
                     value={deliveryStats.read}
                     color="text-green-600"
                     bgColor="bg-green-100"
-                    percent={deliveryStats.total > 0 ? Math.round((deliveryStats.read / deliveryStats.total) * 100) : 0}
+                    percent={
+                      deliveryStats.total > 0
+                        ? Math.round(
+                            (deliveryStats.read / deliveryStats.total) * 100,
+                          )
+                        : 0
+                    }
                   />
                   <StatCard
                     icon={Bell}
@@ -309,13 +337,18 @@ function MessageDetailPage() {
                     <div className="flex items-center justify-between text-sm mb-2">
                       <span className="text-[#1E1B4B]/60">Read Rate</span>
                       <span className="font-medium text-[#1E1B4B]">
-                        {Math.round((deliveryStats.read / deliveryStats.total) * 100)}%
+                        {Math.round(
+                          (deliveryStats.read / deliveryStats.total) * 100,
+                        )}
+                        %
                       </span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#6366F1] rounded-full transition-all duration-500"
-                        style={{ width: `${(deliveryStats.read / deliveryStats.total) * 100}%` }}
+                        style={{
+                          width: `${(deliveryStats.read / deliveryStats.total) * 100}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -335,9 +368,7 @@ function MessageDetailPage() {
             <CardContent className="p-4 space-y-2">
               {message.status === "draft" && (
                 <>
-                  <Button 
-                    className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white justify-start"
-                  >
+                  <Button className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white justify-start">
                     <FileText className="mr-2 h-4 w-4" />
                     Edit Message
                   </Button>
@@ -360,10 +391,10 @@ function MessageDetailPage() {
                   </Button>
                 </>
               )}
-              
+
               {message.status === "scheduled" && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full border-amber-200 text-amber-700 hover:bg-amber-50 justify-start"
                 >
                   <Clock className="mr-2 h-4 w-4" />
@@ -393,7 +424,9 @@ function MessageDetailPage() {
                 </div>
                 <div>
                   <p className="font-medium text-[#1E1B4B]">{audience.label}</p>
-                  <p className="text-sm text-[#1E1B4B]/60">{audience.description}</p>
+                  <p className="text-sm text-[#1E1B4B]/60">
+                    {audience.description}
+                  </p>
                 </div>
               </div>
 
@@ -402,7 +435,9 @@ function MessageDetailPage() {
                   <Separator className="my-4 bg-[#6366F1]/10" />
                   <div>
                     <p className="text-sm font-medium text-[#1E1B4B] mb-2">
-                      {message.audienceType === "groups" ? "Selected Groups" : "Linked Event"}
+                      {message.audienceType === "groups"
+                        ? "Selected Groups"
+                        : "Linked Event"}
                     </p>
                     <div className="space-y-2">
                       {message.targets.map((target) => (
@@ -415,7 +450,9 @@ function MessageDetailPage() {
                           ) : (
                             <CalendarDays className="h-4 w-4 text-[#6366F1]" />
                           )}
-                          <span className="text-[#1E1B4B] truncate">{target.targetId}</span>
+                          <span className="text-[#1E1B4B] truncate">
+                            {target.targetId}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -433,13 +470,20 @@ function MessageDetailPage() {
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#1E1B4B]/60">Category</span>
-                <Badge variant="outline" className={`${category.color} capitalize`}>
+                <Badge
+                  variant="outline"
+                  className={`${category.color} capitalize`}
+                >
                   {category.label}
                 </Badge>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#1E1B4B]/60">Push Notifications</span>
-                <span className={message.pushEnabled ? "text-green-600" : "text-gray-500"}>
+                <span
+                  className={
+                    message.pushEnabled ? "text-green-600" : "text-gray-500"
+                  }
+                >
                   {message.pushEnabled ? "Enabled" : "Disabled"}
                 </span>
               </div>
@@ -454,7 +498,7 @@ function MessageDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function StatCard({
@@ -465,17 +509,19 @@ function StatCard({
   bgColor,
   percent,
 }: {
-  icon: React.ElementType
-  label: string
-  value: number
-  color: string
-  bgColor: string
-  percent?: number
+  icon: React.ElementType;
+  label: string;
+  value: number;
+  color: string;
+  bgColor: string;
+  percent?: number;
 }) {
   return (
     <div className="relative overflow-hidden rounded-xl bg-gray-50 p-4">
       <div className="flex items-center gap-3">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${bgColor}`}>
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-lg ${bgColor}`}
+        >
           <Icon className={`h-5 w-5 ${color}`} />
         </div>
         <div>
@@ -490,5 +536,5 @@ function StatCard({
         </div>
       )}
     </div>
-  )
+  );
 }

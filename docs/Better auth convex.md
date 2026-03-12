@@ -75,7 +75,7 @@ The @convex-dev/better-auth component works with server-side rendering framework
 
 ---
 
-Convex + Better Auth 
+Convex + Better Auth
 Framework Agnostic
 Support for popular frameworks.
 

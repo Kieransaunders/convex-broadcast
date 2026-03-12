@@ -1,51 +1,53 @@
-import { useEffect, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../convex/_generated/api.js"
-import { Button } from "~/components/ui/button"
-import { ShieldAlert, LogOut } from "lucide-react"
-import { authClient } from "~/lib/auth-client"
-import { useRouter } from "@tanstack/react-router"
-import type { Id } from "../../convex/_generated/dataModel.js"
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../convex/_generated/api.js";
+import { Button } from "~/components/ui/button";
+import { ShieldAlert, LogOut } from "lucide-react";
+import { authClient } from "~/lib/auth-client";
+import { useRouter } from "@tanstack/react-router";
+import type { Id } from "../../convex/_generated/dataModel.js";
 
 export function ImpersonationBanner() {
-  const router = useRouter()
-  const [isImpersonating, setIsImpersonating] = useState(false)
-  const [impersonatedUserId, setImpersonatedUserId] = useState<string | null>(null)
+  const router = useRouter();
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const [impersonatedUserId, setImpersonatedUserId] = useState<string | null>(
+    null,
+  );
 
   // Check if we're in impersonation mode
   useEffect(() => {
     const checkImpersonation = async () => {
-      const session = await authClient.getSession()
+      const session = await authClient.getSession();
       // Better Auth sets impersonatedBy in the session when impersonating
-      const user = session.data?.user as any
+      const user = session.data?.user as any;
       if (user?.impersonatedBy) {
-        setIsImpersonating(true)
-        setImpersonatedUserId(user.id)
+        setIsImpersonating(true);
+        setImpersonatedUserId(user.id);
       } else {
-        setIsImpersonating(false)
-        setImpersonatedUserId(null)
+        setIsImpersonating(false);
+        setImpersonatedUserId(null);
       }
-    }
-    checkImpersonation()
-  }, [router.state.location.pathname])
+    };
+    checkImpersonation();
+  }, [router.state.location.pathname]);
 
   const { data: impersonatedUser } = useQuery({
     ...convexQuery(api.users.getById, {
-      id: (impersonatedUserId as Id<"users">) || undefined
+      id: (impersonatedUserId as Id<"users">) || undefined,
     }),
     enabled: !!impersonatedUserId && isImpersonating,
-  })
+  });
 
   const handleStopImpersonating = async () => {
-    await authClient.admin.stopImpersonating()
-    router.invalidate()
+    await authClient.admin.stopImpersonating();
+    router.invalidate();
     // Navigate back to admin dashboard
-    router.navigate({ to: "/dashboard" })
-  }
+    router.navigate({ to: "/dashboard" });
+  };
 
   if (!isImpersonating || !impersonatedUser) {
-    return null
+    return null;
   }
 
   return (
@@ -78,5 +80,5 @@ export function ImpersonationBanner() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

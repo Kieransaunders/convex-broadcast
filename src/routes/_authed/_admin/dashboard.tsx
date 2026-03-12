@@ -1,24 +1,26 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../../convex/_generated/api.js"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Users, Mail, Eye } from "lucide-react"
-import { Skeleton } from "~/components/ui/skeleton"
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../../convex/_generated/api.js";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Users, Mail, Eye } from "lucide-react";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authed/_admin/dashboard")({
   component: DashboardPage,
-})
+});
 
 function DashboardPage() {
-  const { data: users, isLoading: usersLoading } = useQuery(convexQuery(api.users.list, {}))
+  const { data: users, isLoading: usersLoading } = useQuery(
+    convexQuery(api.users.list, {}),
+  );
   const { data: messages, isLoading: messagesLoading } = useQuery(
-    convexQuery(api.messages.list, {})
-  )
+    convexQuery(api.messages.list, {}),
+  );
 
-  const totalUsers = users?.length || 0
-  const totalMessages = messages?.length || 0
-  const sentMessages = messages?.filter((m) => m.status === "sent").length || 0
+  const totalUsers = users?.length || 0;
+  const totalMessages = messages?.length || 0;
+  const sentMessages = messages?.filter((m) => m.status === "sent").length || 0;
 
   return (
     <div className="space-y-6">
@@ -58,7 +60,9 @@ function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-[#6366F1]/10">
           <CardHeader>
-            <CardTitle className="text-lg text-[#1E1B4B]">Quick Actions</CardTitle>
+            <CardTitle className="text-lg text-[#1E1B4B]">
+              Quick Actions
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <QuickActionLink href="/messages/new" label="Send a new message" />
@@ -70,7 +74,9 @@ function DashboardPage() {
 
         <Card className="border-[#6366F1]/10">
           <CardHeader>
-            <CardTitle className="text-lg text-[#1E1B4B]">Recent Messages</CardTitle>
+            <CardTitle className="text-lg text-[#1E1B4B]">
+              Recent Messages
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {messagesLoading ? (
@@ -89,8 +95,12 @@ function DashboardPage() {
                     className="flex items-center justify-between rounded-lg p-3 hover:bg-[#6366F1]/5 transition-colors"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-[#1E1B4B] truncate">{message.title}</p>
-                      <p className="text-sm text-[#1E1B4B]/60 capitalize">{message.status}</p>
+                      <p className="font-medium text-[#1E1B4B] truncate">
+                        {message.title}
+                      </p>
+                      <p className="text-sm text-[#1E1B4B]/60 capitalize">
+                        {message.status}
+                      </p>
                     </div>
                     <span
                       className={`ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -109,7 +119,10 @@ function DashboardPage() {
             ) : (
               <p className="text-[#1E1B4B]/60 text-sm">
                 No messages yet.{" "}
-                <Link to="/messages/new" className="text-[#6366F1] hover:underline">
+                <Link
+                  to="/messages/new"
+                  className="text-[#6366F1] hover:underline"
+                >
                   Create your first message
                 </Link>
               </p>
@@ -118,7 +131,7 @@ function DashboardPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
 function StatCard({
@@ -128,11 +141,11 @@ function StatCard({
   loading,
   href,
 }: {
-  title: string
-  value: number
-  icon: React.ElementType
-  loading: boolean
-  href: string
+  title: string;
+  value: number;
+  icon: React.ElementType;
+  loading: boolean;
+  href: string;
 }) {
   return (
     <Link to={href}>
@@ -154,7 +167,7 @@ function StatCard({
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }
 
 function QuickActionLink({ href, label }: { href: string; label: string }) {
@@ -170,8 +183,13 @@ function QuickActionLink({ href, label }: { href: string; label: string }) {
         viewBox="0 0 24 24"
         stroke="currentColor"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5l7 7-7 7"
+        />
       </svg>
     </Link>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { Link, createFileRoute } from "@tanstack/react-router"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent } from "~/components/ui/card"
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 import {
   Mail,
   Bell,
@@ -9,12 +9,12 @@ import {
   Zap,
   Globe,
   ArrowRight,
-  CheckCircle
-} from "lucide-react"
+  CheckCircle,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
-})
+});
 
 function LandingPage() {
   return (
@@ -27,7 +27,9 @@ function LandingPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6366F1]">
                 <Mail className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-bold text-[#1E1B4B]">Org Comms</span>
+              <span className="text-xl font-bold text-[#1E1B4B]">
+                Org Comms
+              </span>
             </div>
             <div className="flex items-center gap-4">
               <Link
@@ -36,9 +38,7 @@ function LandingPage() {
               >
                 Sign In
               </Link>
-              <Button
-                className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
-              >
+              <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
                 <Link to="/sign-up">Get Started</Link>
               </Button>
             </div>
@@ -58,8 +58,9 @@ function LandingPage() {
             <span className="text-[#6366F1]"> connected</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-[#1E1B4B]/70 mb-10">
-            Org Comms is the all-in-one communication platform for organizations.
-            Send messages, manage events, and keep everyone informed with ease.
+            Org Comms is the all-in-one communication platform for
+            organizations. Send messages, manage events, and keep everyone
+            informed with ease.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
@@ -90,7 +91,8 @@ function LandingPage() {
               Everything you need to communicate
             </h2>
             <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
-              Powerful features designed to make organizational communication simple and effective.
+              Powerful features designed to make organizational communication
+              simple and effective.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -137,7 +139,8 @@ function LandingPage() {
                 Ready to transform your communications?
               </h2>
               <p className="text-white/80 mb-8 max-w-xl mx-auto">
-                Join organizations already using Org Comms to keep their teams connected and informed.
+                Join organizations already using Org Comms to keep their teams
+                connected and informed.
               </p>
               <Button
                 size="lg"
@@ -160,7 +163,9 @@ function LandingPage() {
             <div className="flex h-6 w-6 items-center justify-center rounded bg-[#6366F1]">
               <Mail className="h-3 w-3 text-white" />
             </div>
-            <span className="text-sm font-medium text-[#1E1B4B]">Org Comms</span>
+            <span className="text-sm font-medium text-[#1E1B4B]">
+              Org Comms
+            </span>
           </div>
           <p className="text-sm text-[#1E1B4B]/60">
             © {new Date().getFullYear()} Org Comms. All rights reserved.
@@ -168,7 +173,7 @@ function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 function FeatureCard({
@@ -176,9 +181,9 @@ function FeatureCard({
   title,
   description,
 }: {
-  icon: React.ElementType
-  title: string
-  description: string
+  icon: React.ElementType;
+  title: string;
+  description: string;
 }) {
   return (
     <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow">
@@ -190,5 +195,5 @@ function FeatureCard({
         <p className="text-sm text-[#1E1B4B]/70">{description}</p>
       </CardContent>
     </Card>
-  )
+  );
 }

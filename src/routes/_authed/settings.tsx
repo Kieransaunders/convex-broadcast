@@ -1,111 +1,122 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { useMutation } from "convex/react"
-import { api } from "../../../convex/_generated/api"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Label } from "~/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import { Switch } from "~/components/ui/switch"
-import { authClient } from "~/lib/auth-client"
-import { useState, useEffect } from "react"
-import { User, Bell, LogOut, ArrowLeft } from "lucide-react"
-import { Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Switch } from "~/components/ui/switch";
+import { authClient } from "~/lib/auth-client";
+import { useState, useEffect } from "react";
+import { User, Bell, LogOut, ArrowLeft } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authed/settings")({
   component: SettingsPage,
-})
+});
 
 function SettingsPage() {
-  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}))
-  const { data: subscription } = useQuery(convexQuery(api.push.getMySubscription, {}))
-  const { data: vapidKey } = useQuery(convexQuery(api.push.getVapidPublicKey, {}))
-  const updatePreference = useMutation(api.push.updatePreference)
-  const subscribe = useMutation(api.push.subscribe)
-  const unsubscribe = useMutation(api.push.unsubscribe)
+  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+  const { data: subscription } = useQuery(
+    convexQuery(api.push.getMySubscription, {}),
+  );
+  const { data: vapidKey } = useQuery(
+    convexQuery(api.push.getVapidPublicKey, {}),
+  );
+  const updatePreference = useMutation(api.push.updatePreference);
+  const subscribe = useMutation(api.push.subscribe);
+  const unsubscribe = useMutation(api.push.unsubscribe);
 
-  const [pushEnabled, setPushEnabled] = useState(false)
-  const [preference, setPreference] = useState<"all" | "urgent" | "none">("all")
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [preference, setPreference] = useState<"all" | "urgent" | "none">(
+    "all",
+  );
 
   useEffect(() => {
     if (subscription) {
-      setPushEnabled(true)
-      setPreference(subscription.preference)
+      setPushEnabled(true);
+      setPreference(subscription.preference);
     }
-  }, [subscription])
+  }, [subscription]);
 
-  const [pushLoading, setPushLoading] = useState(false)
+  const [pushLoading, setPushLoading] = useState(false);
 
   const handlePushToggle = async (enabled: boolean) => {
-    setPushLoading(true)
+    setPushLoading(true);
     try {
       if (enabled) {
         // Request permission and subscribe
-        const permission = await Notification.requestPermission()
+        const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-          alert("Notification permission denied. Please enable notifications in your browser settings.")
-          setPushEnabled(false)
-          return
+          alert(
+            "Notification permission denied. Please enable notifications in your browser settings.",
+          );
+          setPushEnabled(false);
+          return;
         }
 
-        const keyToUse = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY
+        const keyToUse = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY;
         if (!keyToUse) {
-          console.error("VAPID public key not configured")
-          alert("Push notification system is still initializing. Please try again in 5 seconds.")
-          setPushEnabled(false)
-          return
+          console.error("VAPID public key not configured");
+          alert(
+            "Push notification system is still initializing. Please try again in 5 seconds.",
+          );
+          setPushEnabled(false);
+          return;
         }
 
         // Register service worker and subscribe
-        const registration = await navigator.serviceWorker.ready
+        const registration = await navigator.serviceWorker.ready;
         const pushSubscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(keyToUse) as BufferSource,
-        })
+        });
 
         await subscribe({
           endpoint: pushSubscription.endpoint,
           p256dh: arrayBufferToBase64(pushSubscription.getKey("p256dh")!),
           auth: arrayBufferToBase64(pushSubscription.getKey("auth")!),
           preference: "all",
-        })
-        setPushEnabled(true)
-        alert("Push notifications enabled successfully!")
+        });
+        setPushEnabled(true);
+        alert("Push notifications enabled successfully!");
       } else {
         // Unsubscribe
-        const registration = await navigator.serviceWorker.ready
-        const pushSubscription = await registration.pushManager.getSubscription()
+        const registration = await navigator.serviceWorker.ready;
+        const pushSubscription =
+          await registration.pushManager.getSubscription();
         if (pushSubscription) {
-          await unsubscribe({ endpoint: pushSubscription.endpoint })
-          await pushSubscription.unsubscribe()
+          await unsubscribe({ endpoint: pushSubscription.endpoint });
+          await pushSubscription.unsubscribe();
         }
-        setPushEnabled(false)
-        alert("Push notifications disabled.")
+        setPushEnabled(false);
+        alert("Push notifications disabled.");
       }
     } catch (error) {
-      console.error("Error toggling push notifications:", error)
-      alert("Failed to update push notification settings. Please try again.")
-      setPushEnabled(!enabled)
+      console.error("Error toggling push notifications:", error);
+      alert("Failed to update push notification settings. Please try again.");
+      setPushEnabled(!enabled);
     } finally {
-      setPushLoading(false)
+      setPushLoading(false);
     }
-  }
+  };
 
   const handlePreferenceChange = async (value: "all" | "urgent" | "none") => {
-    setPreference(value)
-    await updatePreference({ preference: value })
-  }
+    setPreference(value);
+    await updatePreference({ preference: value });
+  };
 
   const handleSignOut = async () => {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          window.location.href = "/"
+          window.location.href = "/";
         },
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F3FF]">
@@ -158,7 +169,8 @@ function SettingsPage() {
                 <div>
                   <Label className="text-base">Push Notifications</Label>
                   <p className="text-sm text-gray-500">
-                    {typeof window !== "undefined" && !("Notification" in window)
+                    {typeof window !== "undefined" &&
+                    !("Notification" in window)
                       ? "Notifications are not supported in this browser."
                       : "Receive notifications in your browser"}
                   </p>
@@ -166,14 +178,21 @@ function SettingsPage() {
                 <Switch
                   checked={pushEnabled}
                   onCheckedChange={handlePushToggle}
-                  disabled={pushLoading || (typeof window !== "undefined" && !("Notification" in window))}
+                  disabled={
+                    pushLoading ||
+                    (typeof window !== "undefined" &&
+                      !("Notification" in window))
+                  }
                 />
               </div>
 
               {pushEnabled && (
                 <div className="space-y-3">
                   <Label>Notification Preference</Label>
-                  <RadioGroup value={preference} onValueChange={(v) => handlePreferenceChange(v as any)}>
+                  <RadioGroup
+                    value={preference}
+                    onValueChange={(v) => handlePreferenceChange(v as any)}
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="all" id="all" />
                       <Label htmlFor="all">All messages</Label>
@@ -204,22 +223,22 @@ function SettingsPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 // Helper functions
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/")
-  const rawData = window.atob(base64)
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)))
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  let binary = ""
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
   for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i])
+    binary += String.fromCharCode(bytes[i]);
   }
-  return window.btoa(binary)
+  return window.btoa(binary);
 }

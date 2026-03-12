@@ -1,49 +1,49 @@
-import { createFileRoute, useSearch, Link } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../../../convex/_generated/api.js"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Badge } from "~/components/ui/badge"
-import { Separator } from "~/components/ui/separator"
-import { EditEventDialog } from "~/components/events/edit-event-dialog"
-import { CancelEventDialog } from "~/components/events/cancel-event-dialog"
-import { SendEventUpdateDialog } from "~/components/events/send-event-update-dialog"
-import { ArrowLeft, CalendarDays, MapPin, Clock, Calendar } from "lucide-react"
-import type { Id } from "../../../../../convex/_generated/dataModel.js"
+import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../../../convex/_generated/api.js";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
+import { EditEventDialog } from "~/components/events/edit-event-dialog";
+import { CancelEventDialog } from "~/components/events/cancel-event-dialog";
+import { SendEventUpdateDialog } from "~/components/events/send-event-update-dialog";
+import { ArrowLeft, CalendarDays, MapPin, Clock, Calendar } from "lucide-react";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 type SearchParams = {
-  id: string
-}
+  id: string;
+};
 
 export const Route = createFileRoute("/_authed/_admin/events/detail")({
   component: EventDetailPage,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
     id: search.id as string,
   }),
-})
+});
 
 function EventDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/events/detail" })
+  const { id } = useSearch({ from: "/_authed/_admin/events/detail" });
 
   const { data: event, isLoading } = useQuery(
-    convexQuery(api.events.getById, { id: id as Id<"events"> })
-  )
+    convexQuery(api.events.getById, { id: id as Id<"events"> }),
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "scheduled":
-        return "bg-blue-100 text-blue-700"
+        return "bg-blue-100 text-blue-700";
       case "changed":
-        return "bg-yellow-100 text-yellow-700"
+        return "bg-yellow-100 text-yellow-700";
       case "cancelled":
-        return "bg-red-100 text-red-700"
+        return "bg-red-100 text-red-700";
       case "completed":
-        return "bg-green-100 text-green-700"
+        return "bg-green-100 text-green-700";
       default:
-        return "bg-gray-100 text-gray-700"
+        return "bg-gray-100 text-gray-700";
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -51,7 +51,7 @@ function EventDetailPage() {
         <div className="h-8 w-48 bg-gray-100 rounded animate-pulse" />
         <div className="h-64 bg-gray-100 rounded animate-pulse" />
       </div>
-    )
+    );
   }
 
   if (!event) {
@@ -63,11 +63,11 @@ function EventDetailPage() {
           <Link to="/events">Back to Events</Link>
         </Button>
       </div>
-    )
+    );
   }
 
-  const startDate = new Date(event.startsAt)
-  const endDate = new Date(event.endsAt)
+  const startDate = new Date(event.startsAt);
+  const endDate = new Date(event.endsAt);
 
   return (
     <div className="space-y-6">
@@ -86,12 +86,18 @@ function EventDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="border-[#6366F1]/10 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-lg text-[#1E1B4B]">Event Details</CardTitle>
+            <CardTitle className="text-lg text-[#1E1B4B]">
+              Event Details
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="text-sm font-medium text-[#1E1B4B]/60 mb-1">Description</h3>
-              <p className="text-[#1E1B4B]">{event.description || "No description provided"}</p>
+              <h3 className="text-sm font-medium text-[#1E1B4B]/60 mb-1">
+                Description
+              </h3>
+              <p className="text-[#1E1B4B]">
+                {event.description || "No description provided"}
+              </p>
             </div>
 
             <Separator className="bg-[#6366F1]/10" />
@@ -102,7 +108,9 @@ function EventDetailPage() {
                   <Calendar className="h-5 w-5 text-[#6366F1]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-[#1E1B4B]/60">Date</h3>
+                  <h3 className="text-sm font-medium text-[#1E1B4B]/60">
+                    Date
+                  </h3>
                   <p className="text-[#1E1B4B] font-medium">
                     {startDate.toLocaleDateString(undefined, {
                       weekday: "long",
@@ -119,7 +127,9 @@ function EventDetailPage() {
                   <Clock className="h-5 w-5 text-[#6366F1]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-[#1E1B4B]/60">Time</h3>
+                  <h3 className="text-sm font-medium text-[#1E1B4B]/60">
+                    Time
+                  </h3>
                   <p className="text-[#1E1B4B] font-medium">
                     {startDate.toLocaleTimeString(undefined, {
                       hour: "numeric",
@@ -140,8 +150,12 @@ function EventDetailPage() {
                     <MapPin className="h-5 w-5 text-[#6366F1]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-[#1E1B4B]/60">Location</h3>
-                    <p className="text-[#1E1B4B] font-medium">{event.location}</p>
+                    <h3 className="text-sm font-medium text-[#1E1B4B]/60">
+                      Location
+                    </h3>
+                    <p className="text-[#1E1B4B] font-medium">
+                      {event.location}
+                    </p>
                   </div>
                 </div>
               )}
@@ -155,13 +169,19 @@ function EventDetailPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <EditEventDialog eventId={id as Id<"events">} />
-            <SendEventUpdateDialog eventId={id as Id<"events">} eventTitle={event.title} />
+            <SendEventUpdateDialog
+              eventId={id as Id<"events">}
+              eventTitle={event.title}
+            />
             {event.status !== "cancelled" && (
-              <CancelEventDialog eventId={id as Id<"events">} eventTitle={event.title} />
+              <CancelEventDialog
+                eventId={id as Id<"events">}
+                eventTitle={event.title}
+              />
             )}
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

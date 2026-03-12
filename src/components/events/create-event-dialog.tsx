@@ -1,60 +1,60 @@
-import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
-import { useConvex } from "convex/react"
-import { api } from "../../../convex/_generated/api.js"
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
+import { api } from "../../../convex/_generated/api.js";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Textarea } from "~/components/ui/textarea"
-import { CalendarDays } from "lucide-react"
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
+import { CalendarDays } from "lucide-react";
 
 export function CreateEventDialog() {
-  const convex = useConvex()
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [location, setLocation] = useState("")
-  const [startsAt, setStartsAt] = useState("")
-  const [endsAt, setEndsAt] = useState("")
+  const convex = useConvex();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [startsAt, setStartsAt] = useState("");
+  const [endsAt, setEndsAt] = useState("");
 
   const createEvent = useMutation({
     mutationFn: async (data: {
-      title: string
-      description: string
-      location: string
-      startsAt: number
-      endsAt: number
+      title: string;
+      description: string;
+      location: string;
+      startsAt: number;
+      endsAt: number;
     }) => {
-      return await convex.mutation(api.events.create, data)
+      return await convex.mutation(api.events.create, data);
     },
     onSuccess: () => {
-      setOpen(false)
-      setTitle("")
-      setDescription("")
-      setLocation("")
-      setStartsAt("")
-      setEndsAt("")
+      setOpen(false);
+      setTitle("");
+      setDescription("");
+      setLocation("");
+      setStartsAt("");
+      setEndsAt("");
     },
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title || !startsAt || !endsAt) return
+    e.preventDefault();
+    if (!title || !startsAt || !endsAt) return;
     createEvent.mutate({
       title,
       description,
       location,
       startsAt: new Date(startsAt).getTime(),
       endsAt: new Date(endsAt).getTime(),
-    })
-  }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -141,5 +141,5 @@ export function CreateEventDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

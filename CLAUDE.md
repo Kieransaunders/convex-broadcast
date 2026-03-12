@@ -35,15 +35,18 @@ Dev server runs at `http://localhost:3000`.
 ## Environment Setup
 
 Copy `.env.example` to `.env.local`. Required vars:
+
 - `VITE_CONVEX_URL` — from Convex dashboard
 - `VITE_CONVEX_SITE_URL` — from Convex dashboard
 
 Set these in the **Convex dashboard** (`npx convex env set`):
+
 - `BETTER_AUTH_SECRET` — `openssl rand -base64 32`
 - `SITE_URL` — e.g. `http://localhost:3000`
 - `SUPER_ADMIN_EMAIL` — first super admin
 
 Optional (push notifications):
+
 - `VITE_VAPID_PUBLIC_KEY` + `VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` — generate with `npx web-push generate-vapid-keys`
 - `RESEND_API_KEY` — for email invites
 
@@ -52,6 +55,7 @@ Optional (push notifications):
 ### Frontend (TanStack Start + Router)
 
 File-based routing in `src/routes/`:
+
 - `__root.tsx` — root layout, sets up `ConvexBetterAuthProvider`, registers service worker, renders `ImpersonationBanner` + `PWAInstallPrompt`
 - `_authed.tsx` — auth guard (redirects to `/sign-in` if no token)
 - `_authed/_admin.tsx` — admin role guard
@@ -67,6 +71,7 @@ Query layer uses `@convex-dev/react-query` — wraps Convex queries in TanStack 
 All backend logic in `convex/`. Auto-generated types in `convex/_generated/api.d.ts` — never edit manually.
 
 Key modules:
+
 - `schema.ts` — full DB schema (users, groups, groupMemberships, events, messages, messageTargets, deliveries, invites, impersonationLogs, pushSubscriptions, settings)
 - `messages.ts` — message CRUD, send/schedule logic
 - `push.ts` / `pushActions.ts` — web push subscription management and delivery

@@ -1,12 +1,12 @@
-import { createFileRoute, useSearch, Link } from "@tanstack/react-router"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../../../convex/_generated/api.js"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Badge } from "~/components/ui/badge"
+import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../../../convex/_generated/api.js";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Badge } from "~/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -15,14 +15,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog"
+} from "~/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select"
+} from "~/components/ui/select";
 import {
   Table,
   TableBody,
@@ -30,38 +30,53 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table"
-import { ArrowLeft, Plus, User, Loader2, Trash2, FolderOpen, Search, X } from "lucide-react"
-import { useState, useMemo } from "react"
-import { useConvex } from "convex/react"
-import type { Id } from "../../../../../convex/_generated/dataModel.js"
+} from "~/components/ui/table";
+import {
+  ArrowLeft,
+  Plus,
+  User,
+  Loader2,
+  Trash2,
+  FolderOpen,
+  Search,
+  X,
+} from "lucide-react";
+import { useState, useMemo } from "react";
+import { useConvex } from "convex/react";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 type SearchParams = {
-  id: string
-}
+  id: string;
+};
 
 export const Route = createFileRoute("/_authed/_admin/groups/detail")({
   component: GroupDetailPage,
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
     id: search.id as string,
   }),
-})
+});
 
 function GroupDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/groups/detail" })
-  const convex = useConvex()
-  const [addMemberOpen, setAddMemberOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set())
-  const [selectedRole, setSelectedRole] = useState<"member" | "manager">("member")
+  const { id } = useSearch({ from: "/_authed/_admin/groups/detail" });
+  const convex = useConvex();
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [selectedRole, setSelectedRole] = useState<"member" | "manager">(
+    "member",
+  );
 
   const { data: group, isLoading: groupLoading } = useQuery(
-    convexQuery(api.groups.getById, { id: id as Id<"groups"> })
-  )
+    convexQuery(api.groups.getById, { id: id as Id<"groups"> }),
+  );
   const { data: members, isLoading: membersLoading } = useQuery(
-    convexQuery(api.groups.getMembers, { groupId: id as Id<"groups"> })
-  )
-  const { data: users, isLoading: usersLoading } = useQuery(convexQuery(api.users.list, {}))
+    convexQuery(api.groups.getMembers, { groupId: id as Id<"groups"> }),
+  );
+  const { data: users, isLoading: usersLoading } = useQuery(
+    convexQuery(api.users.list, {}),
+  );
 
   const addMembersMutation = useMutation({
     mutationFn: async ({
@@ -69,105 +84,105 @@ function GroupDetailPage() {
       userIds,
       role,
     }: {
-      groupId: Id<"groups">
-      userIds: Id<"users">[]
-      role: "member" | "manager"
+      groupId: Id<"groups">;
+      userIds: Id<"users">[];
+      role: "member" | "manager";
     }) => {
       // Add members one by one
       for (const userId of userIds) {
-        await convex.mutation(api.groups.addMember, { groupId, userId, role })
+        await convex.mutation(api.groups.addMember, { groupId, userId, role });
       }
     },
     onSuccess: () => {
-      setAddMemberOpen(false)
-      setSelectedUserIds(new Set())
-      setSearchQuery("")
-      setSelectedRole("member")
+      setAddMemberOpen(false);
+      setSelectedUserIds(new Set());
+      setSearchQuery("");
+      setSelectedRole("member");
     },
-  })
+  });
 
   const removeMemberMutation = useMutation({
     mutationFn: async (membershipId: Id<"groupMemberships">) => {
-      return await convex.mutation(api.groups.removeMember, { membershipId })
+      return await convex.mutation(api.groups.removeMember, { membershipId });
     },
-  })
+  });
 
   // Filter out users already in the group
   const availableUsers = useMemo(() => {
-    if (!users) return []
-    const memberIds = new Set(members?.map((m) => m.userId) || [])
-    return users.filter((user) => !memberIds.has(user._id))
-  }, [users, members])
+    if (!users) return [];
+    const memberIds = new Set(members?.map((m) => m.userId) || []);
+    return users.filter((user) => !memberIds.has(user._id));
+  }, [users, members]);
 
   // Filter users by search query
   const filteredUsers = useMemo(() => {
-    if (!searchQuery.trim()) return availableUsers
-    const query = searchQuery.toLowerCase()
+    if (!searchQuery.trim()) return availableUsers;
+    const query = searchQuery.toLowerCase();
     return availableUsers.filter(
       (user) =>
         user.name.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
-    )
-  }, [availableUsers, searchQuery])
+        user.email.toLowerCase().includes(query),
+    );
+  }, [availableUsers, searchQuery]);
 
   const selectedUsers = useMemo(() => {
-    return availableUsers.filter((user) => selectedUserIds.has(user._id))
-  }, [availableUsers, selectedUserIds])
+    return availableUsers.filter((user) => selectedUserIds.has(user._id));
+  }, [availableUsers, selectedUserIds]);
 
   const handleToggleUser = (userId: string) => {
     setSelectedUserIds((prev) => {
-      const newSet = new Set(prev)
+      const newSet = new Set(prev);
       if (newSet.has(userId)) {
-        newSet.delete(userId)
+        newSet.delete(userId);
       } else {
-        newSet.add(userId)
+        newSet.add(userId);
       }
-      return newSet
-    })
-  }
+      return newSet;
+    });
+  };
 
   const handleSelectAll = () => {
     if (selectedUserIds.size === filteredUsers.length) {
       // Deselect all visible
       setSelectedUserIds((prev) => {
-        const newSet = new Set(prev)
-        filteredUsers.forEach((u) => newSet.delete(u._id))
-        return newSet
-      })
+        const newSet = new Set(prev);
+        filteredUsers.forEach((u) => newSet.delete(u._id));
+        return newSet;
+      });
     } else {
       // Select all visible
       setSelectedUserIds((prev) => {
-        const newSet = new Set(prev)
-        filteredUsers.forEach((u) => newSet.add(u._id))
-        return newSet
-      })
+        const newSet = new Set(prev);
+        filteredUsers.forEach((u) => newSet.add(u._id));
+        return newSet;
+      });
     }
-  }
+  };
 
   const handleRemoveSelected = (userId: string) => {
     setSelectedUserIds((prev) => {
-      const newSet = new Set(prev)
-      newSet.delete(userId)
-      return newSet
-    })
-  }
+      const newSet = new Set(prev);
+      newSet.delete(userId);
+      return newSet;
+    });
+  };
 
   const handleAddMembers = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (selectedUserIds.size === 0) return
+    e.preventDefault();
+    if (selectedUserIds.size === 0) return;
     addMembersMutation.mutate({
       groupId: id as Id<"groups">,
       userIds: Array.from(selectedUserIds) as Id<"users">[],
       role: selectedRole,
-    })
-  }
+    });
+  };
 
   const handleClose = () => {
-    setAddMemberOpen(false)
-    setSelectedUserIds(new Set())
-    setSearchQuery("")
-    setSelectedRole("member")
-  }
+    setAddMemberOpen(false);
+    setSelectedUserIds(new Set());
+    setSearchQuery("");
+    setSelectedRole("member");
+  };
 
   if (groupLoading) {
     return (
@@ -175,7 +190,7 @@ function GroupDetailPage() {
         <div className="h-8 w-48 bg-gray-100 rounded animate-pulse" />
         <div className="h-32 bg-gray-100 rounded animate-pulse" />
       </div>
-    )
+    );
   }
 
   if (!group) {
@@ -187,7 +202,7 @@ function GroupDetailPage() {
           <Link to="/groups">Back to Groups</Link>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -200,13 +215,17 @@ function GroupDetailPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold text-[#1E1B4B]">{group.name}</h1>
-          <p className="text-[#1E1B4B]/60">{group.description || "No description"}</p>
+          <p className="text-[#1E1B4B]/60">
+            {group.description || "No description"}
+          </p>
         </div>
       </div>
 
       <Card className="border-[#6366F1]/10">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg text-[#1E1B4B]">Members ({members?.length || 0})</CardTitle>
+          <CardTitle className="text-lg text-[#1E1B4B]">
+            Members ({members?.length || 0})
+          </CardTitle>
           <Dialog open={addMemberOpen} onOpenChange={setAddMemberOpen}>
             <DialogTrigger
               render={
@@ -217,14 +236,19 @@ function GroupDetailPage() {
               }
             />
             <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
-              <form onSubmit={handleAddMembers} className="flex flex-col h-full">
+              <form
+                onSubmit={handleAddMembers}
+                className="flex flex-col h-full"
+              >
                 <DialogHeader>
-                  <DialogTitle className="text-[#1E1B4B]">Add Members</DialogTitle>
+                  <DialogTitle className="text-[#1E1B4B]">
+                    Add Members
+                  </DialogTitle>
                   <DialogDescription className="text-[#1E1B4B]/60">
                     Search and select users to add to this group.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="flex-1 min-h-0 flex flex-col gap-4 py-4">
                   {/* Selected users chips */}
                   {selectedUsers.length > 0 && (
@@ -235,7 +259,9 @@ function GroupDetailPage() {
                           variant="secondary"
                           className="flex items-center gap-1 px-2 py-1"
                         >
-                          <span className="truncate max-w-[150px]">{user.name}</span>
+                          <span className="truncate max-w-[150px]">
+                            {user.name}
+                          </span>
                           <button
                             type="button"
                             onClick={() => handleRemoveSelected(user._id)}
@@ -261,12 +287,14 @@ function GroupDetailPage() {
 
                   {/* Role selector */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-[#1E1B4B]">Role:</span>
+                    <span className="text-sm font-medium text-[#1E1B4B]">
+                      Role:
+                    </span>
                     <Select
                       value={selectedRole}
                       onValueChange={(value) => {
                         if (value === "member" || value === "manager") {
-                          setSelectedRole(value)
+                          setSelectedRole(value);
                         }
                       }}
                     >
@@ -288,15 +316,18 @@ function GroupDetailPage() {
                     {/* Header with select all */}
                     <div className="flex items-center gap-3 p-3 border-b border-[#6366F1]/10 bg-gray-50/50">
                       <Checkbox
-                        checked={filteredUsers.length > 0 && filteredUsers.every(u => selectedUserIds.has(u._id))}
+                        checked={
+                          filteredUsers.length > 0 &&
+                          filteredUsers.every((u) => selectedUserIds.has(u._id))
+                        }
                         onCheckedChange={handleSelectAll}
                         disabled={filteredUsers.length === 0}
                       />
                       <span className="text-sm font-medium text-[#1E1B4B]">
-                        {filteredUsers.length > 0 && filteredUsers.every(u => selectedUserIds.has(u._id))
+                        {filteredUsers.length > 0 &&
+                        filteredUsers.every((u) => selectedUserIds.has(u._id))
                           ? "Deselect All"
-                          : "Select All"
-                        }
+                          : "Select All"}
                       </span>
                       <span className="text-sm text-[#1E1B4B]/60 ml-auto">
                         {filteredUsers.length} available
@@ -308,7 +339,10 @@ function GroupDetailPage() {
                       {usersLoading ? (
                         <div className="p-4 space-y-3">
                           {[...Array(5)].map((_, i) => (
-                            <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+                            <div
+                              key={i}
+                              className="h-12 bg-gray-100 rounded animate-pulse"
+                            />
                           ))}
                         </div>
                       ) : filteredUsers.length > 0 ? (
@@ -320,20 +354,27 @@ function GroupDetailPage() {
                             >
                               <Checkbox
                                 checked={selectedUserIds.has(user._id)}
-                                onCheckedChange={() => handleToggleUser(user._id)}
+                                onCheckedChange={() =>
+                                  handleToggleUser(user._id)
+                                }
                               />
                               <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#6366F1]/10">
                                   <User className="h-4 w-4 text-[#6366F1]" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <p className="font-medium text-[#1E1B4B] truncate">{user.name}</p>
-                                  <p className="text-sm text-[#1E1B4B]/60 truncate">{user.email}</p>
+                                  <p className="font-medium text-[#1E1B4B] truncate">
+                                    {user.name}
+                                  </p>
+                                  <p className="text-sm text-[#1E1B4B]/60 truncate">
+                                    {user.email}
+                                  </p>
                                 </div>
                                 <Badge
                                   variant="outline"
                                   className={`shrink-0 capitalize ${
-                                    user.role === "admin" || user.role === "super_admin"
+                                    user.role === "admin" ||
+                                    user.role === "super_admin"
                                       ? "border-[#6366F1]/20 text-[#6366F1]"
                                       : "border-gray-200 text-gray-500"
                                   }`}
@@ -347,12 +388,16 @@ function GroupDetailPage() {
                       ) : availableUsers.length === 0 ? (
                         <div className="p-8 text-center">
                           <User className="mx-auto h-12 w-12 text-[#6366F1]/30" />
-                          <p className="mt-2 text-[#1E1B4B]/60">No available users to add</p>
+                          <p className="mt-2 text-[#1E1B4B]/60">
+                            No available users to add
+                          </p>
                         </div>
                       ) : (
                         <div className="p-8 text-center">
                           <Search className="mx-auto h-12 w-12 text-[#6366F1]/30" />
-                          <p className="mt-2 text-[#1E1B4B]/60">No users match your search</p>
+                          <p className="mt-2 text-[#1E1B4B]/60">
+                            No users match your search
+                          </p>
                           <Button
                             type="button"
                             variant="ghost"
@@ -379,7 +424,9 @@ function GroupDetailPage() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={selectedUserIds.size === 0 || addMembersMutation.isPending}
+                    disabled={
+                      selectedUserIds.size === 0 || addMembersMutation.isPending
+                    }
                     className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
                   >
                     {addMembersMutation.isPending ? (
@@ -388,7 +435,12 @@ function GroupDetailPage() {
                         Adding...
                       </>
                     ) : (
-                      <>Add {selectedUserIds.size > 0 && `(${selectedUserIds.size})`} Members</>
+                      <>
+                        Add{" "}
+                        {selectedUserIds.size > 0 &&
+                          `(${selectedUserIds.size})`}{" "}
+                        Members
+                      </>
                     )}
                   </Button>
                 </DialogFooter>
@@ -400,7 +452,10 @@ function GroupDetailPage() {
           {membersLoading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+                <div
+                  key={i}
+                  className="h-12 bg-gray-100 rounded animate-pulse"
+                />
               ))}
             </div>
           ) : members && members.length > 0 ? (
@@ -422,14 +477,20 @@ function GroupDetailPage() {
                           <User className="h-4 w-4 text-[#6366F1]" />
                         </div>
                         <div>
-                          <p className="font-medium text-[#1E1B4B]">{member.user?.name}</p>
-                          <p className="text-sm text-[#1E1B4B]/60">{member.user?.email}</p>
+                          <p className="font-medium text-[#1E1B4B]">
+                            {member.user?.name}
+                          </p>
+                          <p className="text-sm text-[#1E1B4B]/60">
+                            {member.user?.email}
+                          </p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={member.role === "manager" ? "default" : "secondary"}
+                        variant={
+                          member.role === "manager" ? "default" : "secondary"
+                        }
                         className={
                           member.role === "manager"
                             ? "bg-[#6366F1] text-white"
@@ -466,5 +527,5 @@ function GroupDetailPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

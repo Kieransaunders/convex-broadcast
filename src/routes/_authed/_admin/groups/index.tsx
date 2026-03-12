@@ -1,12 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { convexQuery } from "@convex-dev/react-query"
-import { api } from "../../../../../convex/_generated/api.js"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Textarea } from "~/components/ui/textarea"
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { convexQuery } from "@convex-dev/react-query";
+import { api } from "../../../../../convex/_generated/api.js";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -15,45 +15,55 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { Plus, FolderOpen, Users, Loader2, ArrowRight } from "lucide-react"
-import { useState } from "react"
-import { useConvex } from "convex/react"
+} from "~/components/ui/dialog";
+import { Plus, FolderOpen, Users, Loader2, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { useConvex } from "convex/react";
 
 export const Route = createFileRoute("/_authed/_admin/groups/")({
   component: GroupsPage,
-})
+});
 
 function GroupsPage() {
-  const convex = useConvex()
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [groupName, setGroupName] = useState("")
-  const [groupDescription, setGroupDescription] = useState("")
+  const convex = useConvex();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
 
-  const { data: groups, isLoading } = useQuery(convexQuery(api.groups.list, {}))
+  const { data: groups, isLoading } = useQuery(
+    convexQuery(api.groups.list, {}),
+  );
 
   const createMutation = useMutation({
-    mutationFn: async ({ name, description }: { name: string; description: string }) => {
-      return await convex.mutation(api.groups.create, { name, description })
+    mutationFn: async ({
+      name,
+      description,
+    }: {
+      name: string;
+      description: string;
+    }) => {
+      return await convex.mutation(api.groups.create, { name, description });
     },
     onSuccess: () => {
-      setCreateDialogOpen(false)
-      setGroupName("")
-      setGroupDescription("")
+      setCreateDialogOpen(false);
+      setGroupName("");
+      setGroupDescription("");
     },
-  })
+  });
 
   const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    createMutation.mutate({ name: groupName, description: groupDescription })
-  }
+    e.preventDefault();
+    createMutation.mutate({ name: groupName, description: groupDescription });
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#1E1B4B]">Groups</h1>
-          <p className="text-[#1E1B4B]/60 mt-1">Organize members into groups for targeted messaging.</p>
+          <p className="text-[#1E1B4B]/60 mt-1">
+            Organize members into groups for targeted messaging.
+          </p>
         </div>
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger
@@ -67,7 +77,9 @@ function GroupsPage() {
           <DialogContent className="sm:max-w-md">
             <form onSubmit={handleCreate}>
               <DialogHeader>
-                <DialogTitle className="text-[#1E1B4B]">Create Group</DialogTitle>
+                <DialogTitle className="text-[#1E1B4B]">
+                  Create Group
+                </DialogTitle>
                 <DialogDescription className="text-[#1E1B4B]/60">
                   Create a new group to organize your members.
                 </DialogDescription>
@@ -138,7 +150,11 @@ function GroupsPage() {
       ) : groups && groups.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {groups.map((group) => (
-            <Link key={group._id} to="/groups/detail" search={{ id: group._id }}>
+            <Link
+              key={group._id}
+              to="/groups/detail"
+              search={{ id: group._id }}
+            >
               <Card className="border-[#6366F1]/10 hover:shadow-md transition-shadow cursor-pointer h-full">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -147,7 +163,9 @@ function GroupsPage() {
                     </div>
                     <ArrowRight className="h-4 w-4 text-[#6366F1]/40" />
                   </div>
-                  <CardTitle className="text-lg text-[#1E1B4B] mt-3">{group.name}</CardTitle>
+                  <CardTitle className="text-lg text-[#1E1B4B] mt-3">
+                    {group.name}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-[#1E1B4B]/60 line-clamp-2">
@@ -166,11 +184,15 @@ function GroupsPage() {
         <Card className="border-[#6366F1]/10">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <FolderOpen className="h-12 w-12 text-[#6366F1]/30" />
-            <p className="mt-4 text-lg font-medium text-[#1E1B4B]">No groups yet</p>
-            <p className="text-[#1E1B4B]/60">Create your first group to get started.</p>
+            <p className="mt-4 text-lg font-medium text-[#1E1B4B]">
+              No groups yet
+            </p>
+            <p className="text-[#1E1B4B]/60">
+              Create your first group to get started.
+            </p>
           </CardContent>
         </Card>
       )}
     </div>
-  )
+  );
 }

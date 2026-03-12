@@ -11,6 +11,7 @@
 ## Task 1: Add Event-Group Link Schema
 
 **Files:**
+
 - Modify: `convex/schema.ts`
 
 **Step 1: Add `eventGroupLinks` table to schema**
@@ -46,6 +47,7 @@ git commit -m "feat(schema): add event-group link table for event targeting"
 ## Task 2: Add Event CRUD Mutations
 
 **Files:**
+
 - Modify: `convex/events.ts`
 
 **Step 1: Add `remove` mutation**
@@ -56,18 +58,18 @@ Add to `convex/events.ts`:
 export const remove = mutation({
   args: { id: v.id("events") },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx)
+    await getAdminUser(ctx);
     // Delete associated links first
     const links = await ctx.db
       .query("eventGroupLinks")
       .withIndex("by_eventId", (q) => q.eq("eventId", args.id))
-      .collect()
+      .collect();
     for (const link of links) {
-      await ctx.db.delete(link._id)
+      await ctx.db.delete(link._id);
     }
-    await ctx.db.delete(args.id)
+    await ctx.db.delete(args.id);
   },
-})
+});
 ```
 
 **Step 2: Add `changeStatus` mutation**
@@ -86,10 +88,10 @@ export const changeStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx)
-    await ctx.db.patch(args.id, { status: args.status })
+    await getAdminUser(ctx);
+    await ctx.db.patch(args.id, { status: args.status });
   },
-})
+});
 ```
 
 **Step 3: Verify**
@@ -110,6 +112,7 @@ git commit -m "feat(events): add remove and changeStatus mutations"
 ## Task 3: Add Event-Group Linking Functions
 
 **Files:**
+
 - Modify: `convex/events.ts`
 
 **Step 1: Add `getGroups` query**
@@ -120,20 +123,20 @@ Add to `convex/events.ts`:
 export const getGroups = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    await getUser(ctx)
+    await getUser(ctx);
     const links = await ctx.db
       .query("eventGroupLinks")
       .withIndex("by_eventId", (q) => q.eq("eventId", args.eventId))
-      .collect()
+      .collect();
     const groups = await Promise.all(
       links.map(async (link) => {
-        const group = await ctx.db.get(link.groupId)
-        return group ? { ...group, linkId: link._id } : null
+        const group = await ctx.db.get(link.groupId);
+        return group ? { ...group, linkId: link._id } : null;
       }),
-    )
-    return groups.filter(Boolean)
+    );
+    return groups.filter(Boolean);
   },
-})
+});
 ```
 
 **Step 2: Add `linkGroup` mutation**
@@ -147,22 +150,22 @@ export const linkGroup = mutation({
     groupId: v.id("groups"),
   },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx)
+    await getAdminUser(ctx);
     // Check if already linked
     const existing = await ctx.db
       .query("eventGroupLinks")
       .withIndex("by_eventId_groupId", (q) =>
         q.eq("eventId", args.eventId).eq("groupId", args.groupId),
       )
-      .unique()
-    if (existing) return existing._id
+      .unique();
+    if (existing) return existing._id;
     return await ctx.db.insert("eventGroupLinks", {
       eventId: args.eventId,
       groupId: args.groupId,
       createdAt: Date.now(),
-    })
+    });
   },
-})
+});
 ```
 
 **Step 3: Add `unlinkGroup` mutation**
@@ -173,10 +176,10 @@ Add to `convex/events.ts`:
 export const unlinkGroup = mutation({
   args: { linkId: v.id("eventGroupLinks") },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx)
-    await ctx.db.delete(args.linkId)
+    await getAdminUser(ctx);
+    await ctx.db.delete(args.linkId);
   },
-})
+});
 ```
 
 **Step 4: Add `getByGroup` query**
@@ -187,17 +190,17 @@ Add to `convex/events.ts`:
 export const getByGroup = query({
   args: { groupId: v.id("groups") },
   handler: async (ctx, args) => {
-    await getUser(ctx)
+    await getUser(ctx);
     const links = await ctx.db
       .query("eventGroupLinks")
       .withIndex("by_groupId", (q) => q.eq("groupId", args.groupId))
-      .collect()
+      .collect();
     const events = await Promise.all(
       links.map(async (link) => await ctx.db.get(link.eventId)),
-    )
-    return events.filter(Boolean)
+    );
+    return events.filter(Boolean);
   },
-})
+});
 ```
 
 **Step 5: Verify**
@@ -218,6 +221,7 @@ git commit -m "feat(events): add event-group linking functions"
 ## Task 4: Add Create Event Dialog Component
 
 **Files:**
+
 - Create: `src/components/events/create-event-dialog.tsx`
 - Modify: `src/routes/_authed/_admin/events/index.tsx`
 
@@ -372,6 +376,7 @@ export function CreateEventDialog({ children }: CreateEventDialogProps) {
 **Step 2: Update events list page**
 
 Modify `src/routes/_authed/_admin/events/index.tsx`:
+
 - Import the dialog
 - Wrap the Create Event button with the dialog
 
@@ -393,6 +398,7 @@ git commit -m "feat(events): add create event dialog component"
 ## Task 5: Add Edit Event Dialog Component
 
 **Files:**
+
 - Create: `src/components/events/edit-event-dialog.tsx`
 - Modify: `src/routes/_authed/_admin/events/detail.tsx`
 
@@ -571,6 +577,7 @@ export function EditEventDialog({ eventId, children }: EditEventDialogProps) {
 **Step 2: Update event detail page**
 
 Modify `src/routes/_authed/_admin/events/detail.tsx`:
+
 - Import the dialog
 - Wrap the Edit Event button
 
@@ -592,6 +599,7 @@ git commit -m "feat(events): add edit event dialog component"
 ## Task 6: Connect Cancel Event Action
 
 **Files:**
+
 - Modify: `src/routes/_authed/_admin/events/detail.tsx`
 - Create: `src/components/events/cancel-event-dialog.tsx`
 
@@ -669,6 +677,7 @@ export function CancelEventDialog({ eventId, eventTitle, children }: CancelEvent
 **Step 2: Update event detail page**
 
 Modify `src/routes/_authed/_admin/events/detail.tsx`:
+
 - Import the cancel dialog
 - Replace the Cancel Event button with the dialog
 
@@ -690,6 +699,7 @@ git commit -m "feat(events): add cancel event confirmation dialog"
 ## Task 7: Connect Send Update Button
 
 **Files:**
+
 - Create: `src/components/events/send-event-update-dialog.tsx`
 - Modify: `src/routes/_authed/_admin/events/detail.tsx`
 
@@ -851,6 +861,7 @@ export function SendEventUpdateDialog({ eventId, eventTitle, children }: SendEve
 **Step 2: Update event detail page**
 
 Modify `src/routes/_authed/_admin/events/detail.tsx`:
+
 - Import the send update dialog
 - Replace the Send Update button with the dialog
 
@@ -872,11 +883,13 @@ git commit -m "feat(events): add send event update dialog"
 ## Task 8: Update Events List with Group Filters
 
 **Files:**
+
 - Modify: `src/routes/_authed/_admin/events/index.tsx`
 
 **Step 1: Add group filter UI**
 
 Modify `src/routes/_authed/_admin/events/index.tsx`:
+
 - Import Select component for group filtering
 - Add state for selected group filter
 - Filter events by linked group
@@ -921,16 +934,16 @@ git commit -m "feat(events): complete events section with full CRUD and message 
 
 ## Summary
 
-| Task | Files | Deliverable |
-|------|-------|-------------|
-| 1 | `convex/schema.ts` | Event-group link schema |
-| 2 | `convex/events.ts` | Remove, changeStatus mutations |
-| 3 | `convex/events.ts` | Event-group linking queries/mutations |
-| 4 | `src/components/events/create-event-dialog.tsx` | Create event dialog |
-| 5 | `src/components/events/edit-event-dialog.tsx` | Edit event dialog |
-| 6 | `src/components/events/cancel-event-dialog.tsx` | Cancel event dialog |
-| 7 | `src/components/events/send-event-update-dialog.tsx` | Send update dialog |
-| 8 | `src/routes/_authed/_admin/events/index.tsx` | Group filters |
-| 9 | All | Verified build |
+| Task | Files                                                | Deliverable                           |
+| ---- | ---------------------------------------------------- | ------------------------------------- |
+| 1    | `convex/schema.ts`                                   | Event-group link schema               |
+| 2    | `convex/events.ts`                                   | Remove, changeStatus mutations        |
+| 3    | `convex/events.ts`                                   | Event-group linking queries/mutations |
+| 4    | `src/components/events/create-event-dialog.tsx`      | Create event dialog                   |
+| 5    | `src/components/events/edit-event-dialog.tsx`        | Edit event dialog                     |
+| 6    | `src/components/events/cancel-event-dialog.tsx`      | Cancel event dialog                   |
+| 7    | `src/components/events/send-event-update-dialog.tsx` | Send update dialog                    |
+| 8    | `src/routes/_authed/_admin/events/index.tsx`         | Group filters                         |
+| 9    | All                                                  | Verified build                        |
 
 **Total: 9 tasks to complete Events section.**

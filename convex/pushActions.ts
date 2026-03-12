@@ -1,9 +1,9 @@
-"use node"
+"use node";
 
-import { v } from "convex/values"
-import { internalAction } from "./_generated/server"
-import { internal } from "./_generated/api"
-import webpush from "web-push"
+import { v } from "convex/values";
+import { internalAction } from "./_generated/server";
+import { internal } from "./_generated/api";
+import webpush from "web-push";
 
 // --- Push Sending (Node.js action) ---
 
@@ -12,26 +12,44 @@ export const sendPushForMessage = internalAction({
   handler: async (ctx, args) => {
     const message = await ctx.runQuery(internal.push.getMessageForPush, {
       messageId: args.messageId,
-    })
-    if (!message) return
+    });
+    if (!message) return;
 
     const deliveries = await ctx.runQuery(internal.push.getPendingDeliveries, {
       messageId: args.messageId,
-    })
+    });
 
-    const vapidPublic = process.env.VAPID_PUBLIC_KEY!
-    const vapidPrivate = process.env.VAPID_PRIVATE_KEY!
-    webpush.setVapidDetails("mailto:admin@orgcomms.app", vapidPublic, vapidPrivate)
+    const vapidPublic = process.env.VAPID_PUBLIC_KEY;
+    const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
+
+    if (!vapidPublic || !vapidPrivate) {
+      console.error("Missing VAPID keys. Push notifications cannot be sent.");
+      // Mark all deliveries as failed
+      for (const delivery of deliveries) {
+        await ctx.runMutation(internal.push.updateDeliveryPushStatus, {
+          deliveryId: delivery._id,
+          status: "failed",
+        });
+      }
+      return;
+    }
+
+    const contactEmail =
+      process.env.VAPID_CONTACT_EMAIL ?? "mailto:admin@orgcomms.app";
+    webpush.setVapidDetails(contactEmail, vapidPublic, vapidPrivate);
 
     for (const delivery of deliveries) {
       const subs = await ctx.runQuery(internal.push.getUserSubscriptions, {
         userId: delivery.userId,
-      })
+      });
+
+      let anySent = false;
 
       for (const sub of subs) {
         // Filter by preference
-        if (sub.preference === "none") continue
-        if (sub.preference === "urgent" && message.category !== "urgent") continue
+        if (sub.preference === "none") continue;
+        if (sub.preference === "urgent" && message.category !== "urgent")
+          continue;
 
         try {
           await webpush.sendNotification(
@@ -44,24 +62,23 @@ export const sendPushForMessage = internalAction({
               body: message.body.substring(0, 200),
               url: `/messages/${args.messageId}`,
             }),
-          )
-          await ctx.runMutation(internal.push.updateDeliveryPushStatus, {
-            deliveryId: delivery._id,
-            status: "sent",
-          })
+          );
+          anySent = true;
         } catch (error) {
-          await ctx.runMutation(internal.push.updateDeliveryPushStatus, {
-            deliveryId: delivery._id,
-            status: "failed",
-          })
+          console.error("Push failed for subscription", sub._id, error);
           // If subscription is gone (410), clean it up
           if ((error as any)?.statusCode === 410) {
             await ctx.runMutation(internal.push.removeSubscription, {
               subscriptionId: sub._id,
-            })
+            });
           }
         }
       }
+
+      await ctx.runMutation(internal.push.updateDeliveryPushStatus, {
+        deliveryId: delivery._id,
+        status: anySent ? "sent" : "failed",
+      });
     }
   },
-})
+});

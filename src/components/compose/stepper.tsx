@@ -1,21 +1,25 @@
-import { Check } from "lucide-react"
-import { cn } from "~/lib/utils"
+import { Check } from "lucide-react";
+import { cn } from "~/lib/utils";
 
-const STEPS = ["Content", "Audience", "Delivery", "Review"]
+const STEPS = ["Content", "Audience", "Delivery", "Review"];
 
 interface StepperProps {
-  currentStep: number
-  completedSteps: Set<number>
-  onStepClick: (step: number) => void
+  currentStep: number;
+  completedSteps: Set<number>;
+  onStepClick: (step: number) => void;
 }
 
-export function Stepper({ currentStep, completedSteps, onStepClick }: StepperProps) {
+export function Stepper({
+  currentStep,
+  completedSteps,
+  onStepClick,
+}: StepperProps) {
   return (
     <div className="flex items-center w-full px-4 py-6">
       {STEPS.map((label, index) => {
-        const isCompleted = completedSteps.has(index)
-        const isCurrent = currentStep === index
-        const isClickable = isCompleted && index !== currentStep
+        const isCompleted = completedSteps.has(index);
+        const isCurrent = currentStep === index;
+        const isClickable = isCompleted && index !== currentStep;
 
         return (
           <div key={index} className="flex items-center flex-1 last:flex-none">
@@ -29,8 +33,8 @@ export function Stepper({ currentStep, completedSteps, onStepClick }: StepperPro
                   isCompleted
                     ? "border-[#6366F1] bg-[#6366F1] text-white cursor-pointer hover:bg-[#6366F1]/90"
                     : isCurrent
-                    ? "border-[#6366F1] bg-white text-[#6366F1] cursor-default"
-                    : "border-gray-200 bg-white text-gray-400 cursor-not-allowed"
+                      ? "border-[#6366F1] bg-white text-[#6366F1] cursor-default"
+                      : "border-gray-200 bg-white text-gray-400 cursor-not-allowed",
                 )}
                 aria-label={`Step ${index + 1}: ${label}`}
               >
@@ -43,7 +47,11 @@ export function Stepper({ currentStep, completedSteps, onStepClick }: StepperPro
               <span
                 className={cn(
                   "text-xs font-medium whitespace-nowrap",
-                  isCurrent ? "text-[#6366F1]" : isCompleted ? "text-[#1E1B4B]" : "text-gray-400"
+                  isCurrent
+                    ? "text-[#6366F1]"
+                    : isCompleted
+                      ? "text-[#1E1B4B]"
+                      : "text-gray-400",
                 )}
               >
                 {label}
@@ -53,13 +61,13 @@ export function Stepper({ currentStep, completedSteps, onStepClick }: StepperPro
               <div
                 className={cn(
                   "flex-1 h-0.5 mb-5 mx-2 transition-colors duration-300",
-                  completedSteps.has(index) ? "bg-[#6366F1]" : "bg-gray-200"
+                  completedSteps.has(index) ? "bg-[#6366F1]" : "bg-gray-200",
                 )}
               />
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
