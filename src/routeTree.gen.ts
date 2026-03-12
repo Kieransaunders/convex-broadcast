@@ -9,12 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AnotherPageRouteImport } from './routes/anotherPage'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
+import { Route as AuthedFeedRouteImport } from './routes/_authed/feed'
+import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthedMessagesIdRouteImport } from './routes/_authed/messages.$id'
+import { Route as AuthedAdminSystemSettingsRouteImport } from './routes/_authed/_admin/system-settings'
+import { Route as AuthedAdminDashboardRouteImport } from './routes/_authed/_admin/dashboard'
+import { Route as AuthedAdminUsersIndexRouteImport } from './routes/_authed/_admin/users/index'
+import { Route as AuthedAdminMessagesIndexRouteImport } from './routes/_authed/_admin/messages/index'
+import { Route as AuthedAdminGroupsIndexRouteImport } from './routes/_authed/_admin/groups/index'
+import { Route as AuthedAdminEventsIndexRouteImport } from './routes/_authed/_admin/events/index'
+import { Route as AuthedAdminMessagesNewRouteImport } from './routes/_authed/_admin/messages/new'
+import { Route as AuthedAdminMessagesDetailRouteImport } from './routes/_authed/_admin/messages/detail'
+import { Route as AuthedAdminGroupsDetailRouteImport } from './routes/_authed/_admin/groups/detail'
+import { Route as AuthedAdminEventsDetailRouteImport } from './routes/_authed/_admin/events/detail'
 
-const AnotherPageRoute = AnotherPageRouteImport.update({
-  id: '/anotherPage',
-  path: '/anotherPage',
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +48,235 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedFeedRoute = AuthedFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAdminRoute = AuthedAdminRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedMessagesIdRoute = AuthedMessagesIdRouteImport.update({
+  id: '/messages/$id',
+  path: '/messages/$id',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAdminSystemSettingsRoute =
+  AuthedAdminSystemSettingsRouteImport.update({
+    id: '/system-settings',
+    path: '/system-settings',
+    getParentRoute: () => AuthedAdminRoute,
+  } as any)
+const AuthedAdminDashboardRoute = AuthedAdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminUsersIndexRoute = AuthedAdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesIndexRoute =
+  AuthedAdminMessagesIndexRouteImport.update({
+    id: '/messages/',
+    path: '/messages/',
+    getParentRoute: () => AuthedAdminRoute,
+  } as any)
+const AuthedAdminGroupsIndexRoute = AuthedAdminGroupsIndexRouteImport.update({
+  id: '/groups/',
+  path: '/groups/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminEventsIndexRoute = AuthedAdminEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesNewRoute = AuthedAdminMessagesNewRouteImport.update({
+  id: '/messages/new',
+  path: '/messages/new',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesDetailRoute =
+  AuthedAdminMessagesDetailRouteImport.update({
+    id: '/messages/detail',
+    path: '/messages/detail',
+    getParentRoute: () => AuthedAdminRoute,
+  } as any)
+const AuthedAdminGroupsDetailRoute = AuthedAdminGroupsDetailRouteImport.update({
+  id: '/groups/detail',
+  path: '/groups/detail',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminEventsDetailRoute = AuthedAdminEventsDetailRouteImport.update({
+  id: '/events/detail',
+  path: '/events/detail',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/anotherPage': typeof AnotherPageRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/feed': typeof AuthedFeedRoute
+  '/settings': typeof AuthedSettingsRoute
+  '/dashboard': typeof AuthedAdminDashboardRoute
+  '/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/messages/$id': typeof AuthedMessagesIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/events/': typeof AuthedAdminEventsIndexRoute
+  '/groups/': typeof AuthedAdminGroupsIndexRoute
+  '/messages/': typeof AuthedAdminMessagesIndexRoute
+  '/users/': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/anotherPage': typeof AnotherPageRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/feed': typeof AuthedFeedRoute
+  '/settings': typeof AuthedSettingsRoute
+  '/dashboard': typeof AuthedAdminDashboardRoute
+  '/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/messages/$id': typeof AuthedMessagesIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/events': typeof AuthedAdminEventsIndexRoute
+  '/groups': typeof AuthedAdminGroupsIndexRoute
+  '/messages': typeof AuthedAdminMessagesIndexRoute
+  '/users': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/anotherPage': typeof AnotherPageRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/_authed/_admin': typeof AuthedAdminRouteWithChildren
+  '/_authed/feed': typeof AuthedFeedRoute
+  '/_authed/settings': typeof AuthedSettingsRoute
+  '/_authed/_admin/dashboard': typeof AuthedAdminDashboardRoute
+  '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/_authed/messages/$id': typeof AuthedMessagesIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_authed/_admin/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/_authed/_admin/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/_authed/_admin/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/_authed/_admin/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/_authed/_admin/events/': typeof AuthedAdminEventsIndexRoute
+  '/_authed/_admin/groups/': typeof AuthedAdminGroupsIndexRoute
+  '/_authed/_admin/messages/': typeof AuthedAdminMessagesIndexRoute
+  '/_authed/_admin/users/': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/anotherPage'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/feed'
+    | '/settings'
+    | '/dashboard'
+    | '/system-settings'
+    | '/messages/$id'
+    | '/api/auth/$'
+    | '/events/detail'
+    | '/groups/detail'
+    | '/messages/detail'
+    | '/messages/new'
+    | '/events/'
+    | '/groups/'
+    | '/messages/'
+    | '/users/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/anotherPage'
-  id: '__root__' | '/' | '/anotherPage'
+  to:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/feed'
+    | '/settings'
+    | '/dashboard'
+    | '/system-settings'
+    | '/messages/$id'
+    | '/api/auth/$'
+    | '/events/detail'
+    | '/groups/detail'
+    | '/messages/detail'
+    | '/messages/new'
+    | '/events'
+    | '/groups'
+    | '/messages'
+    | '/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/sign-in'
+    | '/sign-up'
+    | '/_authed/_admin'
+    | '/_authed/feed'
+    | '/_authed/settings'
+    | '/_authed/_admin/dashboard'
+    | '/_authed/_admin/system-settings'
+    | '/_authed/messages/$id'
+    | '/api/auth/$'
+    | '/_authed/_admin/events/detail'
+    | '/_authed/_admin/groups/detail'
+    | '/_authed/_admin/messages/detail'
+    | '/_authed/_admin/messages/new'
+    | '/_authed/_admin/events/'
+    | '/_authed/_admin/groups/'
+    | '/_authed/_admin/messages/'
+    | '/_authed/_admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AnotherPageRoute: typeof AnotherPageRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/anotherPage': {
-      id: '/anotherPage'
-      path: '/anotherPage'
-      fullPath: '/anotherPage'
-      preLoaderRoute: typeof AnotherPageRouteImport
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +286,167 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/settings': {
+      id: '/_authed/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthedSettingsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/feed': {
+      id: '/_authed/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof AuthedFeedRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/_admin': {
+      id: '/_authed/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedAdminRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authed/messages/$id': {
+      id: '/_authed/messages/$id'
+      path: '/messages/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof AuthedMessagesIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/_admin/system-settings': {
+      id: '/_authed/_admin/system-settings'
+      path: '/system-settings'
+      fullPath: '/system-settings'
+      preLoaderRoute: typeof AuthedAdminSystemSettingsRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/dashboard': {
+      id: '/_authed/_admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthedAdminDashboardRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/users/': {
+      id: '/_authed/_admin/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof AuthedAdminUsersIndexRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/messages/': {
+      id: '/_authed/_admin/messages/'
+      path: '/messages'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof AuthedAdminMessagesIndexRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/groups/': {
+      id: '/_authed/_admin/groups/'
+      path: '/groups'
+      fullPath: '/groups/'
+      preLoaderRoute: typeof AuthedAdminGroupsIndexRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/events/': {
+      id: '/_authed/_admin/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof AuthedAdminEventsIndexRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/messages/new': {
+      id: '/_authed/_admin/messages/new'
+      path: '/messages/new'
+      fullPath: '/messages/new'
+      preLoaderRoute: typeof AuthedAdminMessagesNewRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/messages/detail': {
+      id: '/_authed/_admin/messages/detail'
+      path: '/messages/detail'
+      fullPath: '/messages/detail'
+      preLoaderRoute: typeof AuthedAdminMessagesDetailRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/groups/detail': {
+      id: '/_authed/_admin/groups/detail'
+      path: '/groups/detail'
+      fullPath: '/groups/detail'
+      preLoaderRoute: typeof AuthedAdminGroupsDetailRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/events/detail': {
+      id: '/_authed/_admin/events/detail'
+      path: '/events/detail'
+      fullPath: '/events/detail'
+      preLoaderRoute: typeof AuthedAdminEventsDetailRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
   }
 }
 
+interface AuthedAdminRouteChildren {
+  AuthedAdminDashboardRoute: typeof AuthedAdminDashboardRoute
+  AuthedAdminSystemSettingsRoute: typeof AuthedAdminSystemSettingsRoute
+  AuthedAdminEventsDetailRoute: typeof AuthedAdminEventsDetailRoute
+  AuthedAdminGroupsDetailRoute: typeof AuthedAdminGroupsDetailRoute
+  AuthedAdminMessagesDetailRoute: typeof AuthedAdminMessagesDetailRoute
+  AuthedAdminMessagesNewRoute: typeof AuthedAdminMessagesNewRoute
+  AuthedAdminEventsIndexRoute: typeof AuthedAdminEventsIndexRoute
+  AuthedAdminGroupsIndexRoute: typeof AuthedAdminGroupsIndexRoute
+  AuthedAdminMessagesIndexRoute: typeof AuthedAdminMessagesIndexRoute
+  AuthedAdminUsersIndexRoute: typeof AuthedAdminUsersIndexRoute
+}
+
+const AuthedAdminRouteChildren: AuthedAdminRouteChildren = {
+  AuthedAdminDashboardRoute: AuthedAdminDashboardRoute,
+  AuthedAdminSystemSettingsRoute: AuthedAdminSystemSettingsRoute,
+  AuthedAdminEventsDetailRoute: AuthedAdminEventsDetailRoute,
+  AuthedAdminGroupsDetailRoute: AuthedAdminGroupsDetailRoute,
+  AuthedAdminMessagesDetailRoute: AuthedAdminMessagesDetailRoute,
+  AuthedAdminMessagesNewRoute: AuthedAdminMessagesNewRoute,
+  AuthedAdminEventsIndexRoute: AuthedAdminEventsIndexRoute,
+  AuthedAdminGroupsIndexRoute: AuthedAdminGroupsIndexRoute,
+  AuthedAdminMessagesIndexRoute: AuthedAdminMessagesIndexRoute,
+  AuthedAdminUsersIndexRoute: AuthedAdminUsersIndexRoute,
+}
+
+const AuthedAdminRouteWithChildren = AuthedAdminRoute._addFileChildren(
+  AuthedAdminRouteChildren,
+)
+
+interface AuthedRouteChildren {
+  AuthedAdminRoute: typeof AuthedAdminRouteWithChildren
+  AuthedFeedRoute: typeof AuthedFeedRoute
+  AuthedSettingsRoute: typeof AuthedSettingsRoute
+  AuthedMessagesIdRoute: typeof AuthedMessagesIdRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedAdminRoute: AuthedAdminRouteWithChildren,
+  AuthedFeedRoute: AuthedFeedRoute,
+  AuthedSettingsRoute: AuthedSettingsRoute,
+  AuthedMessagesIdRoute: AuthedMessagesIdRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AnotherPageRoute: AnotherPageRoute,
+  AuthedRoute: AuthedRouteWithChildren,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

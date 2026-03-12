@@ -26,8 +26,8 @@ export function getRouter() {
   const router = routerWithQueryClient(
     createRouter({
       routeTree,
-      defaultPreload: 'intent',
-      context: { queryClient },
+      defaultPreload: false,
+      context: { queryClient, convexQueryClient },
       scrollRestoration: true,
       defaultPreloadStaleTime: 0, // Let React Query handle all caching
       defaultErrorComponent: (err) => <p>{err.error.stack}</p>,

@@ -1,120 +1,194 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
-import { useMutation } from 'convex/react'
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '../../convex/_generated/api'
+import { Link, createFileRoute } from "@tanstack/react-router"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import {
+  Mail,
+  Bell,
+  Users,
+  Shield,
+  Zap,
+  Globe,
+  ArrowRight,
+  CheckCircle
+} from "lucide-react"
 
-export const Route = createFileRoute('/')({
-  component: Home,
+export const Route = createFileRoute("/")({
+  component: LandingPage,
 })
 
-function Home() {
-  const {
-    data: { viewer, numbers },
-  } = useSuspenseQuery(convexQuery(api.myFunctions.listNumbers, { count: 10 }))
-
-  const addNumber = useMutation(api.myFunctions.addNumber)
-
+function LandingPage() {
   return (
-    <main className="p-8 flex flex-col gap-16">
-      <h1 className="text-4xl font-bold text-center">
-        Convex + Tanstack Start
-      </h1>
-      <div className="flex flex-col gap-8 max-w-lg mx-auto">
-        <p>Welcome {viewer ?? 'Anonymous'}!</p>
-        <p>
-          Click the button below and open this page in another window - this
-          data is persisted in the Convex cloud database!
-        </p>
-        <p>
-          <button
-            className="bg-dark dark:bg-light text-light dark:text-dark text-sm px-4 py-2 rounded-md border-2"
-            onClick={() => {
-              void addNumber({ value: Math.floor(Math.random() * 10) })
-            }}
-          >
-            Add a random number
-          </button>
-        </p>
-        <p>
-          Numbers:{' '}
-          {numbers.length === 0 ? 'Click the button!' : numbers.join(', ')}
-        </p>
-        <p>
-          Edit{' '}
-          <code className="text-sm font-bold font-mono bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded-md">
-            convex/myFunctions.ts
-          </code>{' '}
-          to change your backend
-        </p>
-        <p>
-          Edit{' '}
-          <code className="text-sm font-bold font-mono bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded-md">
-            src/routes/index.tsx
-          </code>{' '}
-          to change your frontend
-        </p>
-        <p>
-          Open{' '}
-          <Link
-            to="/anotherPage"
-            className="text-blue-600 underline hover:no-underline"
-          >
-            another page
-          </Link>{' '}
-          to send an action.
-        </p>
-        <div className="flex flex-col">
-          <p className="text-lg font-bold">Useful resources:</p>
-          <div className="flex gap-2">
-            <div className="flex flex-col gap-2 w-1/2">
-              <ResourceCard
-                title="Convex docs"
-                description="Read comprehensive documentation for all Convex features."
-                href="https://docs.convex.dev/home"
-              />
-              <ResourceCard
-                title="Stack articles"
-                description="Learn about best practices, use cases, and more from a growing
-            collection of articles, videos, and walkthroughs."
-                href="https://www.typescriptlang.org/docs/handbook/2/basic-types.html"
-              />
+    <div className="min-h-screen bg-[#F5F3FF]">
+      {/* Navigation */}
+      <nav className="border-b border-[#6366F1]/10 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6366F1]">
+                <Mail className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-xl font-bold text-[#1E1B4B]">Org Comms</span>
             </div>
-            <div className="flex flex-col gap-2 w-1/2">
-              <ResourceCard
-                title="Templates"
-                description="Browse our collection of templates to get started quickly."
-                href="https://www.convex.dev/templates"
-              />
-              <ResourceCard
-                title="Discord"
-                description="Join our developer community to ask questions, trade tips & tricks,
-            and show off your projects."
-                href="https://www.convex.dev/community"
-              />
+            <div className="flex items-center gap-4">
+              <Link
+                to="/sign-in"
+                className="text-sm font-medium text-[#1E1B4B] hover:text-[#6366F1]"
+              >
+                Sign In
+              </Link>
+              <Button
+                className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
+              >
+                <Link to="/sign-up">Get Started</Link>
+              </Button>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#6366F1]/10 px-4 py-1.5 text-sm font-medium text-[#6366F1] mb-8">
+            <Zap className="h-4 w-4" />
+            Streamline your organization communications
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-[#1E1B4B] sm:text-6xl mb-6">
+            Keep your team
+            <span className="text-[#6366F1]"> connected</span>
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-[#1E1B4B]/70 mb-10">
+            Org Comms is the all-in-one communication platform for organizations.
+            Send messages, manage events, and keep everyone informed with ease.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button
+              size="lg"
+              className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white px-8"
+            >
+              <Link to="/sign-up" className="flex items-center">
+                Get Started Free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
+            >
+              <Link to="/sign-in">Sign In</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-4">
+              Everything you need to communicate
+            </h2>
+            <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
+              Powerful features designed to make organizational communication simple and effective.
+            </p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <FeatureCard
+              icon={Mail}
+              title="Broadcast Messages"
+              description="Send targeted messages to specific groups or your entire organization instantly."
+            />
+            <FeatureCard
+              icon={Bell}
+              title="Push Notifications"
+              description="Reach your team anywhere with instant push notifications to their devices."
+            />
+            <FeatureCard
+              icon={Users}
+              title="Group Management"
+              description="Organize your members into groups for targeted communications."
+            />
+            <FeatureCard
+              icon={Shield}
+              title="Role-Based Access"
+              description="Control who can send messages and manage your organization."
+            />
+            <FeatureCard
+              icon={Globe}
+              title="Event Management"
+              description="Schedule events and send automatic updates to attendees."
+            />
+            <FeatureCard
+              icon={CheckCircle}
+              title="Delivery Tracking"
+              description="Know who has read your messages with real-time delivery stats."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <Card className="border-none bg-gradient-to-r from-[#6366F1] to-[#818CF8]">
+            <CardContent className="py-16 px-8 text-center">
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Ready to transform your communications?
+              </h2>
+              <p className="text-white/80 mb-8 max-w-xl mx-auto">
+                Join organizations already using Org Comms to keep their teams connected and informed.
+              </p>
+              <Button
+                size="lg"
+                className="bg-white text-[#6366F1] hover:bg-white/90"
+              >
+                <Link to="/sign-up" className="flex items-center">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-[#6366F1]/10 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-[#6366F1]">
+              <Mail className="h-3 w-3 text-white" />
+            </div>
+            <span className="text-sm font-medium text-[#1E1B4B]">Org Comms</span>
+          </div>
+          <p className="text-sm text-[#1E1B4B]/60">
+            © {new Date().getFullYear()} Org Comms. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
   )
 }
 
-function ResourceCard({
+function FeatureCard({
+  icon: Icon,
   title,
   description,
-  href,
 }: {
+  icon: React.ElementType
   title: string
   description: string
-  href: string
 }) {
   return (
-    <div className="flex flex-col gap-2 bg-slate-200 dark:bg-slate-800 p-4 rounded-md h-28 overflow-auto">
-      <a href={href} className="text-sm underline hover:no-underline">
-        {title}
-      </a>
-      <p className="text-xs">{description}</p>
-    </div>
+    <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow">
+      <CardContent className="pt-6">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366F1]/10">
+          <Icon className="h-5 w-5 text-[#6366F1]" />
+        </div>
+        <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">{title}</h3>
+        <p className="text-sm text-[#1E1B4B]/70">{description}</p>
+      </CardContent>
+    </Card>
   )
 }
