@@ -1,6 +1,11 @@
 import * as React from "react"
 import { cn } from "~/lib/utils"
 
+const RadioGroupContext = React.createContext<{
+  value?: string
+  onValueChange?: (value: string) => void
+}>({})
+
 interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: string
   onValueChange?: (value: string) => void
@@ -9,22 +14,16 @@ interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
   ({ className, value, onValueChange, children, ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={cn("grid gap-2", className)}
-        role="radiogroup"
-        {...props}
-      >
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && child.type === RadioGroupItem) {
-            return React.cloneElement(child as React.ReactElement<RadioGroupItemProps>, {
-              checked: value === (child.props as RadioGroupItemProps).value,
-              onSelect: () => onValueChange?.((child.props as RadioGroupItemProps).value),
-            })
-          }
-          return child
-        })}
-      </div>
+      <RadioGroupContext.Provider value={{ value, onValueChange }}>
+        <div
+          ref={ref}
+          className={cn("grid gap-2", className)}
+          role="radiogroup"
+          {...props}
+        >
+          {children}
+        </div>
+      </RadioGroupContext.Provider>
     )
   }
 )
@@ -32,13 +31,13 @@ RadioGroup.displayName = "RadioGroup"
 
 interface RadioGroupItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string
-  checked?: boolean
-  onSelect?: () => void
   id?: string
 }
 
 const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
-  ({ className, value, checked, onSelect, id, ...props }, ref) => {
+  ({ className, value, id, ...props }, ref) => {
+    const { value: groupValue, onValueChange } = React.useContext(RadioGroupContext)
+    const checked = groupValue === value
     return (
       <button
         ref={ref}
@@ -46,7 +45,7 @@ const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
         role="radio"
         aria-checked={checked}
         id={id}
-        onClick={onSelect}
+        onClick={() => onValueChange?.(value)}
         className={cn(
           "aspect-square h-4 w-4 rounded-full border border-[#6366F1] text-[#6366F1] ring-offset-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6366F1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
           checked ? "border-[#6366F1] bg-[#6366F1]" : "border-gray-300 bg-white",
