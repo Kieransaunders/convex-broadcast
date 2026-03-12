@@ -1,0 +1,17 @@
+[build]
+  command = "npx convex deploy --cmd 'npm run build'"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  SITE_URL = "https://org-comms-pwa.netlify.app"
+
+[context.deploy-preview.environment]
+  SITE_URL = "https://deploy-preview--org-comms-pwa.netlify.app"
