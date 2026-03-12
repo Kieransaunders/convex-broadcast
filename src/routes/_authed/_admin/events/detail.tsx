@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
+import { EditEventDialog } from "~/components/events/edit-event-dialog"
 import { ArrowLeft, CalendarDays, MapPin, Clock, Calendar } from "lucide-react"
 import type { Id } from "../../../../../convex/_generated/dataModel.js"
 
@@ -151,9 +152,7 @@ function EventDetailPage() {
             <CardTitle className="text-lg text-[#1E1B4B]">Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
-              Edit Event
-            </Button>
+            <EditEventDialog eventId={id as Id<"events">} />
             <Button variant="outline" className="w-full border-[#6366F1]/20 text-[#6366F1]">
               Send Update
             </Button>
