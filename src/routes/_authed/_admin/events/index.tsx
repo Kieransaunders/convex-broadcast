@@ -5,7 +5,15 @@ import { api } from "../../../../../convex/_generated/api.js"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { CreateEventDialog } from "~/components/events/create-event-dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 import { ArrowRight, Calendar, CalendarDays } from "lucide-react"
+import { useState } from "react"
 
 export const Route = createFileRoute("/_authed/_admin/events/")({
   component: EventsPage,
@@ -13,6 +21,7 @@ export const Route = createFileRoute("/_authed/_admin/events/")({
 
 function EventsPage() {
   const { data: events, isLoading } = useQuery(convexQuery(api.events.list, {}))
+  const [statusFilter, setStatusFilter] = useState<string>("all")
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -29,6 +38,11 @@ function EventsPage() {
     }
   }
 
+  const filteredEvents = events?.filter((event) => {
+    if (statusFilter === "all") return true
+    return event.status === statusFilter
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -37,6 +51,21 @@ function EventsPage() {
           <p className="text-[#1E1B4B]/60 mt-1">Manage organization events and announcements.</p>
         </div>
         <CreateEventDialog />
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v || "all")}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="scheduled">Scheduled</SelectItem>
+            <SelectItem value="changed">Changed</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
@@ -51,9 +80,9 @@ function EventsPage() {
             </Card>
           ))}
         </div>
-      ) : events && events.length > 0 ? (
+      ) : filteredEvents && filteredEvents.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {events.map((event) => (
+          {filteredEvents.map((event) => (
             <Link key={event._id} to="/events/detail" search={{ id: event._id }}>
               <Card className="border-[#6366F1]/10 hover:shadow-md transition-shadow cursor-pointer h-full">
                 <CardHeader className="pb-3">
@@ -123,8 +152,14 @@ function EventsPage() {
         <Card className="border-[#6366F1]/10">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <CalendarDays className="h-12 w-12 text-[#6366F1]/30" />
-            <p className="mt-4 text-lg font-medium text-[#1E1B4B]">No events yet</p>
-            <p className="text-[#1E1B4B]/60">Create your first event to get started.</p>
+            <p className="mt-4 text-lg font-medium text-[#1E1B4B]">
+              {statusFilter === "all" ? "No events yet" : `No ${statusFilter} events`}
+            </p>
+            <p className="text-[#1E1B4B]/60">
+              {statusFilter === "all" 
+                ? "Create your first event to get started." 
+                : "Try a different filter."}
+            </p>
           </CardContent>
         </Card>
       )}
