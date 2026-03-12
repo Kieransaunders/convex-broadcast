@@ -135,6 +135,24 @@ export const archive = mutation({
   },
 })
 
+export const deleteDraft = mutation({
+  args: { id: v.id("messages") },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx)
+    const message = await ctx.db.get(args.id)
+    if (!message) throw new ConvexError("Message not found")
+    if (message.status !== "draft") throw new ConvexError("Can only delete draft messages")
+    const targets = await ctx.db
+      .query("messageTargets")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
+      .collect()
+    for (const target of targets) {
+      await ctx.db.delete(target._id)
+    }
+    await ctx.db.delete(args.id)
+  },
+})
+
 // --- Audience Resolution ---
 
 export const resolveAudience = internalMutation({
@@ -189,6 +207,13 @@ export const resolveAudience = internalMutation({
       })
     }
 
+    // Schedule push after deliveries exist to avoid race condition
+    if (message.pushEnabled && userIds.length > 0) {
+      await ctx.scheduler.runAfter(0, internal.pushActions.sendPushForMessage, {
+        messageId: args.messageId,
+      })
+    }
+
     return userIds
   },
 })
@@ -211,12 +236,6 @@ export const sendNow = mutation({
     await ctx.scheduler.runAfter(0, internal.messages.resolveAudience, {
       messageId: args.id,
     })
-
-    if (message.pushEnabled) {
-      await ctx.scheduler.runAfter(500, internal.pushActions.sendPushForMessage, {
-        messageId: args.id,
-      })
-    }
   },
 })
 
@@ -284,12 +303,6 @@ export const executeSend = internalMutation({
     await ctx.scheduler.runAfter(0, internal.messages.resolveAudience, {
       messageId: args.messageId,
     })
-
-    if (message.pushEnabled) {
-      await ctx.scheduler.runAfter(500, internal.pushActions.sendPushForMessage, {
-        messageId: args.messageId,
-      })
-    }
   },
 })
 
