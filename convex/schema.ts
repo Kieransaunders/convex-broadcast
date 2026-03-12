@@ -51,6 +51,15 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_startsAt", ["startsAt"]),
 
+  eventGroupLinks: defineTable({
+    eventId: v.id("events"),
+    groupId: v.id("groups"),
+    createdAt: v.number(),
+  })
+    .index("by_eventId", ["eventId"])
+    .index("by_groupId", ["groupId"])
+    .index("by_eventId_groupId", ["eventId", "groupId"]),
+
   messages: defineTable({
     title: v.string(),
     body: v.string(),
