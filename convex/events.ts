@@ -60,3 +60,35 @@ export const update = mutation({
     await ctx.db.patch(id, fields)
   },
 })
+
+export const remove = mutation({
+  args: { id: v.id("events") },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx)
+    // Delete associated links first
+    const links = await ctx.db
+      .query("eventGroupLinks")
+      .withIndex("by_eventId", (q) => q.eq("eventId", args.id))
+      .collect()
+    for (const link of links) {
+      await ctx.db.delete(link._id)
+    }
+    await ctx.db.delete(args.id)
+  },
+})
+
+export const changeStatus = mutation({
+  args: {
+    id: v.id("events"),
+    status: v.union(
+      v.literal("scheduled"),
+      v.literal("changed"),
+      v.literal("cancelled"),
+      v.literal("completed"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx)
+    await ctx.db.patch(args.id, { status: args.status })
+  },
+})
