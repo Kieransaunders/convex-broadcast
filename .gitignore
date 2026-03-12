@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .worktrees/
+
+# Local Netlify folder
+.netlify

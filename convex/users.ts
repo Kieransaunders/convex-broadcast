@@ -76,3 +76,15 @@ export const remove = mutation({
     await ctx.db.delete(args.userId)
   },
 })
+
+export const countActive = query({
+  args: {},
+  handler: async (ctx) => {
+    await getAdminUser(ctx)
+    const users = await ctx.db
+      .query("users")
+      .withIndex("by_status", (q) => q.eq("status", "active"))
+      .collect()
+    return users.length
+  },
+})

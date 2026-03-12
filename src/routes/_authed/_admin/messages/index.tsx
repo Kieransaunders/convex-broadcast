@@ -1,147 +1,246 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { useQuery } from "@tanstack/react-query"
+import { Link, createFileRoute } from "@tanstack/react-router"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
+import { useConvex } from "convex/react"
 import { api } from "../../../../../convex/_generated/api.js"
 import { Card, CardContent } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { Mail, Plus, ArrowRight, FileText, Send, Clock } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
+import { Mail, Plus, ArrowRight, FileText, Send, Clock, Loader2, Trash2, AlertTriangle } from "lucide-react"
+import { useState } from "react"
+import { cn } from "~/lib/utils"
 
 export const Route = createFileRoute("/_authed/_admin/messages/")({
   component: MessagesPage,
 })
 
-function MessagesPage() {
-  const { data: allMessages, isLoading } = useQuery(convexQuery(api.messages.list, {}))
+type Message = {
+  _id: string
+  title: string
+  body: string
+  category: string
+  status: string
+  pushEnabled: boolean
+  audienceType?: string
+  scheduledFor?: number
+  sentAt?: number
+}
 
-  const drafts = allMessages?.filter((m) => m.status === "draft") || []
-  const scheduled = allMessages?.filter((m) => m.status === "scheduled") || []
-  const sent = allMessages?.filter((m) => m.status === "sent" || m.status === "archived") || []
+function MessagesPage() {
+  const convex = useConvex()
+  const { data: allMessages, isLoading, refetch } = useQuery(convexQuery(api.messages.list, {}))
+
+  const drafts = (allMessages?.filter((m) => m.status === "draft") || []) as Message[]
+  const scheduled = (allMessages?.filter((m) => m.status === "scheduled") || []) as Message[]
+  const sent = (allMessages?.filter((m) => m.status === "sent" || m.status === "archived") || []) as Message[]
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    type: "send" | "delete" | "cancel"
+    message: Message
+  } | null>(null)
+
+  const sendMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await convex.mutation(api.messages.sendNow, { id: id as any })
+    },
+    onSuccess: () => { refetch(); setConfirmDialog(null) },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await convex.mutation(api.messages.deleteDraft, { id: id as any })
+    },
+    onSuccess: () => { refetch(); setConfirmDialog(null) },
+  })
+
+  const cancelMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await convex.mutation(api.messages.cancelScheduled, { id: id as any })
+    },
+    onSuccess: () => { refetch(); setConfirmDialog(null) },
+  })
+
+  const isActionPending = sendMutation.isPending || deleteMutation.isPending || cancelMutation.isPending
+
+  const handleConfirm = () => {
+    if (!confirmDialog) return
+    const { type, message } = confirmDialog
+    if (type === "send") sendMutation.mutate(message._id)
+    if (type === "delete") deleteMutation.mutate(message._id)
+    if (type === "cancel") cancelMutation.mutate(message._id)
+  }
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "urgent":
-        return "bg-red-100 text-red-700"
-      case "event_update":
-        return "bg-blue-100 text-blue-700"
-      case "reminder":
-        return "bg-yellow-100 text-yellow-700"
-      case "notice":
-        return "bg-green-100 text-green-700"
-      default:
-        return "bg-gray-100 text-gray-700"
+      case "urgent": return "bg-red-100 text-red-700"
+      case "event_update": return "bg-blue-100 text-blue-700"
+      case "reminder": return "bg-yellow-100 text-yellow-700"
+      case "notice": return "bg-green-100 text-green-700"
+      default: return "bg-gray-100 text-gray-700"
     }
   }
 
-  const getCategoryIcon = (category: string) => {
+  const getCategoryLabel = (category: string) => {
     switch (category) {
-      case "urgent":
-        return "🔴"
-      case "event_update":
-        return "📅"
-      case "reminder":
-        return "⏰"
-      case "notice":
-        return "📢"
-      default:
-        return "📄"
+      case "urgent": return "Urgent"
+      case "event_update": return "Event Update"
+      case "reminder": return "Reminder"
+      case "notice": return "Notice"
+      default: return category
     }
   }
 
-  const MessageList = ({
-    messages,
-    emptyText,
-  }: {
-    messages: typeof allMessages
-    emptyText: string
-  }) => {
-    if (isLoading) {
-      return (
-        <div className="space-y-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="border-[#6366F1]/10">
-              <CardContent className="p-6">
-                <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse mb-2" />
-                <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )
-    }
+  const formatRelativeTime = (timestamp: number) => {
+    const diff = timestamp - Date.now()
+    const abs = Math.abs(diff)
+    const minutes = Math.floor(abs / 60000)
+    const hours = Math.floor(abs / 3600000)
+    const days = Math.floor(abs / 86400000)
+    const future = diff > 0
 
-    if (!messages || messages.length === 0) {
-      return (
-        <Card className="border-[#6366F1]/10">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Mail className="h-12 w-12 text-[#6366F1]/30" />
-            <p className="mt-4 text-lg font-medium text-[#1E1B4B]">{emptyText}</p>
-          </CardContent>
-        </Card>
-      )
-    }
+    if (days > 0) return future ? `in ${days}d` : `${days}d ago`
+    if (hours > 0) return future ? `in ${hours}h` : `${hours}h ago`
+    return future ? `in ${minutes}m` : `${minutes}m ago`
+  }
 
-    return (
-      <div className="space-y-4">
-        {messages.map((message) => (
-          <Link key={message._id} to="/messages/detail" search={{ id: message._id }}>
-            <Card className="border-[#6366F1]/10 hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{getCategoryIcon(message.category)}</span>
-                      <h3 className="font-semibold text-[#1E1B4B] truncate">{message.title}</h3>
-                    </div>
-                    <p className="text-sm text-[#1E1B4B]/60 line-clamp-2">{message.body}</p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <Badge className={getCategoryColor(message.category)}>
-                        {message.category}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className={`${message.pushEnabled
-                          ? "border-green-200 text-green-700"
-                          : "border-gray-200 text-gray-500"
-                          }`}
-                      >
-                        {message.pushEnabled ? "🔔 Push" : "📧 Email only"}
-                      </Badge>
-                      {message.audienceType && (
-                        <Badge variant="outline" className="border-[#6366F1]/20 text-[#6366F1]">
-                          To: {message.audienceType}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-[#6366F1]/40 ml-4 flex-shrink-0" />
-                </div>
+  const MessageCard = ({ message, showDraftActions, showScheduledActions }: {
+    message: Message
+    showDraftActions?: boolean
+    showScheduledActions?: boolean
+  }) => (
+    <Link to="/messages/detail" search={{ id: message._id }}>
+      <Card className="border-[#6366F1]/10 hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-[#1E1B4B] truncate">{message.title}</h3>
+              </div>
+              <p className="text-sm text-[#1E1B4B]/60 line-clamp-2">{message.body}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Badge className={getCategoryColor(message.category)}>
+                  {getCategoryLabel(message.category)}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={message.pushEnabled ? "border-green-200 text-green-700" : "border-gray-200 text-gray-500"}
+                >
+                  {message.pushEnabled ? "Push on" : "No push"}
+                </Badge>
+                {message.audienceType && (
+                  <Badge variant="outline" className="border-[#6366F1]/20 text-[#6366F1]">
+                    To: {message.audienceType}
+                  </Badge>
+                )}
                 {message.scheduledFor && (
-                  <div className="mt-3 flex items-center gap-2 text-sm text-[#1E1B4B]/60">
-                    <Clock className="h-4 w-4" />
-                    <span>
-                      Scheduled for{" "}
-                      {new Date(message.scheduledFor).toLocaleString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
+                  <Badge variant="outline" className="border-amber-200 text-amber-700 flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {new Date(message.scheduledFor).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    <span className="text-xs opacity-70">({formatRelativeTime(message.scheduledFor)})</span>
+                  </Badge>
                 )}
                 {message.sentAt && (
-                  <div className="mt-3 text-sm text-[#1E1B4B]/60">
-                    Sent {new Date(message.sentAt).toLocaleString()}
-                  </div>
+                  <span className="text-xs text-[#1E1B4B]/40">
+                    Sent {new Date(message.sentAt).toLocaleDateString()}
+                  </span>
                 )}
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
-    )
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {showDraftActions && (
+                <>
+                  <Button
+                    size="sm"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmDialog({ type: "send", message }) }}
+                    className="bg-[#10B981] hover:bg-[#10B981]/90 text-white cursor-pointer"
+                  >
+                    <Send className="h-3 w-3 mr-1" />
+                    Send
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmDialog({ type: "delete", message }) }}
+                    className="border-red-200 text-red-600 hover:bg-red-50 cursor-pointer"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </>
+              )}
+              {showScheduledActions && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmDialog({ type: "cancel", message }) }}
+                  className="border-amber-200 text-amber-700 hover:bg-amber-50 cursor-pointer"
+                >
+                  Cancel
+                </Button>
+              )}
+              {!showDraftActions && !showScheduledActions && (
+                <ArrowRight className="h-5 w-5 text-[#6366F1]/40" />
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  )
+
+  const EmptyState = ({ text }: { text: string }) => (
+    <Card className="border-[#6366F1]/10">
+      <CardContent className="flex flex-col items-center justify-center py-12">
+        <Mail className="h-12 w-12 text-[#6366F1]/30" />
+        <p className="mt-4 text-lg font-medium text-[#1E1B4B]">{text}</p>
+      </CardContent>
+    </Card>
+  )
+
+  const LoadingSkeleton = () => (
+    <div className="space-y-4">
+      {[...Array(3)].map((_, i) => (
+        <Card key={i} className="border-[#6366F1]/10">
+          <CardContent className="p-6">
+            <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse mb-2" />
+            <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+
+  const dialogConfig = {
+    send: {
+      title: "Send Message Now?",
+      description: "This will immediately send the message to all targeted recipients. This action cannot be undone.",
+      icon: Send,
+      buttonLabel: "Send Now",
+      buttonClass: "bg-[#10B981] hover:bg-[#10B981]/90 text-white",
+    },
+    delete: {
+      title: "Delete Draft?",
+      description: "This will permanently delete this draft. This action cannot be undone.",
+      icon: Trash2,
+      buttonLabel: "Delete",
+      buttonClass: "bg-red-600 hover:bg-red-700 text-white",
+    },
+    cancel: {
+      title: "Cancel Scheduled Message?",
+      description: "This will cancel the scheduled send and move the message back to drafts.",
+      icon: AlertTriangle,
+      buttonLabel: "Cancel Schedule",
+      buttonClass: "bg-amber-600 hover:bg-amber-700 text-white",
+    },
   }
 
   return (
@@ -149,65 +248,101 @@ function MessagesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#1E1B4B]">Messages</h1>
-          <p className="text-[#1E1B4B]/60 mt-1">
-            Create and manage messages to your organization.
-          </p>
+          <p className="text-[#1E1B4B]/60 mt-1">Create and manage messages to your organisation.</p>
         </div>
-        <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
-          <Link to="/messages/new" className="flex items-center">
+        <Link to="/messages/new">
+          <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white cursor-pointer">
             <Plus className="mr-2 h-4 w-4" />
             New Message
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       <Tabs defaultValue="drafts" className="space-y-6">
         <TabsList className="bg-white border border-[#6366F1]/10">
-          <TabsTrigger
-            value="drafts"
-            className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white"
-          >
+          <TabsTrigger value="drafts" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
             <FileText className="mr-2 h-4 w-4" />
             Drafts
-            {drafts.length > 0 && (
-              <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">
-                {drafts.length}
-              </span>
-            )}
+            {drafts.length > 0 && <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">{drafts.length}</span>}
           </TabsTrigger>
-          <TabsTrigger
-            value="scheduled"
-            className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white"
-          >
+          <TabsTrigger value="scheduled" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
             <Clock className="mr-2 h-4 w-4" />
             Scheduled
-            {scheduled.length > 0 && (
-              <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">
-                {scheduled.length}
-              </span>
-            )}
+            {scheduled.length > 0 && <span className="ml-2 rounded-full bg-[#6366F1]/10 px-2 py-0.5 text-xs">{scheduled.length}</span>}
           </TabsTrigger>
-          <TabsTrigger
-            value="sent"
-            className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white"
-          >
+          <TabsTrigger value="sent" className="data-[state=active]:bg-[#6366F1] data-[state=active]:text-white cursor-pointer">
             <Send className="mr-2 h-4 w-4" />
             Sent
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="drafts">
-          <MessageList messages={drafts} emptyText="No draft messages" />
+          {isLoading ? <LoadingSkeleton /> : drafts.length === 0 ? <EmptyState text="No draft messages" /> : (
+            <div className="space-y-4">
+              {drafts.map(m => <MessageCard key={m._id} message={m} showDraftActions />)}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="scheduled">
-          <MessageList messages={scheduled} emptyText="No scheduled messages" />
+          {isLoading ? <LoadingSkeleton /> : scheduled.length === 0 ? <EmptyState text="No scheduled messages" /> : (
+            <div className="space-y-4">
+              {scheduled.map(m => <MessageCard key={m._id} message={m} showScheduledActions />)}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="sent">
-          <MessageList messages={sent} emptyText="No sent messages yet" />
+          {isLoading ? <LoadingSkeleton /> : sent.length === 0 ? <EmptyState text="No sent messages yet" /> : (
+            <div className="space-y-4">
+              {sent.map(m => <MessageCard key={m._id} message={m} />)}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
+
+      {/* Confirmation dialog */}
+      <Dialog open={!!confirmDialog} onOpenChange={(open) => !open && setConfirmDialog(null)}>
+        <DialogContent>
+          {confirmDialog && (() => {
+            const config = dialogConfig[confirmDialog.type]
+            const Icon = config.icon
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className={cn(
+                      "p-2 rounded-lg",
+                      confirmDialog.type === "send" ? "bg-[#10B981]/10" :
+                      confirmDialog.type === "delete" ? "bg-red-100" : "bg-amber-100"
+                    )}>
+                      <Icon className={cn("h-5 w-5",
+                        confirmDialog.type === "send" ? "text-[#10B981]" :
+                        confirmDialog.type === "delete" ? "text-red-600" : "text-amber-600"
+                      )} />
+                    </div>
+                    <DialogTitle>{config.title}</DialogTitle>
+                  </div>
+                  <DialogDescription>
+                    <strong className="text-[#1E1B4B]">{confirmDialog.message.title}</strong>
+                    <br />
+                    {config.description}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2">
+                  <Button variant="outline" onClick={() => setConfirmDialog(null)} disabled={isActionPending} className="cursor-pointer">
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConfirm} disabled={isActionPending} className={cn(config.buttonClass, "cursor-pointer")}>
+                    {isActionPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Icon className="mr-2 h-4 w-4" />}
+                    {config.buttonLabel}
+                  </Button>
+                </DialogFooter>
+              </>
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

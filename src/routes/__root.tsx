@@ -94,6 +94,8 @@ function RootComponent() {
     <RootDocument>
       <ConvexBetterAuthProvider client={convexQueryClient.convexClient} authClient={authClient}>
         <Outlet />
+        <ImpersonationBanner />
+        <PWAInstallPrompt />
       </ConvexBetterAuthProvider>
     </RootDocument>
   )
@@ -109,8 +111,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <ImpersonationBanner />
-        <PWAInstallPrompt />
         <Scripts />
       </body>
     </html>
