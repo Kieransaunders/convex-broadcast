@@ -95,8 +95,9 @@ function UsersPage() {
   });
 
   const impersonateMutation = useMutation({
-    mutationFn: async (userId: string) => {
-      await authClient.admin.impersonateUser({ userId });
+    mutationFn: async ({ userId, authUserId }: { userId: string; authUserId?: string }) => {
+      // Use Better Auth ID if available, otherwise fallback to project ID (though it likely won't work for Better Auth)
+      await authClient.admin.impersonateUser({ userId: authUserId || userId });
       await convex.mutation(api.impersonation.logStart, { impersonatedUserId: userId as any });
     },
     onSuccess: () => {
@@ -296,7 +297,7 @@ function UsersPage() {
                           variant="ghost"
                           size="sm"
                           className="text-[#6366F1] hover:text-[#6366F1]/80 hover:bg-[#6366F1]/10 h-8"
-                          onClick={() => impersonateMutation.mutate(user._id)}
+                          onClick={() => impersonateMutation.mutate({ userId: user._id, authUserId: user.authUserId })}
                           disabled={
                             impersonateMutation.isPending ||
                             user._id === currentUser?._id

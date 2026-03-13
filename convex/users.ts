@@ -1,12 +1,28 @@
 import { ConvexError, v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getAdminUser, getSuperAdminUser, getUser } from "./auth";
+import { components } from "./_generated/api";
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
     await getAdminUser(ctx);
-    return await ctx.db.query("users").collect();
+    const users = await ctx.db.query("users").collect();
+    
+    // Supplement with authUserId if missing (for legacy users)
+    return await Promise.all(users.map(async (user) => {
+      if (user.authUserId) return user;
+      
+      const authUser = await ctx.runQuery(components.betterAuth.adapter.findOne, {
+        model: "user",
+        where: [{ field: "userId", value: user._id }]
+      });
+      
+      if (authUser) {
+        return { ...user, authUserId: authUser._id };
+      }
+      return user;
+    }));
   },
 });
 
@@ -31,6 +47,25 @@ export const updateRole = mutation({
   handler: async (ctx, args) => {
     await getSuperAdminUser(ctx);
     await ctx.db.patch(args.userId, { role: args.role });
+
+    // Synchronize role to Better Auth
+    const authUser = await ctx.runQuery(components.betterAuth.adapter.findOne, {
+      model: "user",
+      where: [{ field: "userId", value: args.userId }],
+    });
+
+    if (authUser) {
+      await ctx.runMutation(components.betterAuth.adapter.updateOne, {
+        input: {
+          model: "user",
+          where: [{ field: "_id", value: authUser._id }],
+          update: { role: args.role },
+        },
+      });
+      
+      // Also ensure project user has authUserId cached
+      await ctx.db.patch(args.userId, { authUserId: authUser._id });
+    }
   },
 });
 

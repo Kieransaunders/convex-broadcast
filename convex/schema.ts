@@ -11,6 +11,7 @@ export default defineSchema({
       v.literal("super_admin"),
     ),
     status: v.union(v.literal("active"), v.literal("inactive")),
+    authUserId: v.optional(v.string()), // Better Auth internal ID
     createdAt: v.number(),
   })
     .index("by_email", ["email"])
