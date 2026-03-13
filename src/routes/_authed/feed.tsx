@@ -4,6 +4,7 @@ import { useMutation as useConvexMutation } from "convex/react";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -110,14 +111,8 @@ function FeedPage() {
     );
   }
 
-  if (messagesLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F5F3FF]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#6366F1]" />
-      </div>
-    );
-  }
-
+  // Render the UI shell immediately - messages load in background
+  // This improves perceived performance by showing the layout instantly
   return (
     <div className="min-h-screen bg-[#F5F3FF]">
       <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
@@ -217,22 +212,30 @@ function FeedPage() {
           </div>
         </div>
         <div className="space-y-4">
-          {messages?.length === 0 && (
+          {/* Skeleton loaders while messages are loading */}
+          {messagesLoading ? (
+            <>
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
+            </>
+          ) : messages?.length === 0 ? (
             <Card className="p-8 text-center">
               <Bell className="mx-auto mb-4 h-12 w-12 text-[#818CF8]" />
               <p className="text-gray-600">
                 No messages yet. Check back later!
               </p>
             </Card>
+          ) : (
+            messages?.map((msg: any) => (
+              <MessageCard 
+                key={msg._id} 
+                message={msg} 
+                onDelete={() => handleDeleteMessage(msg._id)}
+                isDeleting={deletingId === msg._id}
+              />
+            ))
           )}
-          {messages?.map((msg: any) => (
-            <MessageCard 
-              key={msg._id} 
-              message={msg} 
-              onDelete={() => handleDeleteMessage(msg._id)}
-              isDeleting={deletingId === msg._id}
-            />
-          ))}
         </div>
       </main>
       <MobileBottomNav isAdmin={!!isAdmin} unreadCount={unreadCount} />
@@ -407,6 +410,27 @@ function MessageCard({
         )}
       </Button>
     </div>
+  );
+}
+
+function MessageSkeleton() {
+  return (
+    <Card className="border-[#6366F1]/10">
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2 flex-1">
+            <Skeleton className="h-2 w-2 rounded-full" />
+            <Skeleton className="h-5 w-3/4" />
+          </div>
+          <Skeleton className="h-5 w-16 rounded-full" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-2/3 mb-3" />
+        <Skeleton className="h-3 w-24" />
+      </CardContent>
+    </Card>
   );
 }
 
