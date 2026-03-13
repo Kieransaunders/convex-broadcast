@@ -12,6 +12,7 @@ import { authClient } from "~/lib/auth-client";
 import { useState, useEffect } from "react";
 import { User, Bell, LogOut, ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed/settings")({
   component: SettingsPage,
@@ -28,6 +29,10 @@ function SettingsPage() {
   const updatePreference = useMutation(api.push.updatePreference);
   const subscribe = useMutation(api.push.subscribe);
   const unsubscribe = useMutation(api.push.unsubscribe);
+
+  const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
+  const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
+  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 
   const [pushEnabled, setPushEnabled] = useState(false);
   const [preference, setPreference] = useState<"all" | "urgent" | "none">(
@@ -130,7 +135,7 @@ function SettingsPage() {
           <h1 className="ml-2 text-xl font-bold text-[#1E1B4B]">Settings</h1>
         </div>
       </header>
-      <main className="container mx-auto max-w-xl px-4 py-6">
+      <main className="container mx-auto max-w-xl px-4 py-6 pb-24 sm:pb-6">
         <div className="space-y-6">
           {/* Profile Section */}
           <Card>
@@ -222,6 +227,7 @@ function SettingsPage() {
           </Button>
         </div>
       </main>
+      <MobileBottomNav isAdmin={!!isAdmin} unreadCount={unreadCount} />
     </div>
   );
 }

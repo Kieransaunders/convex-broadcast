@@ -12,9 +12,7 @@ import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { createServerFn } from "@tanstack/react-start";
 import { authClient } from "~/lib/auth-client";
 import { getToken } from "~/lib/auth-server";
-import { api } from "../../convex/_generated/api";
-import { useQuery } from "@tanstack/react-query";
-import { convexQuery } from "@convex-dev/react-query";
+
 import { ImpersonationBanner } from "~/components/impersonation-banner";
 import appCss from "~/styles/app.css?url";
 
@@ -59,6 +57,12 @@ export const Route = createRootRouteWithContext<{
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap",
       },
+      // System font fallback to prevent FOIT (Flash of Invisible Text)
+      {
+        rel: "preload",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap",
+        as: "style",
+      },
       { rel: "stylesheet", href: appCss },
       {
         rel: "apple-touch-icon",
@@ -88,10 +92,9 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   const { convexQueryClient } = Route.useRouteContext();
 
-  const { data: settings } = useQuery(
-    convexQuery(api.settings.getSet, { keys: ["app_name"] }),
-  );
-  const appName = (settings as any)?.app_name || "Org Comms";
+  // App name is loaded with a default - no blocking query needed
+  // Settings can be loaded later by specific routes that need them
+  // appName defaults to "Org Comms" and could be loaded dynamically by routes that need it
 
   // Dismiss loading screen once app is hydrated
   useEffect(() => {
@@ -114,12 +117,6 @@ function RootComponent() {
         });
     }
   }, []);
-
-  useEffect(() => {
-    if (appName) {
-      document.title = appName;
-    }
-  }, [appName]);
 
   return (
     <RootDocument>

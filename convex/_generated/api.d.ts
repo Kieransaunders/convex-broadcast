@@ -20,6 +20,7 @@ import type * as invites from "../invites.js";
 import type * as messages from "../messages.js";
 import type * as push from "../push.js";
 import type * as pushActions from "../pushActions.js";
+import type * as seed from "../seed.js";
 import type * as settings from "../settings.js";
 import type * as users from "../users.js";
 
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   push: typeof push;
   pushActions: typeof pushActions;
+  seed: typeof seed;
   settings: typeof settings;
   users: typeof users;
 }>;

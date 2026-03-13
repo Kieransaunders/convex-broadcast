@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
@@ -22,7 +23,12 @@ function MessageDetailPage() {
   const { data: delivery } = useQuery(
     convexQuery(api.messages.getMyDelivery, { messageId: id as any }),
   );
+  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+  const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
   const markRead = useMutation(api.messages.markRead);
+  
+  const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
+  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 
   // Auto-mark as read when viewing
   useEffect(() => {
@@ -52,7 +58,7 @@ function MessageDetailPage() {
           <h1 className="ml-2 text-lg font-semibold text-[#1E1B4B]">Message</h1>
         </div>
       </header>
-      <main className="container mx-auto max-w-2xl px-4 py-6">
+      <main className="container mx-auto max-w-2xl px-4 py-6 pb-24 sm:pb-6">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -72,6 +78,7 @@ function MessageDetailPage() {
           </CardContent>
         </Card>
       </main>
+      <MobileBottomNav isAdmin={!!isAdmin} unreadCount={unreadCount} />
     </div>
   );
 }

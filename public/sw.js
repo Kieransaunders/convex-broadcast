@@ -1,5 +1,6 @@
-const CACHE_NAME = "orgcomms-v1";
-const PRECACHE_URLS = ["/", "/feed"];
+const CACHE_NAME = "orgcomms-v2";
+// Precache critical routes for offline access
+const PRECACHE_URLS = ["/", "/feed", "/settings", "/sign-in"];
 
 // Install: precache app shell
 self.addEventListener("install", (event) => {

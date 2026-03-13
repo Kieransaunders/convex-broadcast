@@ -11,6 +11,7 @@ import { Label } from "~/components/ui/label";
 import { Settings, Bell, BellOff, Loader2, CheckCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
+import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed/feed")({
   component: FeedPage,
@@ -21,12 +22,16 @@ const routeApi = getRouteApi("/_authed/feed");
 function FeedPage() {
   const search = routeApi.useSearch();
   const notice = (search as { notice?: string }).notice;
-  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+  // Fetch feed immediately - don't wait for user query
+  // The feed query handles authentication internally via getUser(ctx)
   const {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
-  } = useQuery(convexQuery(api.messages.feed, user ? {} : "skip"));
+  } = useQuery(convexQuery(api.messages.feed, {}));
+  
+  // User query can load in parallel - only needed for admin check
+  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
   const markAllAsRead = useConvexMutation(api.messages.markAllAsRead);
@@ -127,7 +132,7 @@ function FeedPage() {
         </div>
       </header>
 
-      <main className="container mx-auto max-w-2xl px-4 py-6">
+      <main className="container mx-auto max-w-2xl px-4 py-6 pb-24 sm:pb-6">
         {notice === "admin_only" && (
           <Card className="mb-4 border-amber-200 bg-amber-50">
             <CardContent className="p-4 text-sm text-amber-900">
@@ -178,6 +183,7 @@ function FeedPage() {
           ))}
         </div>
       </main>
+      <MobileBottomNav isAdmin={!!isAdmin} unreadCount={unreadCount} />
     </div>
   );
 }

@@ -324,6 +324,9 @@ export const feed = query({
       .order("desc")
       .take(50);
 
+    // Fetch messages using Promise.all - while this is N queries, each is a
+    // fast primary key lookup (db.get). Convex automatically batches these
+    // internally within the same transaction for better performance.
     const messages = await Promise.all(
       deliveries.map(async (d) => {
         const message = await ctx.db.get(d.messageId);
