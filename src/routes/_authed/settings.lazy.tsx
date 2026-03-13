@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -15,11 +15,12 @@ import { Link } from "@tanstack/react-router";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 
-export const Route = createFileRoute("/_authed/settings")({
+export const Route = createLazyFileRoute("/_authed/settings")({
   component: SettingsPage,
 });
 
 function SettingsPage() {
+  const queryClient = useQueryClient();
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const { data: subscription } = useQuery(
     convexQuery(api.push.getMySubscription, user ? {} : "skip"),
@@ -90,6 +91,8 @@ function SettingsPage() {
           preference: "all",
         });
         setPushEnabled(true);
+        // Invalidate push subscription status to update UI in inbox
+        queryClient.invalidateQueries({ queryKey: ["push-subscription-status"] });
         alert("Push notifications enabled successfully!");
       } else {
         // Unsubscribe
@@ -101,6 +104,8 @@ function SettingsPage() {
           await pushSubscription.unsubscribe();
         }
         setPushEnabled(false);
+        // Invalidate push subscription status to update UI in inbox
+        queryClient.invalidateQueries({ queryKey: ["push-subscription-status"] });
         alert("Push notifications disabled.");
       }
     } catch (error) {

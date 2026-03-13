@@ -1,4 +1,4 @@
-import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
+import { Link, getRouteApi, createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
+import { usePushSubscription } from "~/hooks/use-push-subscription";
 import { cn } from "~/lib/utils";
 
-export const Route = createFileRoute("/_authed/inbox")({
+export const Route = createLazyFileRoute("/_authed/inbox")({
   component: InboxPage,
 });
 
@@ -27,6 +28,9 @@ function InboxPage() {
   const search = routeApi.useSearch();
   const notice = (search as { notice?: string }).notice;
   const [filter, setFilter] = useState<FilterType>("all");
+  
+  // Check if push notifications are enabled in browser
+  const { data: isPushSubscribed } = usePushSubscription();
   
   // Fetch inbox with filter
   const {
@@ -156,7 +160,7 @@ function InboxPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationStatus unreadCount={unreadCount} />
+            {!isPushSubscribed && <NotificationStatus unreadCount={unreadCount} />}
             <Link to="/settings">
               <Button
                 variant="ghost"

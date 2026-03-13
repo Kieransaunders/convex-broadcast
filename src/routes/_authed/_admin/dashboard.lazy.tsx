@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../convex/_generated/api.js";
@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Users, Mail, Eye } from "lucide-react";
 import { Skeleton } from "~/components/ui/skeleton";
 
-export const Route = createFileRoute("/_authed/_admin/dashboard")({
+export const Route = createLazyFileRoute("/_authed/_admin/dashboard")({
   component: DashboardPage,
 });
 

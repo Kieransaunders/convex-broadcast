@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../convex/_generated/api.js";
@@ -16,7 +16,7 @@ import { Save, ExternalLink, Mail, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useConvex } from "convex/react";
 
-export const Route = createFileRoute("/_authed/_admin/system-settings")({
+export const Route = createLazyFileRoute("/_authed/_admin/system-settings")({
   component: AdminSettingsPage,
 });
 

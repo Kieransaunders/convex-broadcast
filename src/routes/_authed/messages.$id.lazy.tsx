@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate, createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 
-export const Route = createFileRoute("/_authed/messages/$id")({
+export const Route = createLazyFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
 });
 

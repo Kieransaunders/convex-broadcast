@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../../convex/_generated/api.js";
@@ -36,7 +36,7 @@ import { useConvex } from "convex/react";
 import { authClient } from "~/lib/auth-client";
 import { useRouter } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_authed/_admin/users/")({
+export const Route = createLazyFileRoute("/_authed/_admin/users/")({
   component: UsersPage,
 });
 
@@ -249,8 +249,8 @@ function UsersPage() {
                       {isSuperAdmin && user._id !== currentUser?._id ? (
                         <Select
                           value={user.role}
-                          onValueChange={(value: "member" | "admin" | "super_admin") => {
-                            if (confirm(`Change ${user.name}'s role to ${value}?`)) {
+                          onValueChange={(value: "member" | "admin" | "super_admin" | null) => {
+                            if (value && confirm(`Change ${user.name}'s role to ${value}?`)) {
                               updateRoleMutation.mutate({ userId: user._id, role: value });
                             }
                           }}

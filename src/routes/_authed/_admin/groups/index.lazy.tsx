@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../../convex/_generated/api.js";
@@ -20,7 +20,7 @@ import { Plus, FolderOpen, Users, Loader2, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useConvex } from "convex/react";
 
-export const Route = createFileRoute("/_authed/_admin/groups/")({
+export const Route = createLazyFileRoute("/_authed/_admin/groups/")({
   component: GroupsPage,
 });
 

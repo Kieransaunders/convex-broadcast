@@ -11,7 +11,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
@@ -29,7 +29,7 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 
-export const Route = createFileRoute("/_authed/_admin/messages/")({
+export const Route = createLazyFileRoute("/_authed/_admin/messages/")({
   component: MessagesPage,
 });
 
