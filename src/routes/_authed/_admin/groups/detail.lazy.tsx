@@ -45,10 +45,6 @@ import { useState, useMemo } from "react";
 import { useConvex } from "convex/react";
 import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
-type SearchParams = {
-  id: string;
-};
-
 export const Route = createLazyFileRoute("/_authed/_admin/groups/detail")({
   component: GroupDetailPage,
 });

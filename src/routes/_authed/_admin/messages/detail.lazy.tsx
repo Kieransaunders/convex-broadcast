@@ -28,10 +28,6 @@ import { useConvex } from "convex/react";
 import { useState } from "react";
 import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
-type SearchParams = {
-  id: string;
-};
-
 const CATEGORY_CONFIG = {
   urgent: {
     color: "bg-red-100 text-red-700 border-red-200",
