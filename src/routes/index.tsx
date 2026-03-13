@@ -14,6 +14,10 @@ import {
   CheckCircle,
   Github,
   Star,
+  Smartphone,
+  Layout,
+  Menu,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -22,6 +26,7 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   const [stars, setStars] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetch("https://api.github.com/repos/Kieransaunders/convex-broadcast")
@@ -49,6 +54,7 @@ function LandingPage() {
       <nav className="border-b border-[#6366F1]/10 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6366F1]">
                 <Mail className="h-4 w-4 text-white" />
@@ -57,7 +63,9 @@ function LandingPage() {
                 Org Comms
               </span>
             </div>
-            <div className="flex items-center gap-4">
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-4">
               <a
                 href="https://github.com/Kieransaunders/convex-broadcast"
                 target="_blank"
@@ -65,7 +73,7 @@ function LandingPage() {
                 className="flex items-center gap-2 rounded-lg border border-[#6366F1]/20 bg-white px-3 py-1.5 text-sm font-medium text-[#1E1B4B] hover:border-[#6366F1]/40 hover:bg-[#6366F1]/5 transition-colors"
               >
                 <Github className="h-4 w-4" />
-                <span className="hidden sm:inline">Star</span>
+                <span>Star</span>
                 <span className="flex items-center gap-1 rounded bg-[#6366F1]/10 px-1.5 py-0.5 text-xs font-semibold text-[#6366F1]">
                   <Star className="h-3 w-3 fill-[#6366F1]" />
                   {stars !== null ? formatStars(stars) : "—"}
@@ -81,7 +89,52 @@ function LandingPage() {
                 <Link to="/sign-up">Get Started</Link>
               </Button>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 rounded-lg text-[#1E1B4B] hover:bg-[#6366F1]/10 transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-[#6366F1]/10 py-4 space-y-3">
+              <a
+                href="https://github.com/Kieransaunders/convex-broadcast"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-lg border border-[#6366F1]/20 bg-white px-4 py-2.5 text-sm font-medium text-[#1E1B4B] hover:border-[#6366F1]/40 hover:bg-[#6366F1]/5 transition-colors"
+              >
+                <Github className="h-4 w-4" />
+                <span>Star on GitHub</span>
+                <span className="flex items-center gap-1 rounded bg-[#6366F1]/10 px-1.5 py-0.5 text-xs font-semibold text-[#6366F1]">
+                  <Star className="h-3 w-3 fill-[#6366F1]" />
+                  {stars !== null ? formatStars(stars) : "—"}
+                </span>
+              </a>
+              <Link
+                to="/sign-in"
+                className="flex items-center justify-center w-full rounded-lg px-4 py-2.5 text-sm font-medium text-[#1E1B4B] hover:bg-[#6366F1]/10 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Button 
+                className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Link to="/sign-up" className="w-full">Get Started</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -170,7 +223,72 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Quick Start Guide for Testers */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#1E1B4B]">
+              Quick Start for Testers
+            </h2>
+            <p className="text-[#1E1B4B]/70 mt-2">
+              Follow these steps to experience the full power of the Org Comms boilerplate.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-4">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
+                1
+              </div>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Login as Admin</h3>
+              <p className="text-sm text-[#1E1B4B]/60 italic mb-3">demo@orgcomms.test</p>
+              <p className="text-sm text-[#1E1B4B]/70">
+                Use the demo account above to access both Member and Admin capabilities.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
+                2
+              </div>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Enable Alerts</h3>
+              <div className="mb-3 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold">
+                REQUIRED FOR PUSH
+              </div>
+              <p className="text-sm text-[#1E1B4B]/70">
+                On the Feed page, click <strong>"Enable Alerts"</strong> to grant push permissions in your browser.{" "}
+                <Link to="/docs/notifications" className="text-[#6366F1] underline hover:text-[#6366F1]/80">
+                  Why this is needed.
+                </Link>
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
+                3
+              </div>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Send Message</h3>
+              <p className="text-sm text-[#1E1B4B]/70">
+                Go to the <strong>Admin Dashboard</strong>, create a message, and send or schedule it for 1 minute time.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
+                4
+              </div>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Install App</h3>
+              <div className="flex gap-2 mb-3">
+                <Smartphone className="h-4 w-4 text-[#6366F1]" />
+                <Layout className="h-4 w-4 text-[#6366F1]" />
+              </div>
+              <p className="text-sm text-[#1E1B4B]/70">
+                Add to Home Screen on iOS/Android to test the full <strong>PWA experience</strong> and notifications.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-16">
@@ -191,7 +309,8 @@ function LandingPage() {
             <FeatureCard
               icon={Bell}
               title="Push Notifications"
-              description="Reach your team anywhere with instant push notifications to their devices."
+              description="Reach your team anywhere with instant push notifications. Works on Desktop and Mobile (PWA)."
+              link="/docs/notifications"
             />
             <FeatureCard
               icon={Users}
@@ -267,20 +386,32 @@ function FeatureCard({
   icon: Icon,
   title,
   description,
+  link,
 }: {
   icon: React.ElementType;
   title: string;
   description: string;
+  link?: string;
 }) {
+  const content = (
+    <CardContent className="pt-6">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366F1]/10">
+        <Icon className="h-5 w-5 text-[#6366F1]" />
+      </div>
+      <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">{title}</h3>
+      <p className="text-sm text-[#1E1B4B]/70">{description}</p>
+    </CardContent>
+  );
+
   return (
     <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow">
-      <CardContent className="pt-6">
-        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#6366F1]/10">
-          <Icon className="h-5 w-5 text-[#6366F1]" />
-        </div>
-        <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">{title}</h3>
-        <p className="text-sm text-[#1E1B4B]/70">{description}</p>
-      </CardContent>
+      {link ? (
+        <Link to={link as any}>
+          {content}
+        </Link>
+      ) : (
+        content
+      )}
     </Card>
   );
 }

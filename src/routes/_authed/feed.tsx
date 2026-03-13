@@ -1,14 +1,11 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useConvex } from "convex/react";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Label } from "~/components/ui/label";
 import { Settings, Bell, BellOff, Loader2, CheckCheck, Inbox, Mail, MailOpen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
@@ -167,7 +164,7 @@ function FeedPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <NotificationStatus userId={user?._id} unreadCount={unreadCount} />
+            <NotificationStatus unreadCount={unreadCount} />
             <Link to="/settings">
               <Button
                 variant="ghost"
@@ -271,115 +268,27 @@ function FeedPage() {
   );
 }
 
-function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCount?: number }) {
-  const convex = useConvex();
-  const { data: subscription, isLoading } = useQuery(
-    convexQuery(api.push.getMySubscription, userId ? {} : "skip"),
-  );
-  const { data: vapidKey } = useQuery(
-    convexQuery(api.push.getVapidPublicKey, {}),
-  );
-  
-  const subscribe = useMutation({
-    mutationFn: async (data: { endpoint: string; p256dh: string; auth: string; preference: "all" | "urgent" | "none" }) => {
-      return await convex.mutation(api.push.subscribe, data);
-    },
-  });
-  
-  const unsubscribe = useMutation({
-    mutationFn: async (data: { endpoint: string }) => {
-      return await convex.mutation(api.push.unsubscribe, data);
-    },
-  });
-  
-  const isEnabled = !!subscription;
+function NotificationStatus({ unreadCount }: { unreadCount?: number }) {
   const hasUnread = (unreadCount ?? 0) > 0;
 
-  const handleToggle = async (checked: boolean) => {
-    if (checked) {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission === "granted") {
-          const key = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY;
-          if (!key) {
-            alert(
-              "Notification system not ready. Please try again in a moment.",
-            );
-            return;
-          }
-
-          const registration = await navigator.serviceWorker.ready;
-          const pushSubscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(key) as BufferSource,
-          });
-
-          await subscribe.mutateAsync({
-            endpoint: pushSubscription.endpoint,
-            p256dh: arrayBufferToBase64(pushSubscription.getKey("p256dh")!),
-            auth: arrayBufferToBase64(pushSubscription.getKey("auth")!),
-            preference: "all",
-          });
-        }
-      } catch (err) {
-        console.error("Failed to enable notifications", err);
-        alert("Failed to enable notifications. Is your browser blocking them?");
-      }
-    } else {
-      try {
-        const registration = await navigator.serviceWorker.ready;
-        const pushSubscription =
-          await registration.pushManager.getSubscription();
-        if (pushSubscription) {
-          await unsubscribe.mutateAsync({ endpoint: pushSubscription.endpoint });
-          await pushSubscription.unsubscribe();
-        }
-      } catch (err) {
-        console.error("Failed to disable notifications", err);
-      }
-    }
-  };
-
-  if (isLoading)
-    return <div className="h-9 w-24 animate-pulse rounded-full bg-gray-200" />;
-
   return (
-    <div
-      onClick={() => handleToggle(!isEnabled)}
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none ${
-        isEnabled
-          ? "bg-green-50 border-green-200 text-green-700"
-          : "bg-amber-50 border-amber-200 text-amber-700 animate-pulse outline outline-2 outline-amber-400/20"
-      }`}
-    >
-      <Checkbox
-        id="push-toggle-header"
-        checked={isEnabled}
-        onCheckedChange={() => {}} // Controlled by parent div click
-        className={`pointer-events-none ${isEnabled ? "border-green-400" : "border-amber-400"}`}
-      />
-      <Label
-        htmlFor="push-toggle-header"
-        className="flex items-center gap-1.5 text-xs font-bold pointer-events-none"
+    <Link to="/settings">
+      <div
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer select-none bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+        title="Go to Settings to enable notifications"
       >
-        {isEnabled ? (
-          <div className="relative">
-            <Bell className="h-3 w-3" />
-            {hasUnread && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
-                {unreadCount! > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </div>
-        ) : (
+        <div className="relative">
           <BellOff className="h-3 w-3" />
-        )}
-        <span className="hidden sm:inline">
-          {isEnabled ? "Alerts ON" : "Enable Alerts"}
-        </span>
-        <span className="sm:hidden">{isEnabled ? "ON" : "OFF"}</span>
-      </Label>
-    </div>
+          {hasUnread && (
+            <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+              {unreadCount! > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </div>
+        <span className="hidden sm:inline text-xs font-bold">Enable Alerts</span>
+        <span className="sm:hidden text-xs font-bold">Alerts</span>
+      </div>
+    </Link>
   );
 }
 
@@ -474,18 +383,3 @@ function MessageSkeleton() {
   );
 }
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = "";
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}

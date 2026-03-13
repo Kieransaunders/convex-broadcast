@@ -13,6 +13,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
 import { Route as AuthedFeedRouteImport } from './routes/_authed/feed'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
@@ -46,6 +47,11 @@ const AuthedRoute = AuthedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsNotificationsRoute = DocsNotificationsRouteImport.update({
+  id: '/docs/notifications',
+  path: '/docs/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/feed': typeof AuthedFeedRoute
   '/settings': typeof AuthedSettingsRoute
+  '/docs/notifications': typeof DocsNotificationsRoute
   '/dashboard': typeof AuthedAdminDashboardRoute
   '/system-settings': typeof AuthedAdminSystemSettingsRoute
   '/messages/$id': typeof AuthedMessagesIdRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/feed': typeof AuthedFeedRoute
   '/settings': typeof AuthedSettingsRoute
+  '/docs/notifications': typeof DocsNotificationsRoute
   '/dashboard': typeof AuthedAdminDashboardRoute
   '/system-settings': typeof AuthedAdminSystemSettingsRoute
   '/messages/$id': typeof AuthedMessagesIdRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
   '/_authed/feed': typeof AuthedFeedRoute
   '/_authed/settings': typeof AuthedSettingsRoute
+  '/docs/notifications': typeof DocsNotificationsRoute
   '/_authed/_admin/dashboard': typeof AuthedAdminDashboardRoute
   '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsRoute
   '/_authed/messages/$id': typeof AuthedMessagesIdRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/feed'
     | '/settings'
+    | '/docs/notifications'
     | '/dashboard'
     | '/system-settings'
     | '/messages/$id'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/feed'
     | '/settings'
+    | '/docs/notifications'
     | '/dashboard'
     | '/system-settings'
     | '/messages/$id'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authed/_admin'
     | '/_authed/feed'
     | '/_authed/settings'
+    | '/docs/notifications'
     | '/_authed/_admin/dashboard'
     | '/_authed/_admin/system-settings'
     | '/_authed/messages/$id'
@@ -253,6 +265,7 @@ export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  DocsNotificationsRoute: typeof DocsNotificationsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/notifications': {
+      id: '/docs/notifications'
+      path: '/docs/notifications'
+      fullPath: '/docs/notifications'
+      preLoaderRoute: typeof DocsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/settings': {
@@ -446,6 +466,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  DocsNotificationsRoute: DocsNotificationsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
