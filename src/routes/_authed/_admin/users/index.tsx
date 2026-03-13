@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
-import { Plus, Mail, User, Trash2, Loader2, Eye } from "lucide-react";
+import { Plus, Mail, User, Trash2, Loader2, Eye, Shield } from "lucide-react";
 import { useState } from "react";
 import { useConvex } from "convex/react";
 import { authClient } from "~/lib/auth-client";
@@ -103,6 +103,14 @@ function UsersPage() {
       router.navigate({ to: "/" });
     },
   });
+
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: "member" | "admin" | "super_admin" }) => {
+      return await convex.mutation(api.users.updateRole, { userId: userId as any, role });
+    },
+  });
+
+  const isSuperAdmin = currentUser?.role === "super_admin";
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -237,16 +245,42 @@ function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`${
-                          user.role === "admin" || user.role === "super_admin"
-                            ? "border-[#6366F1]/20 text-[#6366F1]"
-                            : "border-gray-200 text-gray-500"
-                        } capitalize`}
-                      >
-                        {user.role}
-                      </Badge>
+                      {isSuperAdmin && user._id !== currentUser?._id ? (
+                        <Select
+                          value={user.role}
+                          onValueChange={(value: "member" | "admin" | "super_admin") => {
+                            if (confirm(`Change ${user.name}'s role to ${value}?`)) {
+                              updateRoleMutation.mutate({ userId: user._id, role: value });
+                            }
+                          }}
+                          disabled={updateRoleMutation.isPending}
+                        >
+                          <SelectTrigger className={`w-[130px] h-8 text-xs capitalize ${
+                            user.role === "admin" || user.role === "super_admin"
+                              ? "border-[#6366F1]/20 text-[#6366F1]"
+                              : "border-gray-200 text-gray-500"
+                          }`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="member">Member</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="super_admin">Super Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className={`${
+                            user.role === "admin" || user.role === "super_admin"
+                              ? "border-[#6366F1]/20 text-[#6366F1]"
+                              : "border-gray-200 text-gray-500"
+                          } capitalize`}
+                        >
+                          {user.role === "super_admin" && <Shield className="h-3 w-3 mr-1" />}
+                          {user.role}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-[#1E1B4B]/60">
                       {new Date(user._creationTime).toLocaleDateString()}
