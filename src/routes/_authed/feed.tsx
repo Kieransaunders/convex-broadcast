@@ -1,6 +1,6 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMutation as useConvexMutation } from "convex/react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -38,18 +38,34 @@ function FeedPage() {
     refetch,
   } = useQuery(convexQuery(api.messages.feed, { filter: filter === "all" ? undefined : filter }));
   
+  const convex = useConvex();
+  
   // User query can load in parallel - only needed for admin check
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
-  const markAllAsRead = useConvexMutation(api.messages.markAllAsRead, {
+  
+  // Use TanStack Query's useMutation for proper cache invalidation
+  const markAllAsRead = useMutation({
+    mutationFn: async () => {
+      return await convex.mutation(api.messages.markAllAsRead, {});
+    },
     onSuccess: () => {
-      // Invalidate the feed query to refresh the messages
+      // Invalidate feed queries to refresh messages
+      queryClient.invalidateQueries({ queryKey: ["messages.feed"] });
       queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
-  const deleteMyDelivery = useConvexMutation(api.messages.deleteMyDelivery);
-  const [markingAll, setMarkingAll] = useState(false);
+  
+  const deleteMyDelivery = useMutation({
+    mutationFn: async (messageId: string) => {
+      return await convex.mutation(api.messages.deleteMyDelivery, { messageId: messageId as any });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages.feed"] });
+    },
+  });
+  
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Calculate unread count (from all messages, not filtered)
@@ -63,8 +79,7 @@ function FeedPage() {
     if (!confirm("Delete this message from your feed?")) return;
     setDeletingId(messageId);
     try {
-      await deleteMyDelivery({ messageId: messageId as any });
-      refetch();
+      await deleteMyDelivery.mutateAsync(messageId);
     } catch (err) {
       console.error("Failed to delete message:", err);
     } finally {
@@ -186,16 +201,11 @@ function FeedPage() {
                 size="sm"
                 className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
                 onClick={async () => {
-                  setMarkingAll(true);
-                  try {
-                    await markAllAsRead();
-                  } finally {
-                    setMarkingAll(false);
-                  }
+                  await markAllAsRead.mutateAsync();
                 }}
-                disabled={markingAll}
+                disabled={markAllAsRead.isPending}
               >
-                {markingAll ? (
+                {markAllAsRead.isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <CheckCheck className="mr-2 h-4 w-4" />
@@ -262,14 +272,26 @@ function FeedPage() {
 }
 
 function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCount?: number }) {
+  const convex = useConvex();
   const { data: subscription, isLoading } = useQuery(
     convexQuery(api.push.getMySubscription, userId ? {} : "skip"),
   );
   const { data: vapidKey } = useQuery(
     convexQuery(api.push.getVapidPublicKey, {}),
   );
-  const subscribe = useConvexMutation(api.push.subscribe);
-  const unsubscribe = useConvexMutation(api.push.unsubscribe);
+  
+  const subscribe = useMutation({
+    mutationFn: async (data: { endpoint: string; p256dh: string; auth: string; preference: "all" | "urgent" | "none" }) => {
+      return await convex.mutation(api.push.subscribe, data);
+    },
+  });
+  
+  const unsubscribe = useMutation({
+    mutationFn: async (data: { endpoint: string }) => {
+      return await convex.mutation(api.push.unsubscribe, data);
+    },
+  });
+  
   const isEnabled = !!subscription;
   const hasUnread = (unreadCount ?? 0) > 0;
 
@@ -292,7 +314,7 @@ function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCo
             applicationServerKey: urlBase64ToUint8Array(key) as BufferSource,
           });
 
-          await subscribe({
+          await subscribe.mutateAsync({
             endpoint: pushSubscription.endpoint,
             p256dh: arrayBufferToBase64(pushSubscription.getKey("p256dh")!),
             auth: arrayBufferToBase64(pushSubscription.getKey("auth")!),
@@ -309,7 +331,7 @@ function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCo
         const pushSubscription =
           await registration.pushManager.getSubscription();
         if (pushSubscription) {
-          await unsubscribe({ endpoint: pushSubscription.endpoint });
+          await unsubscribe.mutateAsync({ endpoint: pushSubscription.endpoint });
           await pushSubscription.unsubscribe();
         }
       } catch (err) {
