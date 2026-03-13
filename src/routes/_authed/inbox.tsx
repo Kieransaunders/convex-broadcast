@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Settings, Bell, BellOff, Loader2, CheckCheck, Inbox, Mail, MailOpen, Trash2 } from "lucide-react";
+import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Trash2 } from "lucide-react";
+import { useConvex } from "convex/react";
 import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
@@ -83,15 +84,6 @@ function InboxPage() {
       setDeletingId(null);
     }
   };
-
-  // Update PWA app badge
-  useEffect(() => {
-    if ("setAppBadge" in navigator && unreadCount > 0) {
-      navigator.setAppBadge(unreadCount);
-    } else if ("clearAppBadge" in navigator) {
-      navigator.clearAppBadge();
-    }
-  }, [unreadCount]);
 
   useEffect(() => {
     if (messagesError) {
