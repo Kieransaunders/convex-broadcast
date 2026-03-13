@@ -103,9 +103,10 @@ function FeedPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="hidden border-[#6366F1] text-[#6366F1] sm:inline-flex"
+                  className="border-[#6366F1] text-[#6366F1]"
                 >
-                  Admin Dashboard
+                  <span className="hidden sm:inline">Admin Dashboard</span>
+                  <span className="sm:hidden">Admin</span>
                 </Button>
               </Link>
             )}
