@@ -56,6 +56,9 @@ export const authComponent: ReturnType<
           createdAt: Date.now(),
         });
         await authComponent.setUserId(ctx, authUser._id, userId);
+        
+        // Synchronize role to Better Auth user record for admin plugin
+        await ctx.db.patch(authUser._id, { role });
       },
       onDelete: async (ctx, authUser) => {
         const user = await ctx.db.get(authUser.userId as Id<"users">);
@@ -74,7 +77,17 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     database: authComponent.adapter(ctx),
     emailAndPassword: { enabled: true },
     account: { accountLinking: { enabled: true } },
-    plugins: [convex({ authConfig }), admin()],
+    plugins: [
+      convex({ authConfig }), 
+      admin({
+        ac: (ac) => ({
+          super_admin: {
+            ...ac.admin.statements,
+            user: ["impersonate-admins", ...ac.admin.statements.user],
+          }
+        })
+      })
+    ],
   }) satisfies BetterAuthOptions;
 
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
