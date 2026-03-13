@@ -90,21 +90,29 @@ function FeedPage() {
                 ? messagesError.message
                 : "Failed to load your feed."}
             </p>
-            <Button
-              onClick={() => {
-                authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      window.location.href = "/sign-in";
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={() => refetch()}
+                className="bg-[#6366F1] text-white hover:bg-[#6366F1]/90"
+              >
+                Retry Loading Feed
+              </Button>
+              <Button
+                onClick={() => {
+                  authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        window.location.href = "/sign-in";
+                      },
                     },
-                  },
-                });
-              }}
-              variant="outline"
-              className="border-red-300 text-red-700"
-            >
-              Sign Out & Restart
-            </Button>
+                  });
+                }}
+                variant="outline"
+                className="border-red-300 text-red-700"
+              >
+                Sign Out & Restart
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

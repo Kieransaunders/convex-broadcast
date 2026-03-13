@@ -60,11 +60,15 @@ function AdminLayout() {
   const { data: settings } = useQuery(
     convexQuery(api.settings.getSet, { keys: ["app_name"] }),
   );
+  const { data: messages } = useQuery(
+    convexQuery(api.messages.feed, {}),
+  );
   const appName = (settings as any)?.app_name || "Org Comms";
 
   const isAdmin = Boolean(
     user && (user.role === "admin" || user.role === "super_admin"),
   );
+  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {
@@ -176,7 +180,7 @@ function AdminLayout() {
         <main className="flex-1 overflow-auto p-6 pb-24 sm:pb-6">
           <Outlet />
         </main>
-        <MobileBottomNav isAdmin={true} />
+        <MobileBottomNav isAdmin={true} unreadCount={unreadCount} />
       </div>
     </SidebarProvider>
   );

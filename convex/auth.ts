@@ -81,11 +81,20 @@ export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth(createAuthOptions(ctx));
 
 export const getUser = async (ctx: QueryCtx) => {
-  const authUser = await authComponent.safeGetAuthUser(ctx);
-  if (!authUser) throw new ConvexError("Unauthenticated");
-  const user = await ctx.db.get(authUser.userId as Id<"users">);
-  if (!user) throw new ConvexError("User not found");
-  return user;
+  try {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) throw new ConvexError("Unauthenticated");
+    if (!authUser.userId) {
+      throw new ConvexError("User session found but not linked to a project user record");
+    }
+    const user = await ctx.db.get(authUser.userId as Id<"users">);
+    if (!user) throw new ConvexError("User not found in project database");
+    return user;
+  } catch (error) {
+    if (error instanceof ConvexError) throw error;
+    console.error("Auth error:", error);
+    throw new ConvexError("Authentication system error");
+  }
 };
 
 export const getAdminUser = async (ctx: QueryCtx) => {

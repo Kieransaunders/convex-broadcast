@@ -398,6 +398,7 @@ export const feed = query({
   },
   handler: async (ctx, args) => {
     const user = await getUser(ctx);
+    if (!user) return []; // Safety check, though getUser should throw
     let deliveries = await ctx.db
       .query("deliveries")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
