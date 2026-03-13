@@ -38,11 +38,11 @@ function MessageDetailPage() {
   useAppBadge(unreadCount);
 
   const handleDelete = async () => {
-    if (!confirm("Delete this message from your feed?")) return;
+    if (!confirm("Delete this message from your inbox?")) return;
     setIsDeleting(true);
     try {
       await deleteMyDelivery({ messageId: id as any });
-      navigate({ to: "/feed" });
+      navigate({ to: "/inbox" });
     } catch (err) {
       console.error("Failed to delete message:", err);
       setIsDeleting(false);
@@ -70,7 +70,7 @@ function MessageDetailPage() {
       <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center">
-            <Link to="/feed">
+            <Link to="/inbox">
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="h-5 w-5" />
               </Button>

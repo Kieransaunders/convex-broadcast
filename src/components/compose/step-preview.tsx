@@ -78,7 +78,7 @@ export function StepPreview({
 
   return (
     <div className="space-y-6">
-      {/* Message preview — styled like member feed card */}
+      {/* Message preview — styled like member inbox card */}
       <div>
         <p className="text-sm font-medium text-[#1E1B4B]/60 mb-3">
           Message preview (as members will see it)

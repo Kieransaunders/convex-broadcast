@@ -76,7 +76,7 @@ function AdminLayout() {
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {
-      router.navigate({ to: "/feed", search: { notice: "admin_only" } });
+      router.navigate({ to: "/inbox", search: { notice: "admin_only" } });
     }
   }, [isAdmin, isLoading, router]);
 
@@ -100,7 +100,7 @@ function AdminLayout() {
             super admin accounts.
           </p>
           <p className="mt-1 text-sm text-[#1E1B4B]/70">
-            Redirecting you to your feed now.
+            Redirecting you to your inbox now.
           </p>
         </div>
       </div>

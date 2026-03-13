@@ -52,7 +52,7 @@ function SignUpPage() {
         setSuccess(true);
         setTimeout(() => {
           router.invalidate();
-          router.navigate({ to: "/feed" });
+          router.navigate({ to: "/inbox" });
         }, 1500);
       }
     } catch {
@@ -85,7 +85,7 @@ function SignUpPage() {
             <h3 className="text-lg font-semibold text-[#1E1B4B]">
               Account created!
             </h3>
-            <p className="text-[#1E1B4B]/60">Redirecting you to your feed...</p>
+            <p className="text-[#1E1B4B]/60">Redirecting you to your messages...</p>
           </CardContent>
         </Card>
       </div>

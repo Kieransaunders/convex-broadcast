@@ -205,7 +205,7 @@ export function StepDelivery({ form }: StepDeliveryProps) {
                     </p>
                     <p className="text-sm text-[#1E1B4B]/60 mt-0.5">
                       Send push notifications to members' devices in addition to
-                      the in-app feed.
+                      the in-app inbox.
                     </p>
                   </div>
                 </div>

@@ -131,7 +131,7 @@ function SettingsPage() {
     <div className="min-h-screen bg-[#F5F3FF]">
       <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center px-4">
-          <Link to="/feed">
+          <Link to="/inbox">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-5 w-5" />
             </Button>

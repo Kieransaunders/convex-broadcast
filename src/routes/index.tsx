@@ -256,7 +256,7 @@ function LandingPage() {
                 REQUIRED FOR PUSH
               </div>
               <p className="text-sm text-[#1E1B4B]/70">
-                On the Feed page, click <strong>"Enable Alerts"</strong> to grant push permissions in your browser.{" "}
+                On the Messages page, click <strong>"Enable Alerts"</strong> to grant push permissions in your browser.{" "}
                 <Link to="/docs/notifications" className="text-[#6366F1] underline hover:text-[#6366F1]/80">
                   Why this is needed.
                 </Link>

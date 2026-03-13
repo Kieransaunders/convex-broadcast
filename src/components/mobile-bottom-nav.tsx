@@ -13,10 +13,10 @@ export function MobileBottomNav({ isAdmin, unreadCount }: MobileBottomNavProps) 
 
   const navItems = [
     {
-      to: "/feed",
-      label: "Feed",
+      to: "/inbox",
+      label: "Messages",
       icon: Home,
-      active: currentPath === "/feed" || currentPath.startsWith("/messages/"),
+      active: currentPath === "/inbox" || currentPath.startsWith("/messages/"),
     },
     {
       to: "/settings",
@@ -56,7 +56,7 @@ export function MobileBottomNav({ isAdmin, unreadCount }: MobileBottomNavProps) 
           >
             <div className="relative">
               <item.icon className="h-5 w-5" />
-              {item.to === "/feed" && unreadCount ? (
+              {item.to === "/inbox" && unreadCount ? (
                 <span className="absolute -right-2 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>

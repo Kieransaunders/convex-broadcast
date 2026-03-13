@@ -13,21 +13,21 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { cn } from "~/lib/utils";
 
-export const Route = createFileRoute("/_authed/feed")({
-  component: FeedPage,
+export const Route = createFileRoute("/_authed/inbox")({
+  component: InboxPage,
 });
 
-const routeApi = getRouteApi("/_authed/feed");
+const routeApi = getRouteApi("/_authed/inbox");
 
 type FilterType = "all" | "unread" | "read";
 
-function FeedPage() {
+function InboxPage() {
   const queryClient = useQueryClient();
   const search = routeApi.useSearch();
   const notice = (search as { notice?: string }).notice;
   const [filter, setFilter] = useState<FilterType>("all");
   
-  // Fetch feed with filter
+  // Fetch inbox with filter
   const {
     data: messages,
     isLoading: messagesLoading,
@@ -48,7 +48,7 @@ function FeedPage() {
       return await convex.mutation(api.messages.markAllAsRead, {});
     },
     onSuccess: () => {
-      // Invalidate all feed queries (with any filter)
+      // Invalidate all inbox queries
       queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
@@ -58,7 +58,7 @@ function FeedPage() {
       return await convex.mutation(api.messages.deleteMyDelivery, { messageId: messageId as any });
     },
     onSuccess: () => {
-      // Invalidate all feed queries (with any filter)
+      // Invalidate all inbox queries
       queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
@@ -95,7 +95,7 @@ function FeedPage() {
 
   useEffect(() => {
     if (messagesError) {
-      console.error("Feed Query Error:", messagesError);
+      console.error("Inbox Query Error:", messagesError);
     }
   }, [messagesError]);
 
@@ -110,14 +110,14 @@ function FeedPage() {
             <p className="text-sm text-red-800 mb-4">
               {messagesError instanceof Error
                 ? messagesError.message
-                : "Failed to load your feed."}
+                : "Failed to load your messages."}
             </p>
             <div className="flex flex-col gap-2">
               <Button
                 onClick={() => refetch()}
                 className="bg-[#6366F1] text-white hover:bg-[#6366F1]/90"
               >
-                Retry Loading Feed
+                Retry Loading Messages
               </Button>
               <Button
                 onClick={() => {
@@ -148,7 +148,7 @@ function FeedPage() {
       <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-[#1E1B4B]">Org Comms</h1>
+            <h1 className="text-xl font-bold text-[#1E1B4B]">Messages</h1>
             {isAdmin && (
               <Link to="/dashboard">
                 <Button
@@ -183,7 +183,7 @@ function FeedPage() {
           <Card className="mb-4 border-amber-200 bg-amber-50">
             <CardContent className="p-4 text-sm text-amber-900">
               Admin access is only available to admin or super admin accounts.
-              You are signed in successfully, and this is your member feed.
+              You are signed in successfully, and this is your message inbox.
             </CardContent>
           </Card>
         )}
@@ -350,7 +350,7 @@ function MessageCard({
         }}
         disabled={isDeleting}
         className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-600 hover:bg-red-50"
-        title="Delete from my feed"
+        title="Delete from my messages"
       >
         {isDeleting ? (
           <Loader2 className="h-4 w-4 animate-spin" />

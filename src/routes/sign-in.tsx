@@ -49,7 +49,7 @@ function SignInPage() {
         if (role === "admin" || role === "super_admin") {
           router.navigate({ to: "/dashboard" });
         } else {
-          router.navigate({ to: "/feed" });
+          router.navigate({ to: "/inbox" });
         }
       }
     } catch {

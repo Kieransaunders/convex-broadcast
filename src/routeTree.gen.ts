@@ -15,7 +15,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
-import { Route as AuthedFeedRouteImport } from './routes/_authed/feed'
+import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedMessagesIdRouteImport } from './routes/_authed/messages.$id'
@@ -59,9 +59,9 @@ const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedFeedRoute = AuthedFeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
+const AuthedInboxRoute = AuthedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedAdminRoute = AuthedAdminRouteImport.update({
@@ -136,7 +136,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/feed': typeof AuthedFeedRoute
+  '/inbox': typeof AuthedInboxRoute
   '/settings': typeof AuthedSettingsRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/dashboard': typeof AuthedAdminDashboardRoute
@@ -156,7 +156,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/feed': typeof AuthedFeedRoute
+  '/inbox': typeof AuthedInboxRoute
   '/settings': typeof AuthedSettingsRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/dashboard': typeof AuthedAdminDashboardRoute
@@ -179,7 +179,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
-  '/_authed/feed': typeof AuthedFeedRoute
+  '/_authed/inbox': typeof AuthedInboxRoute
   '/_authed/settings': typeof AuthedSettingsRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/_authed/_admin/dashboard': typeof AuthedAdminDashboardRoute
@@ -201,7 +201,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/feed'
+    | '/inbox'
     | '/settings'
     | '/docs/notifications'
     | '/dashboard'
@@ -221,7 +221,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/feed'
+    | '/inbox'
     | '/settings'
     | '/docs/notifications'
     | '/dashboard'
@@ -243,7 +243,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/_authed/_admin'
-    | '/_authed/feed'
+    | '/_authed/inbox'
     | '/_authed/settings'
     | '/docs/notifications'
     | '/_authed/_admin/dashboard'
@@ -313,11 +313,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/feed': {
-      id: '/_authed/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof AuthedFeedRouteImport
+    '/_authed/inbox': {
+      id: '/_authed/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthedInboxRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/_admin': {
@@ -446,14 +446,14 @@ const AuthedAdminRouteWithChildren = AuthedAdminRoute._addFileChildren(
 
 interface AuthedRouteChildren {
   AuthedAdminRoute: typeof AuthedAdminRouteWithChildren
-  AuthedFeedRoute: typeof AuthedFeedRoute
+  AuthedInboxRoute: typeof AuthedInboxRoute
   AuthedSettingsRoute: typeof AuthedSettingsRoute
   AuthedMessagesIdRoute: typeof AuthedMessagesIdRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAdminRoute: AuthedAdminRouteWithChildren,
-  AuthedFeedRoute: AuthedFeedRoute,
+  AuthedInboxRoute: AuthedInboxRoute,
   AuthedSettingsRoute: AuthedSettingsRoute,
   AuthedMessagesIdRoute: AuthedMessagesIdRoute,
 }
