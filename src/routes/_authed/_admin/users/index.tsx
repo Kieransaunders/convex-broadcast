@@ -111,7 +111,7 @@ function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-[#1E1B4B]">Users</h1>
           <p className="text-[#1E1B4B]/60 mt-1">
@@ -191,8 +191,8 @@ function UsersPage() {
         </Dialog>
       </div>
 
-      <div className="rounded-md border border-[#6366F1]/10 bg-white">
-        <Table>
+      <div className="rounded-md border border-[#6366F1]/10 bg-white overflow-x-auto">
+        <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
               <TableHead className="text-[#1E1B4B]/60">User</TableHead>

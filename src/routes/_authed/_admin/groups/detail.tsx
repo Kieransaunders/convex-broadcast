@@ -448,7 +448,7 @@ function GroupDetailPage() {
             </DialogContent>
           </Dialog>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           {membersLoading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
@@ -459,7 +459,7 @@ function GroupDetailPage() {
               ))}
             </div>
           ) : members && members.length > 0 ? (
-            <Table>
+            <Table className="min-w-[500px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-[#1E1B4B]/60">Member</TableHead>
