@@ -1,14 +1,9 @@
 import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-
-const getAuthToken = createServerFn({ method: "GET" }).handler(async () => {
-  const { getToken } = await import("~/lib/auth-server");
-  return await getToken();
-});
 
 export const Route = createFileRoute("/_authed")({
-  beforeLoad: async ({ location }) => {
-    const token = await getAuthToken();
+  beforeLoad: async ({ location, context }) => {
+    // Token is already fetched in __root.tsx beforeLoad — reuse it
+    const token = (context as any).token;
     if (!token)
       throw redirect({ to: "/sign-in", search: { redirect: location.href } });
   },

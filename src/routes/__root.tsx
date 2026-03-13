@@ -46,6 +46,19 @@ export const Route = createRootRouteWithContext<{
       },
     ],
     links: [
+      {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap",
+      },
       { rel: "stylesheet", href: appCss },
       {
         rel: "apple-touch-icon",
@@ -79,6 +92,15 @@ function RootComponent() {
     convexQuery(api.settings.getSet, { keys: ["app_name"] }),
   );
   const appName = (settings as any)?.app_name || "Org Comms";
+
+  // Dismiss loading screen once app is hydrated
+  useEffect(() => {
+    const loader = document.getElementById("app-loading");
+    if (loader) {
+      loader.style.opacity = "0";
+      setTimeout(() => loader.remove(), 200);
+    }
+  }, []);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -121,7 +143,36 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body style={{ backgroundColor: "#f5f3ff", margin: 0 }}>
+        <div
+          id="app-loading"
+          style={{
+            position: "fixed",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#f5f3ff",
+            zIndex: 9999,
+            transition: "opacity 0.2s ease-out",
+          }}
+        >
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              border: "3px solid #e0e0ef",
+              borderTopColor: "#6366f1",
+              borderRadius: "50%",
+              animation: "spin 0.6s linear infinite",
+            }}
+          />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: "@keyframes spin{to{transform:rotate(360deg)}}",
+            }}
+          />
+        </div>
         {children}
         <Scripts />
       </body>
