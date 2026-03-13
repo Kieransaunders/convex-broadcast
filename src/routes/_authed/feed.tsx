@@ -48,8 +48,7 @@ function FeedPage() {
       return await convex.mutation(api.messages.markAllAsRead, {});
     },
     onSuccess: () => {
-      // Invalidate feed queries to refresh messages
-      queryClient.invalidateQueries({ queryKey: ["messages.feed"] });
+      // Invalidate all feed queries (with any filter)
       queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
@@ -59,7 +58,8 @@ function FeedPage() {
       return await convex.mutation(api.messages.deleteMyDelivery, { messageId: messageId as any });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["messages.feed"] });
+      // Invalidate all feed queries (with any filter)
+      queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
   
