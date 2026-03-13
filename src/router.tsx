@@ -27,10 +27,11 @@ export function getRouter() {
   const router = routerWithQueryClient(
     createRouter({
       routeTree,
-      defaultPreload: false,
+      defaultPreload: 'intent', // Preload routes on hover/focus for instant navigation
+      defaultPreloadDelay: 100, // Small delay to avoid unnecessary preloads
       context: { queryClient, convexQueryClient },
       scrollRestoration: true,
-      defaultPreloadStaleTime: 0, // Let React Query handle all caching
+      defaultPreloadStaleTime: 30_000, // 30 second stale time for preloads
       defaultErrorComponent: (err) => <p>{err.error.stack}</p>,
       defaultNotFoundComponent: () => <p>not found</p>,
       Wrap: ({ children }) => (

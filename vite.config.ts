@@ -20,6 +20,22 @@ export default defineConfig(({ mode }) => {
       tanstackStart(),
       viteReact(),
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // Only chunk node_modules, not source files
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+              if (id.includes('@tanstack/react-router')) return 'router';
+              if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query-core')) return 'query';
+              if (id.includes('convex') || id.includes('@convex-dev')) return 'convex';
+              if (id.includes('lucide-react')) return 'icons';
+            }
+          },
+        },
+      },
+    },
     define: {
       "process.env.CONVEX_URL": JSON.stringify(
         env.CONVEX_URL ?? env.VITE_CONVEX_URL,
