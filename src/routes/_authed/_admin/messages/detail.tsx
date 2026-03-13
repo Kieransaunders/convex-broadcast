@@ -1,4 +1,4 @@
-import { createFileRoute, useSearch, Link } from "@tanstack/react-router";
+import { createFileRoute, useSearch, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../../../convex/_generated/api.js";
@@ -22,8 +22,10 @@ import {
   AlertCircle,
   MessageSquare,
   BarChart3,
+  ShieldAlert,
 } from "lucide-react";
 import { useConvex } from "convex/react";
+import { useState } from "react";
 import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 type SearchParams = {
@@ -104,6 +106,8 @@ export const Route = createFileRoute("/_authed/_admin/messages/detail")({
 function MessageDetailPage() {
   const { id } = useSearch({ from: "/_authed/_admin/messages/detail" });
   const convex = useConvex();
+  const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: message, isLoading } = useQuery(
     convexQuery(api.messages.getById, { id: id as Id<"messages"> }),
@@ -114,6 +118,9 @@ function MessageDetailPage() {
     }),
     enabled: message?.status === "sent",
   });
+  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
+
+  const isSuperAdmin = user?.role === "super_admin";
 
   const sendMutation = useMutation({
     mutationFn: async () => {
@@ -122,6 +129,43 @@ function MessageDetailPage() {
       });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (message?.status === "draft") {
+        return await convex.mutation(api.messages.deleteDraft, {
+          id: id as Id<"messages">,
+        });
+      } else {
+        // For sent/scheduled messages, only super admin can delete
+        return await convex.mutation(api.messages.deleteMessage, {
+          id: id as Id<"messages">,
+        });
+      }
+    },
+    onSuccess: () => {
+      navigate({ to: "/messages" });
+    },
+    onError: (error) => {
+      setIsDeleting(false);
+      alert(error.message);
+    },
+  });
+
+  const handleDelete = () => {
+    const isSent = message?.status === "sent" || message?.status === "scheduled";
+    if (isSent && !isSuperAdmin) {
+      alert("Only super admins can delete sent or scheduled messages.");
+      return;
+    }
+    const confirmMessage = isSent
+      ? "WARNING: This will delete this message for ALL users. This action cannot be undone. Are you sure?"
+      : "Delete this draft message?";
+    if (confirm(confirmMessage)) {
+      setIsDeleting(true);
+      deleteMutation.mutate();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -404,10 +448,19 @@ function MessageDetailPage() {
 
               <Button
                 variant="outline"
-                className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 justify-start"
+                onClick={handleDelete}
+                disabled={isDeleting || (message.status !== "draft" && !isSuperAdmin)}
+                className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
+                title={message.status !== "draft" && !isSuperAdmin ? "Only super admins can delete sent messages" : ""}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete Message
+                {isDeleting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : message.status !== "draft" ? (
+                  <ShieldAlert className="mr-2 h-4 w-4" />
+                ) : (
+                  <Trash2 className="mr-2 h-4 w-4" />
+                )}
+                {message.status !== "draft" ? "Delete for All" : "Delete Message"}
               </Button>
             </CardContent>
           </Card>

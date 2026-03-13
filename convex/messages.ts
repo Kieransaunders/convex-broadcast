@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getAdminUser, getUser } from "./auth";
+import { getAdminUser, getUser, getSuperAdminUser } from "./auth";
 import type { Id } from "./_generated/dataModel";
 import { ConvexError } from "convex/values";
 
@@ -151,6 +151,57 @@ export const deleteDraft = mutation({
       await ctx.db.delete(target._id);
     }
     await ctx.db.delete(args.id);
+  },
+});
+
+// Admin: Delete any message (sent or draft) - removes from all users
+export const deleteMessage = mutation({
+  args: { id: v.id("messages") },
+  handler: async (ctx, args) => {
+    await getSuperAdminUser(ctx);
+    const message = await ctx.db.get(args.id);
+    if (!message) throw new ConvexError("Message not found");
+
+    // Delete all delivery records for this message
+    const deliveries = await ctx.db
+      .query("deliveries")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
+      .collect();
+    for (const delivery of deliveries) {
+      await ctx.db.delete(delivery._id);
+    }
+
+    // Delete all message targets
+    const targets = await ctx.db
+      .query("messageTargets")
+      .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
+      .collect();
+    for (const target of targets) {
+      await ctx.db.delete(target._id);
+    }
+
+    // Delete the message itself
+    await ctx.db.delete(args.id);
+  },
+});
+
+// User: Delete a message from their own feed (removes delivery record)
+export const deleteMyDelivery = mutation({
+  args: { messageId: v.id("messages") },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    
+    // Find the user's delivery record for this message
+    const delivery = await ctx.db
+      .query("deliveries")
+      .withIndex("by_userId_messageId", (q) =>
+        q.eq("userId", user._id).eq("messageId", args.messageId)
+      )
+      .unique();
+    
+    if (delivery) {
+      await ctx.db.delete(delivery._id);
+    }
   },
 });
 
@@ -315,14 +366,23 @@ export const executeSend = internalMutation({
 // --- Member Feed ---
 
 export const feed = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    filter: v.optional(v.union(v.literal("all"), v.literal("read"), v.literal("unread"))),
+  },
+  handler: async (ctx, args) => {
     const user = await getUser(ctx);
-    const deliveries = await ctx.db
+    let deliveries = await ctx.db
       .query("deliveries")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .order("desc")
       .take(50);
+
+    // Apply read/unread filter
+    if (args.filter === "read") {
+      deliveries = deliveries.filter((d) => d.readAt !== undefined);
+    } else if (args.filter === "unread") {
+      deliveries = deliveries.filter((d) => d.readAt === undefined);
+    }
 
     // Fetch messages using Promise.all - while this is N queries, each is a
     // fast primary key lookup (db.get). Convex automatically batches these

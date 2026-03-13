@@ -37,6 +37,7 @@ import {
   Settings,
 } from "lucide-react";
 import { authClient } from "~/lib/auth-client";
+import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -172,9 +173,10 @@ function AdminLayout() {
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 pb-24 sm:pb-6">
           <Outlet />
         </main>
+        <MobileBottomNav isAdmin={true} />
       </div>
     </SidebarProvider>
   );

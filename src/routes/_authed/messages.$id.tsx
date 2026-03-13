@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
@@ -6,9 +6,9 @@ import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed/messages/$id")({
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authed/messages/$id")({
 
 function MessageDetailPage() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const { data: message } = useQuery(
     convexQuery(api.messages.getById, { id: id as any }),
   );
@@ -26,9 +27,23 @@ function MessageDetailPage() {
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
   const markRead = useMutation(api.messages.markRead);
+  const deleteMyDelivery = useMutation(api.messages.deleteMyDelivery);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  const handleDelete = async () => {
+    if (!confirm("Delete this message from your feed?")) return;
+    setIsDeleting(true);
+    try {
+      await deleteMyDelivery({ messageId: id as any });
+      navigate({ to: "/feed" });
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+      setIsDeleting(false);
+    }
+  };
 
   // Auto-mark as read when viewing
   useEffect(() => {
@@ -49,13 +64,29 @@ function MessageDetailPage() {
   return (
     <div className="min-h-screen bg-[#F5F3FF]">
       <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto flex h-16 items-center px-4">
-          <Link to="/feed">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <h1 className="ml-2 text-lg font-semibold text-[#1E1B4B]">Message</h1>
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <div className="flex items-center">
+            <Link to="/feed">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            </Link>
+            <h1 className="ml-2 text-lg font-semibold text-[#1E1B4B]">Message</h1>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-gray-500 hover:text-red-600 hover:bg-red-50"
+          >
+            {isDeleting ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-1" />
+            )}
+            Delete
+          </Button>
         </div>
       </header>
       <main className="container mx-auto max-w-2xl px-4 py-6 pb-24 sm:pb-6">

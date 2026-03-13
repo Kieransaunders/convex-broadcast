@@ -8,10 +8,11 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
-import { Settings, Bell, BellOff, Loader2, CheckCheck } from "lucide-react";
+import { Settings, Bell, BellOff, Loader2, CheckCheck, Inbox, Mail, MailOpen, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
+import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/_authed/feed")({
   component: FeedPage,
@@ -19,26 +20,46 @@ export const Route = createFileRoute("/_authed/feed")({
 
 const routeApi = getRouteApi("/_authed/feed");
 
+type FilterType = "all" | "unread" | "read";
+
 function FeedPage() {
   const search = routeApi.useSearch();
   const notice = (search as { notice?: string }).notice;
-  // Fetch feed immediately - don't wait for user query
-  // The feed query handles authentication internally via getUser(ctx)
+  const [filter, setFilter] = useState<FilterType>("all");
+  
+  // Fetch feed with filter
   const {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
-  } = useQuery(convexQuery(api.messages.feed, {}));
+    refetch,
+  } = useQuery(convexQuery(api.messages.feed, { filter: filter === "all" ? undefined : filter }));
   
   // User query can load in parallel - only needed for admin check
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
   const markAllAsRead = useConvexMutation(api.messages.markAllAsRead);
+  const deleteMyDelivery = useConvexMutation(api.messages.deleteMyDelivery);
   const [markingAll, setMarkingAll] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Calculate unread count
-  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+  // Calculate unread count (from all messages, not filtered)
+  const { data: allMessages } = useQuery(convexQuery(api.messages.feed, {}));
+  const unreadCount = allMessages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!confirm("Delete this message from your feed?")) return;
+    setDeletingId(messageId);
+    try {
+      await deleteMyDelivery({ messageId: messageId as any });
+      refetch();
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // Update PWA app badge
   useEffect(() => {
@@ -141,33 +162,59 @@ function FeedPage() {
             </CardContent>
           </Card>
         )}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#1E1B4B]">
-            Your Messages
-          </h2>
-          {unreadCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
-              onClick={async () => {
-                setMarkingAll(true);
-                try {
-                  await markAllAsRead();
-                } finally {
-                  setMarkingAll(false);
-                }
-              }}
-              disabled={markingAll}
-            >
-              {markingAll ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCheck className="mr-2 h-4 w-4" />
-              )}
-              Mark all as read
-            </Button>
-          )}
+        <div className="mb-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-[#1E1B4B]">
+              Your Messages
+            </h2>
+            {unreadCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
+                onClick={async () => {
+                  setMarkingAll(true);
+                  try {
+                    await markAllAsRead();
+                  } finally {
+                    setMarkingAll(false);
+                  }
+                }}
+                disabled={markingAll}
+              >
+                {markingAll ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCheck className="mr-2 h-4 w-4" />
+                )}
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          
+          {/* Filter tabs */}
+          <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+            {[
+              { key: "all" as const, label: "All", icon: Inbox },
+              { key: "unread" as const, label: "Unread", icon: Mail },
+              { key: "read" as const, label: "Read", icon: MailOpen },
+            ].map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setFilter(key)}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer",
+                  filter === key
+                    ? "bg-white text-[#1E1B4B] shadow-sm"
+                    : "text-[#1E1B4B]/50 hover:text-[#1E1B4B]/80"
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
         </div>
         <div className="space-y-4">
           {messages?.length === 0 && (
@@ -179,7 +226,12 @@ function FeedPage() {
             </Card>
           )}
           {messages?.map((msg: any) => (
-            <MessageCard key={msg._id} message={msg} />
+            <MessageCard 
+              key={msg._id} 
+              message={msg} 
+              onDelete={() => handleDeleteMessage(msg._id)}
+              isDeleting={deletingId === msg._id}
+            />
           ))}
         </div>
       </main>
@@ -288,7 +340,15 @@ function NotificationStatus({ userId, unreadCount }: { userId?: string; unreadCo
   );
 }
 
-function MessageCard({ message }: { message: any }) {
+function MessageCard({ 
+  message, 
+  onDelete,
+  isDeleting 
+}: { 
+  message: any; 
+  onDelete: () => void;
+  isDeleting: boolean;
+}) {
   const isUnread = !message.delivery?.readAt;
   const categoryColors: Record<string, string> = {
     notice: "bg-blue-100 text-blue-800",
@@ -298,31 +358,55 @@ function MessageCard({ message }: { message: any }) {
   };
 
   return (
-    <Link to="/messages/$id" params={{ id: message._id }}>
-      <Card
-        className={`transition-shadow hover:shadow-md ${isUnread ? "border-l-4 border-l-[#6366F1]" : ""}`}
-      >
-        <CardHeader className="pb-2">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              {isUnread && (
-                <span className="h-2 w-2 rounded-full bg-[#6366F1]" />
-              )}
-              <CardTitle className="text-base">{message.title}</CardTitle>
+    <div className="relative group">
+      <Link to="/messages/$id" params={{ id: message._id }}>
+        <Card
+          className={cn(
+            "transition-shadow hover:shadow-md",
+            isUnread ? "border-l-4 border-l-[#6366F1]" : ""
+          )}
+        >
+          <CardHeader className="pb-2">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2 pr-8">
+                {isUnread && (
+                  <span className="h-2 w-2 rounded-full bg-[#6366F1] flex-shrink-0" />
+                )}
+                <CardTitle className="text-base">{message.title}</CardTitle>
+              </div>
+              <Badge className={categoryColors[message.category] || ""}>
+                {message.category}
+              </Badge>
             </div>
-            <Badge className={categoryColors[message.category] || ""}>
-              {message.category}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="line-clamp-2 text-sm text-gray-600">{message.body}</p>
-          <p className="mt-2 text-xs text-gray-400">
-            {new Date(message.createdAt).toLocaleDateString()}
-          </p>
-        </CardContent>
-      </Card>
-    </Link>
+          </CardHeader>
+          <CardContent>
+            <p className="line-clamp-2 text-sm text-gray-600">{message.body}</p>
+            <p className="mt-2 text-xs text-gray-400">
+              {new Date(message.createdAt).toLocaleDateString()}
+            </p>
+          </CardContent>
+        </Card>
+      </Link>
+      {/* Delete button - positioned absolutely */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onDelete();
+        }}
+        disabled={isDeleting}
+        className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-600 hover:bg-red-50"
+        title="Delete from my feed"
+      >
+        {isDeleting ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Trash2 className="h-4 w-4" />
+        )}
+      </Button>
+    </div>
   );
 }
 
