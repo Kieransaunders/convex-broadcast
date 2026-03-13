@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { User, Bell, LogOut, ArrowLeft } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
+import { useAppBadge } from "~/hooks/use-app-badge";
 
 export const Route = createFileRoute("/_authed/settings")({
   component: SettingsPage,
@@ -33,6 +34,9 @@ function SettingsPage() {
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
   const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  // Update PWA app icon badge
+  useAppBadge(unreadCount);
 
   const [pushEnabled, setPushEnabled] = useState(false);
   const [preference, setPreference] = useState<"all" | "urgent" | "none">(

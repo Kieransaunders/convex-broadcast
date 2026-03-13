@@ -94,20 +94,37 @@ self.addEventListener("push", (event) => {
   }
 
   const url = data.url ?? "/feed";
+  const badgeCount = data.badgeCount ?? 0;
+
   event.waitUntil(
-    self.registration.showNotification(data.title ?? "New Message", {
-      body: data.body ?? "",
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
-      data: { url },
-      tag: url,
-      renotify: true,
-    }),
+    Promise.all([
+      // Show notification
+      self.registration.showNotification(data.title ?? "New Message", {
+        body: data.body ?? "",
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
+        data: { url },
+        tag: url,
+        renotify: true,
+      }),
+      // Update app badge if supported
+      badgeCount > 0 && "setAppBadge" in self.navigator
+        ? self.navigator.setAppBadge(badgeCount).catch(() => {})
+        : Promise.resolve(),
+    ]),
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? "/feed";
-  event.waitUntil(clients.openWindow(url));
+  event.waitUntil(
+    Promise.all([
+      clients.openWindow(url),
+      // Clear badge when user clicks notification
+      "clearAppBadge" in self.navigator
+        ? self.navigator.clearAppBadge().catch(() => {})
+        : Promise.resolve(),
+    ]),
+  );
 });

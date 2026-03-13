@@ -10,6 +10,7 @@ import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
+import { useAppBadge } from "~/hooks/use-app-badge";
 
 export const Route = createFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
@@ -32,6 +33,9 @@ function MessageDetailPage() {
   
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  // Update PWA app icon badge
+  useAppBadge(unreadCount);
 
   const handleDelete = async () => {
     if (!confirm("Delete this message from your feed?")) return;

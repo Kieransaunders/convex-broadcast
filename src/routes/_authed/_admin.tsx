@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
+import { useAppBadge } from "~/hooks/use-app-badge";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -69,6 +70,9 @@ function AdminLayout() {
     user && (user.role === "admin" || user.role === "super_admin"),
   );
   const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  // Update PWA app icon badge
+  useAppBadge(unreadCount);
 
   useEffect(() => {
     if (!isLoading && !isAdmin) {

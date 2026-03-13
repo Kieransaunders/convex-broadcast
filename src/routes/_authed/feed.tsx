@@ -1,5 +1,5 @@
 import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMutation as useConvexMutation } from "convex/react";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
@@ -13,6 +13,7 @@ import { Settings, Bell, BellOff, Loader2, CheckCheck, Inbox, Mail, MailOpen, Tr
 import { useEffect, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
+import { useAppBadge } from "~/hooks/use-app-badge";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/_authed/feed")({
@@ -24,6 +25,7 @@ const routeApi = getRouteApi("/_authed/feed");
 type FilterType = "all" | "unread" | "read";
 
 function FeedPage() {
+  const queryClient = useQueryClient();
   const search = routeApi.useSearch();
   const notice = (search as { notice?: string }).notice;
   const [filter, setFilter] = useState<FilterType>("all");
@@ -40,7 +42,12 @@ function FeedPage() {
   const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
-  const markAllAsRead = useConvexMutation(api.messages.markAllAsRead);
+  const markAllAsRead = useConvexMutation(api.messages.markAllAsRead, {
+    onSuccess: () => {
+      // Invalidate the feed query to refresh the messages
+      queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
+    },
+  });
   const deleteMyDelivery = useConvexMutation(api.messages.deleteMyDelivery);
   const [markingAll, setMarkingAll] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -48,6 +55,9 @@ function FeedPage() {
   // Calculate unread count (from all messages, not filtered)
   const { data: allMessages } = useQuery(convexQuery(api.messages.feed, {}));
   const unreadCount = allMessages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+
+  // Update PWA app icon badge
+  useAppBadge(unreadCount);
 
   const handleDeleteMessage = async (messageId: string) => {
     if (!confirm("Delete this message from your feed?")) return;

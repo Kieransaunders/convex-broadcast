@@ -43,6 +43,11 @@ export const sendPushForMessage = internalAction({
         userId: delivery.userId,
       });
 
+      // Get unread count for badge
+      const unreadCount = await ctx.runQuery(internal.push.getUserUnreadCount, {
+        userId: delivery.userId,
+      });
+
       let anySent = false;
 
       for (const sub of subs) {
@@ -61,6 +66,7 @@ export const sendPushForMessage = internalAction({
               title: message.title,
               body: message.body.substring(0, 200),
               url: `/messages/${args.messageId}`,
+              badgeCount: unreadCount,
             }),
           );
           anySent = true;
