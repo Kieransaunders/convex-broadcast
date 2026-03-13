@@ -4,6 +4,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import {
   Mail,
+  Lock,
   Bell,
   Users,
   Shield,
@@ -118,6 +119,54 @@ function LandingPage() {
               <Link to="/sign-in">Sign In</Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Demo Credentials Section */}
+      <section className="px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-lg">
+          <Card className="border-[#6366F1]/20 bg-white shadow-lg overflow-hidden">
+            <div className="bg-[#6366F1] px-6 py-3">
+              <div className="flex items-center gap-2 text-white">
+                <Zap className="h-4 w-4" />
+                <span className="text-sm font-semibold">Try the demo — test push notifications instantly</span>
+              </div>
+            </div>
+            <CardContent className="pt-5 pb-6">
+              <p className="text-sm text-[#1E1B4B]/60 mb-4">
+                Sign in with the demo admin account to send messages and test browser push notifications.
+              </p>
+              <div className="space-y-2 mb-5">
+                <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2.5">
+                  <Mail className="h-4 w-4 text-[#6366F1] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs text-[#1E1B4B]/50">Email</span>
+                    <p className="text-sm font-mono font-medium text-[#1E1B4B]">demo@orgcomms.test</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2.5">
+                  <Lock className="h-4 w-4 text-[#6366F1] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs text-[#1E1B4B]/50">Password</span>
+                    <p className="text-sm font-mono font-medium text-[#1E1B4B]">demopass123!</p>
+                  </div>
+                </div>
+              </div>
+              <Button
+                className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
+                size="lg"
+              >
+                <Link
+                  to="/sign-in"
+                  search={{ demo: true }}
+                  className="flex items-center justify-center w-full"
+                >
+                  Try Demo
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

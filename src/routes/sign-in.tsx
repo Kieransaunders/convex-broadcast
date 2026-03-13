@@ -14,13 +14,18 @@ import { authClient } from "~/lib/auth-client";
 import { Mail, Lock, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/sign-in")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: (search.redirect as string) ?? undefined,
+    demo: search.demo === true || search.demo === "true" ? true : undefined,
+  } as { redirect?: string; demo?: boolean }),
   component: SignInPage,
 });
 
 function SignInPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { demo } = Route.useSearch();
+  const [email, setEmail] = useState(demo ? "demo@orgcomms.test" : "");
+  const [password, setPassword] = useState(demo ? "demopass123!" : "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
