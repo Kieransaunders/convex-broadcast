@@ -8,6 +8,7 @@ import * as React from "react";
 import { useEffect } from "react";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { createServerFn } from "@tanstack/react-start";
+import { QueryClientProvider } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { authClient } from "~/lib/auth-client";
@@ -106,7 +107,7 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
-  const { convexQueryClient } = Route.useRouteContext();
+  const { queryClient, convexQueryClient } = Route.useRouteContext();
 
   // App name is loaded with a default - no blocking query needed
   // Settings can be loaded later by specific routes that need them
@@ -136,14 +137,16 @@ function RootComponent() {
 
   return (
     <RootDocument>
-      <ConvexBetterAuthProvider
-        client={convexQueryClient.convexClient}
-        authClient={authClient}
-      >
-        <Outlet />
-        <ImpersonationBanner />
-        <PWAInstallPrompt />
-      </ConvexBetterAuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <ConvexBetterAuthProvider
+          client={convexQueryClient.convexClient}
+          authClient={authClient}
+        >
+          <Outlet />
+          <ImpersonationBanner />
+          <PWAInstallPrompt />
+        </ConvexBetterAuthProvider>
+      </QueryClientProvider>
     </RootDocument>
   );
 }

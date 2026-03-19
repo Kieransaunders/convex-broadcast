@@ -94,7 +94,9 @@ const AuthedInboxRoute = AuthedInboxRouteImport.update({
 const AuthedAdminRoute = AuthedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthedRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/_authed/_admin.lazy').then((d) => d.Route),
+)
 const AuthedMessagesIdLazyRoute = AuthedMessagesIdLazyRouteImport.update({
   id: '/messages/$id',
   path: '/messages/$id',
