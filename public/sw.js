@@ -1,6 +1,6 @@
 const CACHE_NAME = "orgcomms-v2";
 // Precache critical routes for offline access
-const PRECACHE_URLS = ["/", "/feed", "/settings", "/sign-in"];
+const PRECACHE_URLS = ["/", "/inbox", "/settings", "/sign-in"];
 
 // Install: precache app shell
 self.addEventListener("install", (event) => {
@@ -93,7 +93,7 @@ self.addEventListener("push", (event) => {
     console.error("Failed to parse push data", e);
   }
 
-  const url = data.url ?? "/feed";
+  const url = data.url ?? "/inbox";
   const badgeCount = data.badgeCount ?? 0;
 
   event.waitUntil(
@@ -119,7 +119,7 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url ?? "/feed";
+  const url = event.notification.data?.url ?? "/inbox";
   // Handle both direct click and "View Message" action button
   if (event.action === "" || event.action === "view") {
     event.waitUntil(

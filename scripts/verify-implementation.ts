@@ -8,8 +8,8 @@
  * Run with: npx tsx scripts/verify-implementation.ts
  */
 
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const ROOT = process.cwd();
 const COLORS = {
@@ -28,7 +28,7 @@ interface TestResult {
 
 interface TestSuite {
   name: string;
-  tests: TestResult[];
+  tests: Array<TestResult>;
 }
 
 // Helper functions
@@ -49,7 +49,7 @@ const log = (msg: string, color: keyof typeof COLORS = "reset") => {
 // =====================
 
 function testLayer1Foundation(): TestSuite {
-  const tests: TestResult[] = [];
+  const tests: Array<TestResult> = [];
 
   // Task 1: Dependencies
   tests.push({
@@ -210,7 +210,7 @@ function testLayer1Foundation(): TestSuite {
 // =====================
 
 function testLayer2Crud(): TestSuite {
-  const tests: TestResult[] = [];
+  const tests: Array<TestResult> = [];
 
   // Task 6: User management
   tests.push({
@@ -316,7 +316,7 @@ function testLayer2Crud(): TestSuite {
 // =====================
 
 function testLayer3Messaging(): TestSuite {
-  const tests: TestResult[] = [];
+  const tests: Array<TestResult> = [];
 
   // Task 10: Messages
   tests.push({
@@ -446,7 +446,7 @@ function testLayer3Messaging(): TestSuite {
 // =====================
 
 function testLayer4to6UIandPWA(): TestSuite {
-  const tests: TestResult[] = [];
+  const tests: Array<TestResult> = [];
 
   // Task 13-15: UI Components and Routes
   const requiredComponents = [
@@ -496,8 +496,8 @@ function testLayer4to6UIandPWA(): TestSuite {
     passed: fileExists("src/routes/sign-up.tsx"),
   });
   tests.push({
-    name: "src/routes/_authed/feed.tsx exists (member feed)",
-    passed: fileExists("src/routes/_authed/feed.tsx"),
+    name: "src/routes/_authed/inbox.tsx exists (member feed)",
+    passed: fileExists("src/routes/_authed/inbox.tsx"),
   });
   tests.push({
     name: "src/routes/_authed/settings.tsx exists",
@@ -543,7 +543,7 @@ function testLayer4to6UIandPWA(): TestSuite {
   });
   tests.push({
     name: "manifest.json has correct start_url",
-    passed: manifest.start_url === "/feed",
+    passed: manifest.start_url === "/inbox",
   });
   tests.push({
     name: "manifest.json has correct theme_color",
@@ -583,7 +583,7 @@ function testLayer4to6UIandPWA(): TestSuite {
 // MAIN EXECUTION
 // =====================
 
-function printResults(suites: TestSuite[]) {
+function printResults(suites: Array<TestSuite>) {
   console.log("\n" + "=".repeat(60));
   log("ORG COMMS PWA - IMPLEMENTATION VERIFICATION", "blue");
   console.log("=".repeat(60) + "\n");

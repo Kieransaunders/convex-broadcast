@@ -59,7 +59,7 @@ File-based routing in `src/routes/`:
 - `__root.tsx` — root layout, sets up `ConvexBetterAuthProvider`, registers service worker, renders `ImpersonationBanner` + `PWAInstallPrompt`
 - `_authed.tsx` — auth guard (redirects to `/sign-in` if no token)
 - `_authed/_admin.tsx` — admin role guard
-- `_authed/feed.tsx` — member message feed
+- `_authed/inbox.tsx` — member message feed
 - `_authed/_admin/` — admin dashboard, messages, groups, events, users, system-settings
 
 Auth flows via `~/lib/auth-client.tsx` (Better Auth client with `convexClient()` and `adminClient()` plugins). Server-side token retrieval in `~/lib/auth-server.ts`.

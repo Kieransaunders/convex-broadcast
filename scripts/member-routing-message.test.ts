@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 const signInRoute = readFileSync("src/routes/sign-in.tsx", "utf8");
 const signUpRoute = readFileSync("src/routes/sign-up.tsx", "utf8");
-const feedRoute = readFileSync("src/routes/_authed/feed.tsx", "utf8");
+const inboxRoute = readFileSync("src/routes/_authed/inbox.tsx", "utf8");
 const adminRoute = readFileSync("src/routes/_authed/_admin.tsx", "utf8");
 
 assert.ok(
@@ -17,13 +17,13 @@ assert.ok(
 );
 
 assert.ok(
-  feedRoute.includes("admin_only"),
-  "feed should handle an admin_only notice",
+  inboxRoute.includes("admin_only"),
+  "inbox should handle an admin_only notice",
 );
 
 assert.ok(
-  adminRoute.includes('to: "/feed"') && adminRoute.includes("admin_only"),
-  "admin route should redirect members to /feed with an admin_only notice",
+  adminRoute.includes('to: "/inbox"') && adminRoute.includes("admin_only"),
+  "admin route should redirect members to /inbox with an admin_only notice",
 );
 
 console.log("member routing message test passed");
