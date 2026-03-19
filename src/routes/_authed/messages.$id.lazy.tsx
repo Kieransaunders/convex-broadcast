@@ -1,14 +1,13 @@
-import { useNavigate, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createLazyFileRoute, useNavigate  } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
+import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 

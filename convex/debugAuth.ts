@@ -91,7 +91,7 @@ export const repairEmail = internalMutation({
       };
     }
 
-    const superAdminEmail = process.env.SUPER_ADMIN_EMAIL as string | undefined;
+    const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
     const role =
       args.email === superAdminEmail
         ? ("super_admin" as const)

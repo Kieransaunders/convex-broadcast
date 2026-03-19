@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
+  readonly platforms: Array<string>;
   readonly userChoice: Promise<{
     outcome: "accepted" | "dismissed";
     platform: string;
   }>;
-  prompt(): Promise<void>;
+  prompt: () => Promise<void>;
 }
 
 export function usePWAInstall() {

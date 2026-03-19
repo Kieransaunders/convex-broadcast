@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAdminUser, getUser } from "./auth";
 
 export const list = query({
@@ -17,7 +17,7 @@ export const getById = query({
   args: { id: v.id("groups") },
   handler: async (ctx, args) => {
     await getUser(ctx);
-    return await ctx.db.get(args.id);
+    return await ctx.db.get("groups", args.id);
   },
 });
 
@@ -48,7 +48,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
     const { id, ...fields } = args;
-    await ctx.db.patch(id, fields);
+    await ctx.db.patch("groups", id, fields);
   },
 });
 
@@ -62,7 +62,7 @@ export const getMembers = query({
       .collect();
     const members = await Promise.all(
       memberships.map(async (m) => {
-        const user = await ctx.db.get(m.userId);
+        const user = await ctx.db.get("users", m.userId);
         return { ...m, user };
       }),
     );
@@ -99,6 +99,6 @@ export const removeMember = mutation({
   args: { membershipId: v.id("groupMemberships") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.delete(args.membershipId);
+    await ctx.db.delete("groupMemberships", args.membershipId);
   },
 });

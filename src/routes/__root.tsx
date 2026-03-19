@@ -6,15 +6,17 @@ import {
 } from "@tanstack/react-router";
 import * as React from "react";
 import { useEffect } from "react";
-import type { QueryClient } from "@tanstack/react-query";
-import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { createServerFn } from "@tanstack/react-start";
+import type { QueryClient } from "@tanstack/react-query";
+import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { authClient } from "~/lib/auth-client";
 import { getToken } from "~/lib/auth-server";
 
 import { ImpersonationBanner } from "~/components/impersonation-banner";
 import appCss from "~/styles/app.css?url";
+
+import { PWAInstallPrompt } from "~/components/pwa-install-prompt";
 
 const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken();
@@ -26,7 +28,7 @@ let _tokenCache: string | null = null;
 
 async function getCachedAuth(): Promise<string | null> {
   if (_tokenCache !== null) return _tokenCache;
-  _tokenCache = await getAuth();
+  _tokenCache = (await getAuth()) ?? null;
   return _tokenCache;
 }
 
@@ -145,8 +147,6 @@ function RootComponent() {
     </RootDocument>
   );
 }
-
-import { PWAInstallPrompt } from "~/components/pwa-install-prompt";
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (

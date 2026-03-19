@@ -1,7 +1,20 @@
-import { useSearch, Link, createLazyFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link, createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import {
+  ArrowLeft,
+  FolderOpen,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  User,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { useConvex } from "convex/react";
 import { api } from "../../../../../convex/_generated/api.js";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -31,26 +44,13 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  ArrowLeft,
-  Plus,
-  User,
-  Loader2,
-  Trash2,
-  FolderOpen,
-  Search,
-  X,
-} from "lucide-react";
-import { useState, useMemo } from "react";
-import { useConvex } from "convex/react";
-import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 export const Route = createLazyFileRoute("/_authed/_admin/groups/detail")({
   component: GroupDetailPage,
 });
 
 function GroupDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/groups/detail" }) as { id: string };
+  const { id } = useSearch({ from: "/_authed/_admin/groups/detail" }) as unknown as { id: string };
   const convex = useConvex();
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,7 +78,7 @@ function GroupDetailPage() {
       role,
     }: {
       groupId: Id<"groups">;
-      userIds: Id<"users">[];
+      userIds: Array<Id<"users">>;
       role: "member" | "manager";
     }) => {
       // Add members one by one
@@ -160,12 +160,12 @@ function GroupDetailPage() {
     });
   };
 
-  const handleAddMembers = async (e: React.FormEvent) => {
+  const handleAddMembers = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedUserIds.size === 0) return;
     addMembersMutation.mutate({
       groupId: id as Id<"groups">,
-      userIds: Array.from(selectedUserIds) as Id<"users">[],
+      userIds: Array.from(selectedUserIds) as Array<Id<"users">>,
       role: selectedRole,
     });
   };

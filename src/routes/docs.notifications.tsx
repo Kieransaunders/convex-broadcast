@@ -1,17 +1,17 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import {
+  ArrowLeft,
   Bell,
   CheckCircle,
-  Zap,
-  ArrowLeft,
-  Smartphone,
-  Shield,
   Code,
   Globe,
   Lock,
+  Shield,
+  Smartphone,
+  Zap,
 } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export const Route = createFileRoute("/docs/notifications")({
   component: NotificationsDocsPage,

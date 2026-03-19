@@ -19,7 +19,7 @@ export const seedDemoData = internalMutation({
     }
 
     // Promote to super_admin
-    await ctx.db.patch(demoUser._id, { role: "super_admin" });
+    await ctx.db.patch("users", demoUser._id, { role: "super_admin" });
 
     // --- Seed Groups ---
     const groupData = [
@@ -29,7 +29,7 @@ export const seedDemoData = internalMutation({
       { name: "Events Team", description: "Staff involved in event planning" },
     ];
 
-    const groupIds: Id<"groups">[] = [];
+    const groupIds: Array<Id<"groups">> = [];
     for (const g of groupData) {
       // Skip if group already exists
       const existing = await ctx.db
@@ -98,7 +98,7 @@ export const seedDemoData = internalMutation({
       },
     ];
 
-    const eventIds: Id<"events">[] = [];
+    const eventIds: Array<Id<"events">> = [];
     for (const e of eventData) {
       const existing = await ctx.db
         .query("events")
@@ -118,7 +118,7 @@ export const seedDemoData = internalMutation({
     }
 
     // Link events to groups
-    const eventGroupPairs: [number, number][] = [
+    const eventGroupPairs: Array<[number, number]> = [
       [0, 0], // Gala -> All Staff
       [0, 3], // Gala -> Events Team
       [1, 1], // Orientation -> Volunteers

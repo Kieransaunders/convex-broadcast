@@ -1,7 +1,9 @@
-import { useSearch, Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createLazyFileRoute, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { ArrowLeft, Calendar, CalendarDays, Clock, MapPin } from "lucide-react";
 import { api } from "../../../../../convex/_generated/api.js";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
@@ -9,15 +11,13 @@ import { Separator } from "~/components/ui/separator";
 import { EditEventDialog } from "~/components/events/edit-event-dialog";
 import { CancelEventDialog } from "~/components/events/cancel-event-dialog";
 import { SendEventUpdateDialog } from "~/components/events/send-event-update-dialog";
-import { ArrowLeft, CalendarDays, MapPin, Clock, Calendar } from "lucide-react";
-import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 export const Route = createLazyFileRoute("/_authed/_admin/events/detail")({
   component: EventDetailPage,
 });
 
 function EventDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/events/detail" }) as { id: string };
+  const { id } = useSearch({ from: "/_authed/_admin/events/detail" }) as unknown as { id: string };
 
   const { data: event, isLoading } = useQuery(
     convexQuery(api.events.getById, { id: id as Id<"events"> }),

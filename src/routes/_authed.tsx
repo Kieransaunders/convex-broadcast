@@ -1,7 +1,7 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authed")({
-  beforeLoad: async ({ location, context }) => {
+  beforeLoad: ({ location, context }) => {
     // Token is already fetched in __root.tsx beforeLoad — reuse it
     const token = (context as any).token;
     if (!token)

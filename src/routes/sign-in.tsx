@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { Loader2, Lock, Mail } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,11 +12,10 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { authClient } from "~/lib/auth-client";
-import { Mail, Lock, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/sign-in")({
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) ?? undefined,
+    redirect: search.redirect as string | undefined,
     demo: search.demo === true || search.demo === "true" ? true : undefined,
   } as { redirect?: string; demo?: boolean }),
   component: SignInPage,
@@ -43,7 +43,7 @@ function SignInPage() {
       if (result.error) {
         setError(result.error.message || "Invalid credentials");
       } else {
-        const role = (result.data?.user as any)?.role;
+        const role = (result.data.user as any)?.role;
         router.navigate({
           to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",
         });

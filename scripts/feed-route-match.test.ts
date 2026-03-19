@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const inboxRoute = readFileSync("src/routes/_authed/inbox.tsx", "utf8");
+// Component logic lives in the lazy file; the route definition file only has createFileRoute + loader.
+const inboxLazy = readFileSync("src/routes/_authed/inbox.lazy.tsx", "utf8");
 
 assert.ok(
-  inboxRoute.includes('useSearch({ from: "/_authed/inbox" })'),
-  "inbox route should read search params from the file-route id to avoid active-match invariant failures",
+  inboxLazy.includes('getRouteApi("/_authed/inbox")'),
+  "inbox lazy component should read search params via getRouteApi to avoid active-match invariant failures",
 );
 
 console.log("inbox route match test passed");

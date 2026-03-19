@@ -7,8 +7,8 @@ import {
   Mail,
   Plus,
   Send,
-  Trash2,
   ShieldAlert,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, createLazyFileRoute } from "@tanstack/react-router";

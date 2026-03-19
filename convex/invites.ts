@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAdminUser } from "./auth";
 import { resend } from "./email";
 import { getSetting } from "./settings";
@@ -73,7 +73,7 @@ export const revoke = mutation({
   args: { id: v.id("invites") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.patch(args.id, { status: "expired" });
+    await ctx.db.patch("invites", args.id, { status: "expired" });
   },
 });
 
@@ -82,7 +82,7 @@ export const markAccepted = mutation({
   args: { id: v.id("invites") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.patch(args.id, { status: "accepted" });
+    await ctx.db.patch("invites", args.id, { status: "accepted" });
   },
 });
 

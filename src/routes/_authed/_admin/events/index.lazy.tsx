@@ -1,6 +1,8 @@
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { ArrowRight, Calendar, CalendarDays } from "lucide-react";
+import { useState } from "react";
 import { api } from "../../../../../convex/_generated/api.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
@@ -12,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { ArrowRight, Calendar, CalendarDays } from "lucide-react";
-import { useState } from "react";
 
 export const Route = createLazyFileRoute("/_authed/_admin/events/")({
   component: EventsPage,

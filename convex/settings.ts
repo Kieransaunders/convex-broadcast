@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getSuperAdminUser } from "./auth";
 
 export const getSet = query({
@@ -34,7 +34,7 @@ export const update = mutation({
       .unique();
 
     if (existing) {
-      await ctx.db.patch(existing._id, {
+      await ctx.db.patch("settings", existing._id, {
         value: args.value,
         updatedBy: user._id,
         updatedAt: Date.now(),

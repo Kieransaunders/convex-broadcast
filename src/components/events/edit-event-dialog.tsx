@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
 import { convexQuery } from "@convex-dev/react-query";
+import { Pencil } from "lucide-react";
 import { api } from "../../../convex/_generated/api.js";
 import type { Id } from "../../../convex/_generated/dataModel.js";
 import {
@@ -22,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Pencil } from "lucide-react";
 
 interface EditEventDialogProps {
   eventId: Id<"events">;

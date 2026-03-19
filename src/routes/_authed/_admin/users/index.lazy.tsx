@@ -1,6 +1,9 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { createLazyFileRoute, useRouter  } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { Eye, Loader2, Mail, Plus, Shield, Trash2, User } from "lucide-react";
+import { useState } from "react";
+import { useConvex } from "convex/react";
 import { api } from "../../../../../convex/_generated/api.js";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -30,11 +33,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
-import { Plus, Mail, User, Trash2, Loader2, Eye, Shield } from "lucide-react";
-import { useState } from "react";
-import { useConvex } from "convex/react";
 import { authClient } from "~/lib/auth-client";
-import { useRouter } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/_authed/_admin/users/")({
   component: UsersPage,
@@ -113,7 +112,7 @@ function UsersPage() {
 
   const isSuperAdmin = currentUser?.role === "super_admin";
 
-  const handleInvite = async (e: React.FormEvent) => {
+  const handleInvite = (e: React.FormEvent) => {
     e.preventDefault();
     inviteMutation.mutate({ email: inviteEmail, role: inviteRole });
   };
@@ -246,7 +245,7 @@ function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {isSuperAdmin && user._id !== currentUser?._id ? (
+                      {isSuperAdmin && user._id !== currentUser._id ? (
                         <Select
                           value={user.role}
                           onValueChange={(value: "member" | "admin" | "super_admin" | null) => {

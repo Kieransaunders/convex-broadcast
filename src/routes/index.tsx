@@ -1,24 +1,24 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
 import {
-  Mail,
-  Lock,
-  Bell,
-  Users,
-  Shield,
-  Zap,
-  Globe,
   ArrowRight,
+  Bell,
   CheckCircle,
   Github,
-  Star,
-  Smartphone,
+  Globe,
   Layout,
+  Lock,
+  Mail,
   Menu,
+  Shield,
+  Smartphone,
+  Star,
+  Users,
   X,
+  Zap,
 } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,

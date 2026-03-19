@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 
 const signInRoute = readFileSync("src/routes/sign-in.tsx", "utf8");
 const signUpRoute = readFileSync("src/routes/sign-up.tsx", "utf8");
-const inboxRoute = readFileSync("src/routes/_authed/inbox.tsx", "utf8");
+// Component logic (notices, search params) lives in the lazy split file
+const inboxRoute = readFileSync("src/routes/_authed/inbox.lazy.tsx", "utf8");
 const adminRoute = readFileSync("src/routes/_authed/_admin.tsx", "utf8");
 
 assert.ok(

@@ -1,7 +1,7 @@
+import { Download, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { usePWAInstall } from "~/hooks/use-pwa-install";
 import { Button } from "~/components/ui/button";
-import { Download, X } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 
 export function PWAInstallPrompt() {

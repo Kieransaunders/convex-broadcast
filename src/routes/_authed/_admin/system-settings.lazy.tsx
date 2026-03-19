@@ -1,6 +1,9 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { ExternalLink, Info, Mail, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useConvex } from "convex/react";
 import { api } from "../../../../convex/_generated/api.js";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -12,9 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Save, ExternalLink, Mail, Info } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useConvex } from "convex/react";
 
 export const Route = createLazyFileRoute("/_authed/_admin/system-settings")({
   component: AdminSettingsPage,

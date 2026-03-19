@@ -1,6 +1,9 @@
 import { Link, createLazyFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import { ArrowRight, FolderOpen, Loader2, Plus, Users } from "lucide-react";
+import { useState } from "react";
+import { useConvex } from "convex/react";
 import { api } from "../../../../../convex/_generated/api.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -16,9 +19,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Plus, FolderOpen, Users, Loader2, ArrowRight } from "lucide-react";
-import { useState } from "react";
-import { useConvex } from "convex/react";
 
 export const Route = createLazyFileRoute("/_authed/_admin/groups/")({
   component: GroupsPage,
@@ -51,7 +51,7 @@ function GroupsPage() {
     },
   });
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     createMutation.mutate({ name: groupName, description: groupDescription });
   };

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { api } from "../../convex/_generated/api.js";
-import { Button } from "~/components/ui/button";
-import { ShieldAlert, LogOut } from "lucide-react";
-import { authClient } from "~/lib/auth-client";
+import { LogOut, ShieldAlert } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
+import { api } from "../../convex/_generated/api.js";
 import type { Id } from "../../convex/_generated/dataModel.js";
+import { Button } from "~/components/ui/button";
+import { authClient } from "~/lib/auth-client";
 
 export function ImpersonationBanner() {
   const router = useRouter();

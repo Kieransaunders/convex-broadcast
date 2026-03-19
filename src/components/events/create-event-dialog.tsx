@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
+import { CalendarDays } from "lucide-react";
 import { api } from "../../../convex/_generated/api.js";
 import {
   Dialog,
@@ -13,7 +14,6 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
-import { CalendarDays } from "lucide-react";
 
 export function CreateEventDialog() {
   const convex = useConvex();

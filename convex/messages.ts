@@ -1,9 +1,8 @@
-import { v } from "convex/values";
-import { query, mutation, internalMutation } from "./_generated/server";
+import { ConvexError, v  } from "convex/values";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getAdminUser, getUser, getSuperAdminUser, safeGetUser } from "./auth";
+import { getAdminUser, getSuperAdminUser, getUser, safeGetUser } from "./auth";
 import type { Id } from "./_generated/dataModel";
-import { ConvexError } from "convex/values";
 
 // --- Queries ---
 
@@ -35,7 +34,7 @@ export const getById = query({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) return null;
     const targets = await ctx.db
       .query("messageTargets")
@@ -113,13 +112,13 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status === "sent" || message.status === "archived") {
       throw new ConvexError("Cannot edit sent or archived messages");
     }
     const { id, ...fields } = args;
-    await ctx.db.patch(id, fields);
+    await ctx.db.patch("messages", id, fields);
   },
 });
 
@@ -127,11 +126,11 @@ export const archive = mutation({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status !== "sent")
       throw new ConvexError("Can only archive sent messages");
-    await ctx.db.patch(args.id, { status: "archived" });
+    await ctx.db.patch("messages", args.id, { status: "archived" });
   },
 });
 
@@ -139,7 +138,7 @@ export const deleteDraft = mutation({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status !== "draft")
       throw new ConvexError("Can only delete draft messages");
@@ -148,9 +147,9 @@ export const deleteDraft = mutation({
       .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
       .collect();
     for (const target of targets) {
-      await ctx.db.delete(target._id);
+      await ctx.db.delete("messageTargets", target._id);
     }
-    await ctx.db.delete(args.id);
+    await ctx.db.delete("messages", args.id);
   },
 });
 
@@ -160,7 +159,7 @@ export const deleteMessage = mutation({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getSuperAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
 
     // Delete message targets (usually small number)
@@ -169,11 +168,11 @@ export const deleteMessage = mutation({
       .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
       .take(100);
     for (const target of targets) {
-      await ctx.db.delete(target._id);
+      await ctx.db.delete("messageTargets", target._id);
     }
 
     // Delete the message itself first to prevent new deliveries
-    await ctx.db.delete(args.id);
+    await ctx.db.delete("messages", args.id);
 
     // Schedule background cleanup of deliveries (could be thousands)
     // This avoids hitting the 1024 operation limit per mutation
@@ -200,7 +199,7 @@ export const cleanupDeliveries = internalMutation({
 
     // Delete this batch
     for (const delivery of deliveries) {
-      await ctx.db.delete(delivery._id);
+      await ctx.db.delete("deliveries", delivery._id);
     }
 
     // Schedule next batch if we found 100 (there might be more)
@@ -227,7 +226,7 @@ export const deleteMyDelivery = mutation({
       .unique();
     
     if (delivery) {
-      await ctx.db.delete(delivery._id);
+      await ctx.db.delete("deliveries", delivery._id);
     }
   },
 });
@@ -237,10 +236,10 @@ export const deleteMyDelivery = mutation({
 export const resolveAudience = internalMutation({
   args: { messageId: v.id("messages") },
   handler: async (ctx, args) => {
-    const message = await ctx.db.get(args.messageId);
+    const message = await ctx.db.get("messages", args.messageId);
     if (!message) throw new ConvexError("Message not found");
 
-    let userIds: Id<"users">[] = [];
+    let userIds: Array<Id<"users">> = [];
 
     if (message.audienceType === "all") {
       const users = await ctx.db
@@ -267,7 +266,7 @@ export const resolveAudience = internalMutation({
         );
         const uniqueIds = new Set(membershipSets.flat().map((m) => m.userId));
         userIds = [...uniqueIds];
-      } else if (message.audienceType === "event") {
+      } else {
         // Event audience: for now, all active users
         const allUsers = await ctx.db
           .query("users")
@@ -305,12 +304,12 @@ export const sendNow = mutation({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status === "sent")
       throw new ConvexError("Message already sent");
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch("messages", args.id, {
       status: "sent",
       sentAt: Date.now(),
     });
@@ -328,7 +327,7 @@ export const schedule = mutation({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status === "sent")
       throw new ConvexError("Cannot schedule sent message");
@@ -344,7 +343,7 @@ export const schedule = mutation({
       { messageId: args.id },
     );
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch("messages", args.id, {
       status: "scheduled",
       scheduledFor: args.scheduledFor,
       scheduledFunctionId,
@@ -356,7 +355,7 @@ export const cancelScheduled = mutation({
   args: { id: v.id("messages") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    const message = await ctx.db.get(args.id);
+    const message = await ctx.db.get("messages", args.id);
     if (!message) throw new ConvexError("Message not found");
     if (message.status !== "scheduled")
       throw new ConvexError("Message is not scheduled");
@@ -365,7 +364,7 @@ export const cancelScheduled = mutation({
       await ctx.scheduler.cancel(message.scheduledFunctionId);
     }
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch("messages", args.id, {
       status: "draft",
       scheduledFor: undefined,
       scheduledFunctionId: undefined,
@@ -376,10 +375,10 @@ export const cancelScheduled = mutation({
 export const executeSend = internalMutation({
   args: { messageId: v.id("messages") },
   handler: async (ctx, args) => {
-    const message = await ctx.db.get(args.messageId);
+    const message = await ctx.db.get("messages", args.messageId);
     if (!message || message.status !== "scheduled") return;
 
-    await ctx.db.patch(args.messageId, {
+    await ctx.db.patch("messages", args.messageId, {
       status: "sent",
       sentAt: Date.now(),
     });
@@ -417,7 +416,7 @@ export const feed = query({
     // internally within the same transaction for better performance.
     const messages = await Promise.all(
       deliveries.map(async (d) => {
-        const message = await ctx.db.get(d.messageId);
+        const message = await ctx.db.get("messages", d.messageId);
         return message ? { ...message, delivery: d } : null;
       }),
     );
@@ -474,7 +473,7 @@ export const markRead = mutation({
   args: { deliveryId: v.id("deliveries") },
   handler: async (ctx, args) => {
     await getUser(ctx);
-    await ctx.db.patch(args.deliveryId, { readAt: Date.now() });
+    await ctx.db.patch("deliveries", args.deliveryId, { readAt: Date.now() });
   },
 });
 
@@ -492,7 +491,7 @@ export const markAllAsRead = mutation({
     const unreadDeliveries = deliveries.filter((d) => d.readAt === undefined);
 
     for (const delivery of unreadDeliveries) {
-      await ctx.db.patch(delivery._id, { readAt: Date.now() });
+      await ctx.db.patch("deliveries", delivery._id, { readAt: Date.now() });
     }
 
     return { markedAsRead: unreadDeliveries.length };

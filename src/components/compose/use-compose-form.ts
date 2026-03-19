@@ -113,7 +113,7 @@ export function useComposeForm() {
   };
 
   const toCreatePayload = (values: ComposeFormValues) => {
-    let targetIds: string[] | undefined;
+    let targetIds: Array<string> | undefined;
     if (values.audienceType === "groups") {
       targetIds = values.selectedGroupIds;
     } else if (values.audienceType === "event" && values.selectedEventId) {

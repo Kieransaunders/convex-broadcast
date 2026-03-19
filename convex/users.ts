@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAdminUser, getSuperAdminUser, getUser } from "./auth";
 import { components } from "./_generated/api";
 
@@ -31,7 +31,7 @@ export const getById = query({
   handler: async (ctx, args) => {
     if (!args.id) return null;
     await getUser(ctx);
-    return await ctx.db.get(args.id);
+    return await ctx.db.get("users", args.id);
   },
 });
 
@@ -46,7 +46,7 @@ export const updateRole = mutation({
   },
   handler: async (ctx, args) => {
     await getSuperAdminUser(ctx);
-    await ctx.db.patch(args.userId, { role: args.role });
+    await ctx.db.patch("users", args.userId, { role: args.role });
 
     // Synchronize role to Better Auth
     const authUser = await ctx.runQuery(components.betterAuth.adapter.findOne, {
@@ -64,7 +64,7 @@ export const updateRole = mutation({
       });
       
       // Also ensure project user has authUserId cached
-      await ctx.db.patch(args.userId, { authUserId: authUser._id });
+      await ctx.db.patch("users", args.userId, { authUserId: authUser._id });
     }
   },
 });
@@ -76,7 +76,7 @@ export const updateStatus = mutation({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.patch(args.userId, { status: args.status });
+    await ctx.db.patch("users", args.userId, { status: args.status });
   },
 });
 export const remove = mutation({
@@ -93,7 +93,7 @@ export const remove = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .collect();
     for (const membership of memberships) {
-      await ctx.db.delete(membership._id);
+      await ctx.db.delete("groupMemberships", membership._id);
     }
 
     const pushSubs = await ctx.db
@@ -101,7 +101,7 @@ export const remove = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .collect();
     for (const sub of pushSubs) {
-      await ctx.db.delete(sub._id);
+      await ctx.db.delete("pushSubscriptions", sub._id);
     }
 
     const deliveries = await ctx.db
@@ -109,10 +109,10 @@ export const remove = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .collect();
     for (const delivery of deliveries) {
-      await ctx.db.delete(delivery._id);
+      await ctx.db.delete("deliveries", delivery._id);
     }
 
-    await ctx.db.delete(args.userId);
+    await ctx.db.delete("users", args.userId);
   },
 });
 

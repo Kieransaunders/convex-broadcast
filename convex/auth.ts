@@ -1,13 +1,16 @@
-import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import {  betterAuth } from "better-auth/minimal";
+import {  createClient } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { admin } from "better-auth/plugins";
+import { ConvexError } from "convex/values";
 import { components, internal } from "./_generated/api";
 import betterAuthSchema from "./betterAuth/schema";
-import { query, type QueryCtx } from "./_generated/server";
-import type { DataModel, Id } from "./_generated/dataModel";
-import { ConvexError } from "convex/values";
+import {  query } from "./_generated/server";
 import authConfig from "./auth.config";
+import type {QueryCtx} from "./_generated/server";
+import type {GenericCtx} from "@convex-dev/better-auth";
+import type {BetterAuthOptions} from "better-auth/minimal";
+import type { DataModel, Id } from "./_generated/dataModel";
 
 export const authComponent: ReturnType<
   typeof createClient<DataModel, typeof betterAuthSchema>
@@ -17,9 +20,7 @@ export const authComponent: ReturnType<
   triggers: {
     user: {
       onCreate: async (ctx, authUser) => {
-        const superAdminEmail = process.env.SUPER_ADMIN_EMAIL as
-          | string
-          | undefined;
+        const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
 
         // Check for pending invite with matching email
         const pendingInvite = await ctx.db
@@ -40,7 +41,7 @@ export const authComponent: ReturnType<
           // Use the role from the invite
           role = pendingInvite.role;
           // Mark invite as accepted
-          await ctx.db.patch(pendingInvite._id, { status: "accepted" });
+          await ctx.db.patch("invites", pendingInvite._id, { status: "accepted" });
         } else if (isFirstUser) {
           // First user to sign up becomes super_admin automatically
           role = "super_admin";
@@ -50,7 +51,7 @@ export const authComponent: ReturnType<
 
         const userId = await ctx.db.insert("users", {
           email: authUser.email,
-          name: authUser.name ?? authUser.email,
+          name: authUser.name,
           role,
           status: "active",
           authUserId: authUser._id,
@@ -69,8 +70,8 @@ export const authComponent: ReturnType<
         });
       },
       onDelete: async (ctx, authUser) => {
-        const user = await ctx.db.get(authUser.userId as Id<"users">);
-        if (user) await ctx.db.delete(user._id);
+        const user = await ctx.db.get("users", authUser.userId as Id<"users">);
+        if (user) await ctx.db.delete("users", user._id);
       },
     },
   },
@@ -81,7 +82,7 @@ export const { getAuthUser } = authComponent.clientApi();
 
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
   ({
-    baseURL: process.env.SITE_URL as string | undefined,
+    baseURL: process.env.SITE_URL,
     database: authComponent.adapter(ctx),
     emailAndPassword: { enabled: true },
     account: { accountLinking: { enabled: true } },
@@ -111,7 +112,7 @@ export const getUser = async (ctx: QueryCtx) => {
     if (!authUser.userId) {
       throw new ConvexError("User session found but not linked to a project user record");
     }
-    const user = await ctx.db.get(authUser.userId as Id<"users">);
+    const user = await ctx.db.get("users", authUser.userId as Id<"users">);
     if (!user) throw new ConvexError("User not found in project database");
     return user;
   } catch (error) {
@@ -126,7 +127,7 @@ export const getUser = async (ctx: QueryCtx) => {
 export const safeGetUser = async (ctx: QueryCtx) => {
   const authUser = await authComponent.safeGetAuthUser(ctx);
   if (!authUser?.userId) return null;
-  return ctx.db.get(authUser.userId as Id<"users">);
+  return ctx.db.get("users", authUser.userId as Id<"users">);
 };
 
 export const getAdminUser = async (ctx: QueryCtx) => {
@@ -150,6 +151,6 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) return null;
-    return await ctx.db.get(authUser.userId as Id<"users">);
+    return await ctx.db.get("users", authUser.userId as Id<"users">);
   },
 });

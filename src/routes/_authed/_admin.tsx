@@ -1,23 +1,33 @@
 import {
-  createFileRoute,
-  Outlet,
   Link,
-  useRouter,
+  Outlet,
+  createFileRoute,
   redirect,
+  useRouter,
 } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import {
+  CalendarDays,
+  ChevronDown,
+  FolderOpen,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Settings,
+  Users,
+} from "lucide-react";
 import { api } from "../../../convex/_generated/api.js";
 import {
-  SidebarProvider,
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
   SidebarRail,
-  SidebarFooter,
 } from "~/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import {
@@ -26,16 +36,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  LayoutDashboard,
-  Users,
-  FolderOpen,
-  CalendarDays,
-  Mail,
-  LogOut,
-  ChevronDown,
-  Settings,
-} from "lucide-react";
 import { authClient } from "~/lib/auth-client";
 import { clearTokenCache } from "~/routes/__root";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";

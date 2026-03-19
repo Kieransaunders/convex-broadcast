@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getAdminUser, getUser } from "./auth";
 
 export const list = query({
@@ -14,7 +14,7 @@ export const getById = query({
   args: { id: v.id("events") },
   handler: async (ctx, args) => {
     await getUser(ctx);
-    return await ctx.db.get(args.id);
+    return await ctx.db.get("events", args.id);
   },
 });
 
@@ -57,7 +57,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
     const { id, ...fields } = args;
-    await ctx.db.patch(id, fields);
+    await ctx.db.patch("events", id, fields);
   },
 });
 
@@ -71,9 +71,9 @@ export const remove = mutation({
       .withIndex("by_eventId", (q) => q.eq("eventId", args.id))
       .collect();
     for (const link of links) {
-      await ctx.db.delete(link._id);
+      await ctx.db.delete("eventGroupLinks", link._id);
     }
-    await ctx.db.delete(args.id);
+    await ctx.db.delete("events", args.id);
   },
 });
 
@@ -89,7 +89,7 @@ export const changeStatus = mutation({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.patch(args.id, { status: args.status });
+    await ctx.db.patch("events", args.id, { status: args.status });
   },
 });
 
@@ -105,7 +105,7 @@ export const getGroups = query({
       .collect();
     const groups = await Promise.all(
       links.map(async (link) => {
-        const group = await ctx.db.get(link.groupId);
+        const group = await ctx.db.get("groups", link.groupId);
         return group ? { ...group, linkId: link._id } : null;
       }),
     );
@@ -140,7 +140,7 @@ export const unlinkGroup = mutation({
   args: { linkId: v.id("eventGroupLinks") },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    await ctx.db.delete(args.linkId);
+    await ctx.db.delete("eventGroupLinks", args.linkId);
   },
 });
 
@@ -153,7 +153,7 @@ export const getByGroup = query({
       .withIndex("by_groupId", (q) => q.eq("groupId", args.groupId))
       .collect();
     const events = await Promise.all(
-      links.map(async (link) => await ctx.db.get(link.eventId)),
+      links.map(async (link) => await ctx.db.get("events", link.eventId)),
     );
     return events.filter(Boolean);
   },

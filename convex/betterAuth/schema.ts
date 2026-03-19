@@ -3,6 +3,7 @@
 // `npx @better-auth/cli generate --output src/component/schema.ts -y`
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+
 export const tables = {
   user: defineTable({
     name: v.string(),

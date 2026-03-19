@@ -47,7 +47,7 @@ export const cleanupDemoMessages = internalMutation({
         .withIndex("by_messageId", (q) => q.eq("messageId", message._id))
         .collect();
       for (const delivery of deliveries) {
-        await ctx.db.delete(delivery._id);
+        await ctx.db.delete("deliveries", delivery._id);
       }
 
       // Delete message targets
@@ -56,7 +56,7 @@ export const cleanupDemoMessages = internalMutation({
         .withIndex("by_messageId", (q) => q.eq("messageId", message._id))
         .collect();
       for (const target of targets) {
-        await ctx.db.delete(target._id);
+        await ctx.db.delete("messageTargets", target._id);
       }
 
       // Cancel any scheduled sends
@@ -69,7 +69,7 @@ export const cleanupDemoMessages = internalMutation({
       }
 
       // Delete the message
-      await ctx.db.delete(message._id);
+      await ctx.db.delete("messages", message._id);
     }
   },
 });

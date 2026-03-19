@@ -58,7 +58,7 @@ async function main() {
   await new Promise((r) => setTimeout(r, 3000));
 
   console.log("3. Running seed mutation via Convex CLI...");
-  const { execSync } = await import("child_process");
+  const { execSync } = await import("node:child_process");
   try {
     const result = execSync('npx convex run seed:seedDemoData \'{}\'', {
       encoding: "utf-8",

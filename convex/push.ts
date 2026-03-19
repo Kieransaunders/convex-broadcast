@@ -28,7 +28,7 @@ export const subscribe = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
     const match = existing.find((s) => s.endpoint === args.endpoint);
-    if (match) await ctx.db.delete(match._id);
+    if (match) await ctx.db.delete("pushSubscriptions", match._id);
 
     return await ctx.db.insert("pushSubscriptions", {
       userId: user._id,
@@ -50,7 +50,7 @@ export const unsubscribe = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
     const match = subs.find((s) => s.endpoint === args.endpoint);
-    if (match) await ctx.db.delete(match._id);
+    if (match) await ctx.db.delete("pushSubscriptions", match._id);
   },
 });
 
@@ -69,7 +69,7 @@ export const updatePreference = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .collect();
     for (const sub of subs) {
-      await ctx.db.patch(sub._id, { preference: args.preference });
+      await ctx.db.patch("pushSubscriptions", sub._id, { preference: args.preference });
     }
   },
 });
@@ -88,7 +88,7 @@ export const getMySubscription = query({
 
 export const getVapidPublicKey = query({
   args: {},
-  handler: async () => {
+  handler: () => {
     return process.env.VAPID_PUBLIC_KEY ?? null;
   },
 });
@@ -98,7 +98,7 @@ export const getVapidPublicKey = query({
 export const getMessageForPush = internalQuery({
   args: { messageId: v.id("messages") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.messageId);
+    return await ctx.db.get("messages", args.messageId);
   },
 });
 
@@ -129,14 +129,14 @@ export const updateDeliveryPushStatus = internalMutation({
     status: v.union(v.literal("sent"), v.literal("failed")),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.deliveryId, { pushStatus: args.status });
+    await ctx.db.patch("deliveries", args.deliveryId, { pushStatus: args.status });
   },
 });
 
 export const removeSubscription = internalMutation({
   args: { subscriptionId: v.id("pushSubscriptions") },
   handler: async (ctx, args) => {
-    await ctx.db.delete(args.subscriptionId);
+    await ctx.db.delete("pushSubscriptions", args.subscriptionId);
   },
 });
 

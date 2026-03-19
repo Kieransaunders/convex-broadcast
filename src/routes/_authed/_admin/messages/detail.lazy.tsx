@@ -1,32 +1,32 @@
-import { useSearch, Link, useNavigate, createLazyFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link, createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
+import {
+  AlertCircle,
+  ArrowLeft,
+  BarChart3,
+  Bell,
+  CalendarDays,
+  CheckCircle,
+  Clock,
+  FileText,
+  FolderOpen,
+  Globe,
+  Loader2,
+  MessageSquare,
+  Send,
+  ShieldAlert,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { useConvex } from "convex/react";
+import { useState } from "react";
 import { api } from "../../../../../convex/_generated/api.js";
+import type { Id } from "../../../../../convex/_generated/dataModel.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
-import {
-  ArrowLeft,
-  Send,
-  Trash2,
-  Loader2,
-  FileText,
-  Bell,
-  CheckCircle,
-  Users,
-  FolderOpen,
-  CalendarDays,
-  Globe,
-  Clock,
-  AlertCircle,
-  MessageSquare,
-  BarChart3,
-  ShieldAlert,
-} from "lucide-react";
-import { useConvex } from "convex/react";
-import { useState } from "react";
-import type { Id } from "../../../../../convex/_generated/dataModel.js";
 
 const CATEGORY_CONFIG = {
   urgent: {
@@ -97,7 +97,7 @@ export const Route = createLazyFileRoute("/_authed/_admin/messages/detail")({
 });
 
 function MessageDetailPage() {
-  const { id } = useSearch({ from: "/_authed/_admin/messages/detail" }) as { id: string };
+  const { id } = useSearch({ from: "/_authed/_admin/messages/detail" }) as unknown as { id: string };
   const convex = useConvex();
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -193,9 +193,9 @@ function MessageDetailPage() {
     );
   }
 
-  const category = CATEGORY_CONFIG[message.category] || CATEGORY_CONFIG.notice;
-  const status = STATUS_CONFIG[message.status] || STATUS_CONFIG.draft;
-  const audience = AUDIENCE_CONFIG[message.audienceType] || AUDIENCE_CONFIG.all;
+  const category = CATEGORY_CONFIG[message.category];
+  const status = STATUS_CONFIG[message.status];
+  const audience = AUDIENCE_CONFIG[message.audienceType];
   const CategoryIcon = category.icon;
   const StatusIcon = status.icon;
   const AudienceIcon = audience.icon;
@@ -476,7 +476,7 @@ function MessageDetailPage() {
                 </div>
               </div>
 
-              {message.targets && message.targets.length > 0 && (
+              {message.targets.length > 0 && (
                 <>
                   <Separator className="my-4 bg-[#6366F1]/10" />
                   <div>

@@ -6,7 +6,7 @@ import viteReact from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   // Load env vars from .env.local
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, process.cwd(), "") as Record<string, string | undefined>;
 
   return {
     server: {

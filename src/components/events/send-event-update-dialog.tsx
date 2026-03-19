@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
+import { useNavigate } from "@tanstack/react-router";
+import { Bell, Send } from "lucide-react";
 import { api } from "../../../convex/_generated/api.js";
 import type { Id } from "../../../convex/_generated/dataModel.js";
-import { useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
@@ -17,7 +18,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Send, Bell } from "lucide-react";
 
 interface SendEventUpdateDialogProps {
   eventId: Id<"events">;
