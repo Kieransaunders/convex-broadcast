@@ -11,16 +11,9 @@ export const Route = createLazyFileRoute("/_authed/_admin/dashboard")({
 });
 
 function DashboardPage() {
-  const { data: users, isLoading: usersLoading } = useQuery(
-    convexQuery(api.users.list, {}),
+  const { data: stats, isLoading } = useQuery(
+    convexQuery(api.messages.dashboardStats, {}),
   );
-  const { data: messages, isLoading: messagesLoading } = useQuery(
-    convexQuery(api.messages.list, {}),
-  );
-
-  const totalUsers = users?.length || 0;
-  const totalMessages = messages?.length || 0;
-  const sentMessages = messages?.filter((m) => m.status === "sent").length || 0;
 
   return (
     <div className="space-y-6">
@@ -35,23 +28,23 @@ function DashboardPage() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Users"
-          value={totalUsers}
+          value={stats?.userCount ?? 0}
           icon={Users}
-          loading={usersLoading}
+          loading={isLoading}
           href="/users"
         />
         <StatCard
           title="Messages Sent"
-          value={sentMessages}
+          value={stats?.sentCount ?? 0}
           icon={Mail}
-          loading={messagesLoading}
+          loading={isLoading}
           href="/messages"
         />
         <StatCard
           title="Total Messages"
-          value={totalMessages}
+          value={stats?.totalCount ?? 0}
           icon={Eye}
-          loading={messagesLoading}
+          loading={isLoading}
           href="/messages"
         />
       </div>
@@ -79,15 +72,15 @@ function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {messagesLoading ? (
+            {isLoading ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
               </div>
-            ) : messages && messages.length > 0 ? (
+            ) : stats?.recentMessages && stats.recentMessages.length > 0 ? (
               <div className="space-y-3">
-                {messages.slice(0, 5).map((message) => (
+                {stats.recentMessages.map((message) => (
                   <Link
                     key={message._id}
                     to="/messages/detail"

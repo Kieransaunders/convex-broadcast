@@ -439,6 +439,37 @@ export const getMyDelivery = query({
   },
 });
 
+export const unreadCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await safeGetUser(ctx);
+    if (!user) return 0;
+    const deliveries = await ctx.db
+      .query("deliveries")
+      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .collect();
+    return deliveries.filter((d) => d.readAt === undefined).length;
+  },
+});
+
+export const dashboardStats = query({
+  args: {},
+  handler: async (ctx) => {
+    await getAdminUser(ctx);
+    const [users, allMessages, recentMessages] = await Promise.all([
+      ctx.db.query("users").collect(),
+      ctx.db.query("messages").collect(),
+      ctx.db.query("messages").order("desc").take(5),
+    ]);
+    return {
+      userCount: users.length,
+      totalCount: allMessages.length,
+      sentCount: allMessages.filter((m) => m.status === "sent").length,
+      recentMessages,
+    };
+  },
+});
+
 export const markRead = mutation({
   args: { deliveryId: v.id("deliveries") },
   handler: async (ctx, args) => {

@@ -3,11 +3,11 @@ import {
   Outlet,
   Link,
   useRouter,
+  redirect,
 } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api.js";
-import { useEffect } from "react";
 import {
   SidebarProvider,
   Sidebar,
@@ -51,62 +51,35 @@ const navigation = [
 ];
 
 export const Route = createFileRoute("/_authed/_admin")({
+  beforeLoad: async ({ context }) => {
+    const { convexQueryClient } = context as any;
+    const user = await convexQueryClient.fetchQuery(
+      convexQuery(api.auth.getCurrentUser, {}),
+    );
+    if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
+      throw redirect({ to: "/inbox", search: { notice: "admin_only" } });
+    }
+    return { adminUser: user };
+  },
   component: AdminLayout,
 });
 
 function AdminLayout() {
   const router = useRouter();
-  const { data: user, isLoading } = useQuery(
+  const { adminUser } = Route.useRouteContext();
+  const { data: user = adminUser } = useQuery(
     convexQuery(api.auth.getCurrentUser, {}),
   );
   const { data: settings } = useQuery(
     convexQuery(api.settings.getSet, { keys: ["app_name"] }),
   );
-  const { data: messages } = useQuery(
-    convexQuery(api.messages.feed, {}),
+  const { data: unreadCount = 0 } = useQuery(
+    convexQuery(api.messages.unreadCount, {}),
   );
   const appName = (settings as any)?.app_name || "Org Comms";
 
-  const isAdmin = Boolean(
-    user && (user.role === "admin" || user.role === "super_admin"),
-  );
-  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
-
   // Update PWA app icon badge
   useAppBadge(unreadCount);
-
-  useEffect(() => {
-    if (!isLoading && !isAdmin) {
-      router.navigate({ to: "/inbox", search: { notice: "admin_only" } });
-    }
-  }, [isAdmin, isLoading, router]);
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#F5F3FF]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#6366F1] border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F5F3FF] p-4">
-        <div className="w-full max-w-md rounded-xl border border-amber-200 bg-white p-6 text-center shadow-sm">
-          <h1 className="text-lg font-semibold text-[#1E1B4B]">
-            Admin access required
-          </h1>
-          <p className="mt-2 text-sm text-[#1E1B4B]/70">
-            You are signed in, but this area is only available to admin and
-            super admin accounts.
-          </p>
-          <p className="mt-1 text-sm text-[#1E1B4B]/70">
-            Redirecting you to your inbox now.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const handleSignOut = async () => {
     clearTokenCache();

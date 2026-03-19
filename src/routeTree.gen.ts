@@ -16,11 +16,11 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
+import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const AuthedSettingsLazyRouteImport = createFileRoute('/_authed/settings')()
-const AuthedInboxLazyRouteImport = createFileRoute('/_authed/inbox')()
 const AuthedMessagesIdLazyRouteImport = createFileRoute(
   '/_authed/messages/$id',
 )()
@@ -81,16 +81,16 @@ const AuthedSettingsLazyRoute = AuthedSettingsLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_authed/settings.lazy').then((d) => d.Route),
 )
-const AuthedInboxLazyRoute = AuthedInboxLazyRouteImport.update({
-  id: '/inbox',
-  path: '/inbox',
-  getParentRoute: () => AuthedRoute,
-} as any).lazy(() => import('./routes/_authed/inbox.lazy').then((d) => d.Route))
 const DocsNotificationsRoute = DocsNotificationsRouteImport.update({
   id: '/docs/notifications',
   path: '/docs/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedInboxRoute = AuthedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AuthedRoute,
+} as any).lazy(() => import('./routes/_authed/inbox.lazy').then((d) => d.Route))
 const AuthedAdminRoute = AuthedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthedRoute,
@@ -192,8 +192,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/inbox': typeof AuthedInboxRoute
   '/docs/notifications': typeof DocsNotificationsRoute
-  '/inbox': typeof AuthedInboxLazyRoute
   '/settings': typeof AuthedSettingsLazyRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
@@ -212,8 +212,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/inbox': typeof AuthedInboxRoute
   '/docs/notifications': typeof DocsNotificationsRoute
-  '/inbox': typeof AuthedInboxLazyRoute
   '/settings': typeof AuthedSettingsLazyRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
@@ -235,8 +235,8 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
+  '/_authed/inbox': typeof AuthedInboxRoute
   '/docs/notifications': typeof DocsNotificationsRoute
-  '/_authed/inbox': typeof AuthedInboxLazyRoute
   '/_authed/settings': typeof AuthedSettingsLazyRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/_admin/dashboard': typeof AuthedAdminDashboardLazyRoute
@@ -257,8 +257,8 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/docs/notifications'
     | '/inbox'
+    | '/docs/notifications'
     | '/settings'
     | '/api/auth/$'
     | '/dashboard'
@@ -277,8 +277,8 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/docs/notifications'
     | '/inbox'
+    | '/docs/notifications'
     | '/settings'
     | '/api/auth/$'
     | '/dashboard'
@@ -299,8 +299,8 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/_authed/_admin'
-    | '/docs/notifications'
     | '/_authed/inbox'
+    | '/docs/notifications'
     | '/_authed/settings'
     | '/api/auth/$'
     | '/_authed/_admin/dashboard'
@@ -362,19 +362,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsLazyRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/inbox': {
-      id: '/_authed/inbox'
-      path: '/inbox'
-      fullPath: '/inbox'
-      preLoaderRoute: typeof AuthedInboxLazyRouteImport
-      parentRoute: typeof AuthedRoute
-    }
     '/docs/notifications': {
       id: '/docs/notifications'
       path: '/docs/notifications'
       fullPath: '/docs/notifications'
       preLoaderRoute: typeof DocsNotificationsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/inbox': {
+      id: '/_authed/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthedInboxRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/_authed/_admin': {
       id: '/_authed/_admin'
@@ -502,14 +502,14 @@ const AuthedAdminRouteWithChildren = AuthedAdminRoute._addFileChildren(
 
 interface AuthedRouteChildren {
   AuthedAdminRoute: typeof AuthedAdminRouteWithChildren
-  AuthedInboxLazyRoute: typeof AuthedInboxLazyRoute
+  AuthedInboxRoute: typeof AuthedInboxRoute
   AuthedSettingsLazyRoute: typeof AuthedSettingsLazyRoute
   AuthedMessagesIdLazyRoute: typeof AuthedMessagesIdLazyRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAdminRoute: AuthedAdminRouteWithChildren,
-  AuthedInboxLazyRoute: AuthedInboxLazyRoute,
+  AuthedInboxRoute: AuthedInboxRoute,
   AuthedSettingsLazyRoute: AuthedSettingsLazyRoute,
   AuthedMessagesIdLazyRoute: AuthedMessagesIdLazyRoute,
 }

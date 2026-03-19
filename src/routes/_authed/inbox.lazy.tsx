@@ -9,7 +9,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Trash2 } from "lucide-react";
 import { useConvex } from "convex/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
@@ -26,20 +26,26 @@ type FilterType = "all" | "unread" | "read";
 
 function InboxPage() {
   const queryClient = useQueryClient();
-  const search = routeApi.useSearch();
-  const notice = (search as { notice?: string }).notice;
+  const { notice } = routeApi.useSearch();
   const [filter, setFilter] = useState<FilterType>("all");
   
   // Check if push notifications are enabled in browser
   const { data: isPushSubscribed } = usePushSubscription();
   
-  // Fetch inbox with filter
+  // Fetch all messages once — filter client-side to avoid extra Convex calls on tab switch
   const {
     data: messages,
     isLoading: messagesLoading,
     error: messagesError,
     refetch,
-  } = useQuery(convexQuery(api.messages.feed, { filter: filter === "all" ? undefined : filter }));
+  } = useQuery(convexQuery(api.messages.feed, {}));
+
+  const displayMessages = useMemo(() => {
+    if (!messages) return [];
+    if (filter === "unread") return messages.filter((m: any) => !m.delivery?.readAt);
+    if (filter === "read") return messages.filter((m: any) => !!m.delivery?.readAt);
+    return messages;
+  }, [messages, filter]);
   
   const convex = useConvex();
   
@@ -71,9 +77,10 @@ function InboxPage() {
   
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Calculate unread count (from all messages, not filtered)
-  const { data: allMessages } = useQuery(convexQuery(api.messages.feed, {}));
-  const unreadCount = allMessages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+  const unreadCount = useMemo(
+    () => messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0,
+    [messages],
+  );
 
   // Update PWA app icon badge
   useAppBadge(unreadCount);
@@ -242,7 +249,7 @@ function InboxPage() {
               <MessageSkeleton />
               <MessageSkeleton />
             </>
-          ) : messages?.length === 0 ? (
+          ) : displayMessages.length === 0 ? (
             <Card className="p-8 text-center">
               <Bell className="mx-auto mb-4 h-12 w-12 text-[#818CF8]" />
               <p className="text-gray-600">
@@ -250,7 +257,7 @@ function InboxPage() {
               </p>
             </Card>
           ) : (
-            messages?.map((msg: any) => (
+            displayMessages.map((msg: any) => (
               <MessageCard 
                 key={msg._id} 
                 message={msg} 
