@@ -11,10 +11,11 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Switch } from "~/components/ui/switch";
 import { authClient } from "~/lib/auth-client";
 import { useState, useEffect } from "react";
-import { User, Bell, LogOut, ArrowLeft } from "lucide-react";
+import { User, Bell, LogOut, ArrowLeft, Smartphone, CheckCircle2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
+import { usePWAInstall } from "~/hooks/use-pwa-install";
 
 export const Route = createLazyFileRoute("/_authed/settings")({
   component: SettingsPage,
@@ -51,6 +52,11 @@ function SettingsPage() {
       setPreference(subscription.preference);
     }
   }, [subscription]);
+
+  const { isInstallable, install } = usePWAInstall();
+  const isStandalone =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
 
   const [pushLoading, setPushLoading] = useState(false);
 
@@ -226,6 +232,47 @@ function SettingsPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* App Install Section */}
+          {(isInstallable || isStandalone) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5" />
+                  App
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isStandalone ? (
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">App installed</p>
+                      <p className="text-sm text-gray-500">
+                        You're using the installed app.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Install App</p>
+                      <p className="text-sm text-gray-500">
+                        Add to your home screen for the best experience.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-[#6366F1] text-white hover:bg-[#6366F1]/90"
+                      onClick={install}
+                    >
+                      Install
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Sign Out */}
           <Button
