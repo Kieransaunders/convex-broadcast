@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"require\\(''sharp''\\)\")",
+      "Bash(node -e \"require\\(''canvas''\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
