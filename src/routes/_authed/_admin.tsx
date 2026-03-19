@@ -37,6 +37,7 @@ import {
   Settings,
 } from "lucide-react";
 import { authClient } from "~/lib/auth-client";
+import { clearTokenCache } from "~/routes/__root";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 
@@ -108,6 +109,7 @@ function AdminLayout() {
   }
 
   const handleSignOut = async () => {
+    clearTokenCache();
     await authClient.signOut();
     router.invalidate();
   };

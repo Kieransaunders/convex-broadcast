@@ -20,15 +20,29 @@ const getAuth = createServerFn({ method: "GET" }).handler(async () => {
   return await getToken();
 });
 
+// Client-side token cache — avoids a server round-trip on every navigation.
+// Cleared on sign-out so the next auth check fetches a fresh token.
+let _tokenCache: string | null = null;
+
+async function getCachedAuth(): Promise<string | null> {
+  if (_tokenCache !== null) return _tokenCache;
+  _tokenCache = await getAuth();
+  return _tokenCache;
+}
+
+export function clearTokenCache() {
+  _tokenCache = null;
+}
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
 }>()({
   beforeLoad: async ({ context }) => {
     (context.convexQueryClient.convexClient as any).setAuth(async () => {
-      return await getAuth();
+      return await getCachedAuth();
     });
-    return { token: await getAuth() }; // Keep returning token for consistency if needed elsewhere, or remove if not used.
+    return { token: await getCachedAuth() };
   },
   head: () => ({
     meta: [

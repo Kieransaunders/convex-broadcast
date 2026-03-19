@@ -18,9 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AuthedAdminMessagesDetailRouteImport } from './routes/_authed/_admin/messages/detail'
-import { Route as AuthedAdminGroupsDetailRouteImport } from './routes/_authed/_admin/groups/detail'
-import { Route as AuthedAdminEventsDetailRouteImport } from './routes/_authed/_admin/events/detail'
 
 const AuthedSettingsLazyRouteImport = createFileRoute('/_authed/settings')()
 const AuthedInboxLazyRouteImport = createFileRoute('/_authed/inbox')()
@@ -47,6 +44,15 @@ const AuthedAdminEventsIndexLazyRouteImport = createFileRoute(
 )()
 const AuthedAdminMessagesNewLazyRouteImport = createFileRoute(
   '/_authed/_admin/messages/new',
+)()
+const AuthedAdminMessagesDetailLazyRouteImport = createFileRoute(
+  '/_authed/_admin/messages/detail',
+)()
+const AuthedAdminGroupsDetailLazyRouteImport = createFileRoute(
+  '/_authed/_admin/groups/detail',
+)()
+const AuthedAdminEventsDetailLazyRouteImport = createFileRoute(
+  '/_authed/_admin/events/detail',
 )()
 
 const SignUpRoute = SignUpRouteImport.update({
@@ -157,28 +163,30 @@ const AuthedAdminMessagesNewLazyRoute =
   } as any).lazy(() =>
     import('./routes/_authed/_admin/messages/new.lazy').then((d) => d.Route),
   )
-const AuthedAdminMessagesDetailRoute =
-  AuthedAdminMessagesDetailRouteImport.update({
+const AuthedAdminMessagesDetailLazyRoute =
+  AuthedAdminMessagesDetailLazyRouteImport.update({
     id: '/messages/detail',
     path: '/messages/detail',
     getParentRoute: () => AuthedAdminRoute,
   } as any).lazy(() =>
     import('./routes/_authed/_admin/messages/detail.lazy').then((d) => d.Route),
   )
-const AuthedAdminGroupsDetailRoute = AuthedAdminGroupsDetailRouteImport.update({
-  id: '/groups/detail',
-  path: '/groups/detail',
-  getParentRoute: () => AuthedAdminRoute,
-} as any).lazy(() =>
-  import('./routes/_authed/_admin/groups/detail.lazy').then((d) => d.Route),
-)
-const AuthedAdminEventsDetailRoute = AuthedAdminEventsDetailRouteImport.update({
-  id: '/events/detail',
-  path: '/events/detail',
-  getParentRoute: () => AuthedAdminRoute,
-} as any).lazy(() =>
-  import('./routes/_authed/_admin/events/detail.lazy').then((d) => d.Route),
-)
+const AuthedAdminGroupsDetailLazyRoute =
+  AuthedAdminGroupsDetailLazyRouteImport.update({
+    id: '/groups/detail',
+    path: '/groups/detail',
+    getParentRoute: () => AuthedAdminRoute,
+  } as any).lazy(() =>
+    import('./routes/_authed/_admin/groups/detail.lazy').then((d) => d.Route),
+  )
+const AuthedAdminEventsDetailLazyRoute =
+  AuthedAdminEventsDetailLazyRouteImport.update({
+    id: '/events/detail',
+    path: '/events/detail',
+    getParentRoute: () => AuthedAdminRoute,
+  } as any).lazy(() =>
+    import('./routes/_authed/_admin/events/detail.lazy').then((d) => d.Route),
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -191,9 +199,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
   '/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/events/detail': typeof AuthedAdminEventsDetailRoute
-  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
-  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/events/detail': typeof AuthedAdminEventsDetailLazyRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
   '/messages/new': typeof AuthedAdminMessagesNewLazyRoute
   '/events/': typeof AuthedAdminEventsIndexLazyRoute
   '/groups/': typeof AuthedAdminGroupsIndexLazyRoute
@@ -211,9 +219,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
   '/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/events/detail': typeof AuthedAdminEventsDetailRoute
-  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
-  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/events/detail': typeof AuthedAdminEventsDetailLazyRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
   '/messages/new': typeof AuthedAdminMessagesNewLazyRoute
   '/events': typeof AuthedAdminEventsIndexLazyRoute
   '/groups': typeof AuthedAdminGroupsIndexLazyRoute
@@ -234,9 +242,9 @@ export interface FileRoutesById {
   '/_authed/_admin/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
   '/_authed/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/_authed/_admin/events/detail': typeof AuthedAdminEventsDetailRoute
-  '/_authed/_admin/groups/detail': typeof AuthedAdminGroupsDetailRoute
-  '/_authed/_admin/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/_authed/_admin/events/detail': typeof AuthedAdminEventsDetailLazyRoute
+  '/_authed/_admin/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
+  '/_authed/_admin/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
   '/_authed/_admin/messages/new': typeof AuthedAdminMessagesNewLazyRoute
   '/_authed/_admin/events/': typeof AuthedAdminEventsIndexLazyRoute
   '/_authed/_admin/groups/': typeof AuthedAdminGroupsIndexLazyRoute
@@ -442,21 +450,21 @@ declare module '@tanstack/react-router' {
       id: '/_authed/_admin/messages/detail'
       path: '/messages/detail'
       fullPath: '/messages/detail'
-      preLoaderRoute: typeof AuthedAdminMessagesDetailRouteImport
+      preLoaderRoute: typeof AuthedAdminMessagesDetailLazyRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/groups/detail': {
       id: '/_authed/_admin/groups/detail'
       path: '/groups/detail'
       fullPath: '/groups/detail'
-      preLoaderRoute: typeof AuthedAdminGroupsDetailRouteImport
+      preLoaderRoute: typeof AuthedAdminGroupsDetailLazyRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/events/detail': {
       id: '/_authed/_admin/events/detail'
       path: '/events/detail'
       fullPath: '/events/detail'
-      preLoaderRoute: typeof AuthedAdminEventsDetailRouteImport
+      preLoaderRoute: typeof AuthedAdminEventsDetailLazyRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
   }
@@ -465,9 +473,9 @@ declare module '@tanstack/react-router' {
 interface AuthedAdminRouteChildren {
   AuthedAdminDashboardLazyRoute: typeof AuthedAdminDashboardLazyRoute
   AuthedAdminSystemSettingsLazyRoute: typeof AuthedAdminSystemSettingsLazyRoute
-  AuthedAdminEventsDetailRoute: typeof AuthedAdminEventsDetailRoute
-  AuthedAdminGroupsDetailRoute: typeof AuthedAdminGroupsDetailRoute
-  AuthedAdminMessagesDetailRoute: typeof AuthedAdminMessagesDetailRoute
+  AuthedAdminEventsDetailLazyRoute: typeof AuthedAdminEventsDetailLazyRoute
+  AuthedAdminGroupsDetailLazyRoute: typeof AuthedAdminGroupsDetailLazyRoute
+  AuthedAdminMessagesDetailLazyRoute: typeof AuthedAdminMessagesDetailLazyRoute
   AuthedAdminMessagesNewLazyRoute: typeof AuthedAdminMessagesNewLazyRoute
   AuthedAdminEventsIndexLazyRoute: typeof AuthedAdminEventsIndexLazyRoute
   AuthedAdminGroupsIndexLazyRoute: typeof AuthedAdminGroupsIndexLazyRoute
@@ -478,9 +486,9 @@ interface AuthedAdminRouteChildren {
 const AuthedAdminRouteChildren: AuthedAdminRouteChildren = {
   AuthedAdminDashboardLazyRoute: AuthedAdminDashboardLazyRoute,
   AuthedAdminSystemSettingsLazyRoute: AuthedAdminSystemSettingsLazyRoute,
-  AuthedAdminEventsDetailRoute: AuthedAdminEventsDetailRoute,
-  AuthedAdminGroupsDetailRoute: AuthedAdminGroupsDetailRoute,
-  AuthedAdminMessagesDetailRoute: AuthedAdminMessagesDetailRoute,
+  AuthedAdminEventsDetailLazyRoute: AuthedAdminEventsDetailLazyRoute,
+  AuthedAdminGroupsDetailLazyRoute: AuthedAdminGroupsDetailLazyRoute,
+  AuthedAdminMessagesDetailLazyRoute: AuthedAdminMessagesDetailLazyRoute,
   AuthedAdminMessagesNewLazyRoute: AuthedAdminMessagesNewLazyRoute,
   AuthedAdminEventsIndexLazyRoute: AuthedAdminEventsIndexLazyRoute,
   AuthedAdminGroupsIndexLazyRoute: AuthedAdminGroupsIndexLazyRoute,

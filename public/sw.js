@@ -102,10 +102,12 @@ self.addEventListener("push", (event) => {
       self.registration.showNotification(data.title ?? "New Message", {
         body: data.body ?? "",
         icon: "/icon-192.png",
-        badge: "/icon-192.png",
+        badge: "/badge-72.png",
         data: { url },
         tag: url,
         renotify: true,
+        vibrate: [100, 50, 100],
+        actions: [{ action: "view", title: "View Message" }],
       }),
       // Update app badge if supported
       badgeCount > 0 && "setAppBadge" in self.navigator
@@ -118,13 +120,16 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? "/feed";
-  event.waitUntil(
-    Promise.all([
-      clients.openWindow(url),
-      // Clear badge when user clicks notification
-      "clearAppBadge" in self.navigator
-        ? self.navigator.clearAppBadge().catch(() => {})
-        : Promise.resolve(),
-    ]),
-  );
+  // Handle both direct click and "View Message" action button
+  if (event.action === "" || event.action === "view") {
+    event.waitUntil(
+      Promise.all([
+        clients.openWindow(url),
+        // Clear badge when user clicks notification
+        "clearAppBadge" in self.navigator
+          ? self.navigator.clearAppBadge().catch(() => {})
+          : Promise.resolve(),
+      ]),
+    );
+  }
 });

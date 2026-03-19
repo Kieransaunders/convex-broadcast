@@ -1,4 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+import { clearTokenCache } from "~/routes/__root";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
@@ -123,6 +124,7 @@ function SettingsPage() {
   };
 
   const handleSignOut = async () => {
+    clearTokenCache();
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {

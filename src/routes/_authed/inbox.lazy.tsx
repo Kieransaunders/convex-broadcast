@@ -1,4 +1,5 @@
 import { Link, getRouteApi, createLazyFileRoute } from "@tanstack/react-router";
+import { clearTokenCache } from "~/routes/__root";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../../convex/_generated/api";
@@ -117,6 +118,7 @@ function InboxPage() {
               </Button>
               <Button
                 onClick={() => {
+                  clearTokenCache();
                   authClient.signOut({
                     fetchOptions: {
                       onSuccess: () => {

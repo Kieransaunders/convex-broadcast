@@ -43,14 +43,10 @@ function SignInPage() {
       if (result.error) {
         setError(result.error.message || "Invalid credentials");
       } else {
-        router.invalidate();
-        const session = await authClient.getSession();
-        const role = (session?.data?.user as any)?.role;
-        if (role === "admin" || role === "super_admin") {
-          router.navigate({ to: "/dashboard" });
-        } else {
-          router.navigate({ to: "/inbox" });
-        }
+        const role = (result.data?.user as any)?.role;
+        router.navigate({
+          to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",
+        });
       }
     } catch {
       setError("Something went wrong. Please try again.");
