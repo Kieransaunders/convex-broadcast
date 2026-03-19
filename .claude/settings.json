@@ -4,7 +4,26 @@
       "Bash(node -e \"require\\(''sharp''\\)\")",
       "Bash(node -e \"require\\(''canvas''\\)\")",
       "Bash(node -e \":*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Read(//Volumes/External/DevExteralHD/CharityComms/**)",
+      "Bash(git add:*)",
+      "Bash(npm info:*)",
+      "Bash(git commit:*)",
+      "Bash(npx eslint:*)",
+      "Bash(node scripts/feed-route-match.test.ts)",
+      "Bash(node scripts/member-routing-message.test.ts)",
+      "Bash(node scripts/admin-layout-route.test.ts)",
+      "Read(//Users/boss/.claude/**)",
+      "Bash(sed -i '' 's/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/messages\\\\/detail\"\" }\\);/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/messages\\\\/detail\"\" }\\) as { id: string };/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/messages/detail.lazy.tsx)",
+      "Bash(sed -i '' 's/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/groups\\\\/detail\"\" }\\);/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/groups\\\\/detail\"\" }\\) as { id: string };/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/groups/detail.lazy.tsx)",
+      "Bash(sed -i '' 's/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/events\\\\/detail\"\" }\\);/const { id } = useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/events\\\\/detail\"\" }\\) as { id: string };/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/events/detail.lazy.tsx)",
+      "Bash(sed -i '' 's/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/messages\\\\/detail\"\" }\\) as { id: string }/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/messages\\\\/detail\"\" }\\) as unknown as { id: string }/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/messages/detail.lazy.tsx)",
+      "Bash(sed -i '' 's/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/groups\\\\/detail\"\" }\\) as { id: string }/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/groups\\\\/detail\"\" }\\) as unknown as { id: string }/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/groups/detail.lazy.tsx)",
+      "Bash(sed -i '' 's/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/events\\\\/detail\"\" }\\) as { id: string }/useSearch\\({ from: \"\"\\\\/_authed\\\\/_admin\\\\/events\\\\/detail\"\" }\\) as unknown as { id: string }/' /Volumes/External/DevExteralHD/CharityComms/convex-broadcast/src/routes/_authed/_admin/events/detail.lazy.tsx)",
+      "Bash(git stash:*)"
     ]
   }
 }

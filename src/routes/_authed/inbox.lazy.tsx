@@ -1,5 +1,5 @@
 import { Link, createLazyFileRoute, getRouteApi } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Trash2 } from "lucide-react";
 import { useConvex } from "convex/react";
@@ -25,7 +25,6 @@ const routeApi = getRouteApi("/_authed/inbox");
 type FilterType = "all" | "unread" | "read";
 
 function InboxPage() {
-  const queryClient = useQueryClient();
   const { notice } = routeApi.useSearch();
   const [filter, setFilter] = useState<FilterType>("all");
   
@@ -59,19 +58,11 @@ function InboxPage() {
     mutationFn: async () => {
       return await convex.mutation(api.messages.markAllAsRead, {});
     },
-    onSuccess: () => {
-      // Invalidate all inbox queries
-      queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
-    },
   });
-  
+
   const deleteMyDelivery = useMutation({
     mutationFn: async (messageId: string) => {
       return await convex.mutation(api.messages.deleteMyDelivery, { messageId: messageId as any });
-    },
-    onSuccess: () => {
-      // Invalidate all inbox queries
-      queryClient.invalidateQueries({ queryKey: ["messages", "feed"] });
     },
   });
   
