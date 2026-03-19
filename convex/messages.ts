@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getAdminUser, getUser, getSuperAdminUser } from "./auth";
+import { getAdminUser, getUser, getSuperAdminUser, safeGetUser } from "./auth";
 import type { Id } from "./_generated/dataModel";
 import { ConvexError } from "convex/values";
 
@@ -397,8 +397,8 @@ export const feed = query({
     filter: v.optional(v.union(v.literal("all"), v.literal("read"), v.literal("unread"))),
   },
   handler: async (ctx, args) => {
-    const user = await getUser(ctx);
-    if (!user) return []; // Safety check, though getUser should throw
+    const user = await safeGetUser(ctx);
+    if (!user) return [];
     let deliveries = await ctx.db
       .query("deliveries")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))

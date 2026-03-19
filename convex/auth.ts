@@ -121,6 +121,14 @@ export const getUser = async (ctx: QueryCtx) => {
   }
 };
 
+// Returns null instead of throwing — use for queries that should return empty data
+// during the brief auth initialization window (hydration race with ConvexBetterAuthProvider).
+export const safeGetUser = async (ctx: QueryCtx) => {
+  const authUser = await authComponent.safeGetAuthUser(ctx);
+  if (!authUser?.userId) return null;
+  return ctx.db.get(authUser.userId as Id<"users">);
+};
+
 export const getAdminUser = async (ctx: QueryCtx) => {
   const user = await getUser(ctx);
   if (user.role !== "admin" && user.role !== "super_admin") {
