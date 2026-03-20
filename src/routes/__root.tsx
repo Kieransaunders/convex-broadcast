@@ -17,6 +17,7 @@ import { ImpersonationBanner } from "~/components/impersonation-banner";
 import appCss from "~/styles/app.css?url";
 
 import { PWAInstallPrompt } from "~/components/pwa-install-prompt";
+import { SWUpdatePrompt } from "~/components/sw-update-prompt";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -129,6 +130,7 @@ function RootComponent() {
           <Outlet />
           <ImpersonationBanner />
           <PWAInstallPrompt />
+          <SWUpdatePrompt />
         </ConvexBetterAuthProvider>
       </QueryClientProvider>
     </RootDocument>

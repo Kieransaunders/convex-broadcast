@@ -49,6 +49,7 @@
     "@edge-runtime/vm": "^5.0.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/eslint-config": "^0.4.0",
+    "@tanstack/react-query-devtools": "^5.91.3",
     "@types/node": "^25.4.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

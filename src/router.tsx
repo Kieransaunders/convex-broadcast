@@ -1,8 +1,10 @@
 import { createRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
 import { ConvexQueryClient } from "@convex-dev/react-query";
 import { ConvexProvider } from "convex/react";
+
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
@@ -17,8 +19,9 @@ export function getRouter() {
       queries: {
         queryKeyHashFn: convexQueryClient.hashFn(),
         queryFn: convexQueryClient.queryFn(),
-        gcTime: Infinity,
-        staleTime: 0,
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
+        staleTime: 1000 * 30, // 30 seconds
+        refetchOnWindowFocus: false,
       },
     },
   });
@@ -37,6 +40,7 @@ export function getRouter() {
       Wrap: ({ children }) => (
         <ConvexProvider client={convexQueryClient.convexClient}>
           {children}
+          {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
         </ConvexProvider>
       ),
     }),

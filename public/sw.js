@@ -133,3 +133,10 @@ self.addEventListener("notificationclick", (event) => {
     );
   }
 });
+
+// Handle skip waiting message from client
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});

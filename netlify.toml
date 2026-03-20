@@ -66,3 +66,11 @@ SITE_URL = "https://org-comms-pwa.netlify.app"
 
 [context.deploy-preview.environment]
 SITE_URL = "https://deploy-preview--org-comms-pwa.netlify.app"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"

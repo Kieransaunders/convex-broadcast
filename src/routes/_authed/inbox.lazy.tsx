@@ -1,9 +1,9 @@
 import { Link, createLazyFileRoute, getRouteApi } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Trash2 } from "lucide-react";
 import { useConvex } from "convex/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -53,16 +53,70 @@ function InboxPage() {
   const isAdmin =
     user && (user.role === "admin" || user.role === "super_admin");
   
-  // Use TanStack Query's useMutation for proper cache invalidation
+  const queryClient = useQueryClient();
+
+
+  // Use TanStack Query's useMutation with optimistic updates
   const markAllAsRead = useMutation({
     mutationFn: async () => {
       return await convex.mutation(api.messages.markAllAsRead, {});
+    },
+    onMutate: async () => {
+      // Cancel outgoing refetches to avoid overwriting optimistic update
+      await queryClient.cancelQueries({ queryKey: convexQuery(api.messages.feed, {}).queryKey });
+      
+      // Snapshot previous value
+      const previousMessages = queryClient.getQueryData(convexQuery(api.messages.feed, {}).queryKey);
+      
+      // Optimistically update to mark all as read
+      queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, (old: any) => {
+        if (!old) return old;
+        return old.map((msg: any) => ({
+          ...msg,
+          delivery: { ...msg.delivery, readAt: Date.now() }
+        }));
+      });
+      
+      return { previousMessages };
+    },
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousMessages) {
+        queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, context.previousMessages);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure cache is in sync
+      queryClient.invalidateQueries({ queryKey: convexQuery(api.messages.feed, {}).queryKey });
+      queryClient.invalidateQueries({ queryKey: convexQuery(api.messages.unreadCount, {}).queryKey });
     },
   });
 
   const deleteMyDelivery = useMutation({
     mutationFn: async (messageId: string) => {
       return await convex.mutation(api.messages.deleteMyDelivery, { messageId: messageId as any });
+    },
+    onMutate: async (messageId) => {
+      await queryClient.cancelQueries({ queryKey: convexQuery(api.messages.feed, {}).queryKey });
+      
+      const previousMessages = queryClient.getQueryData(convexQuery(api.messages.feed, {}).queryKey);
+      
+      // Optimistically remove the message
+      queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, (old: any) => {
+        if (!old) return old;
+        return old.filter((msg: any) => msg._id !== messageId);
+      });
+      
+      return { previousMessages };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousMessages) {
+        queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, context.previousMessages);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: convexQuery(api.messages.feed, {}).queryKey });
+      queryClient.invalidateQueries({ queryKey: convexQuery(api.messages.unreadCount, {}).queryKey });
     },
   });
   
@@ -76,7 +130,7 @@ function InboxPage() {
   // Update PWA app icon badge
   useAppBadge(unreadCount);
 
-  const handleDeleteMessage = async (messageId: string) => {
+  const handleDeleteMessage = useCallback(async (messageId: string) => {
     if (!confirm("Delete this message from your feed?")) return;
     setDeletingId(messageId);
     try {
@@ -86,7 +140,15 @@ function InboxPage() {
     } finally {
       setDeletingId(null);
     }
-  };
+  }, [deleteMyDelivery]);
+
+  const handleMarkAllAsRead = useCallback(async () => {
+    await markAllAsRead.mutateAsync();
+  }, [markAllAsRead]);
+
+  const handleFilterChange = useCallback((key: FilterType) => {
+    setFilter(key);
+  }, []);
 
   useEffect(() => {
     if (messagesError) {
@@ -193,9 +255,7 @@ function InboxPage() {
                 variant="outline"
                 size="sm"
                 className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
-                onClick={async () => {
-                  await markAllAsRead.mutateAsync();
-                }}
+                onClick={handleMarkAllAsRead}
                 disabled={markAllAsRead.isPending}
               >
                 {markAllAsRead.isPending ? (
@@ -218,7 +278,7 @@ function InboxPage() {
               <button
                 key={key}
                 type="button"
-                onClick={() => setFilter(key)}
+                onClick={() => handleFilterChange(key)}
                 className={cn(
                   "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-150 cursor-pointer",
                   filter === key
