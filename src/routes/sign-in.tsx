@@ -12,6 +12,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { authClient } from "~/lib/auth-client";
+import { clearTokenCache } from "~/lib/auth-helpers";
 
 export const Route = createFileRoute("/sign-in")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -43,6 +44,7 @@ function SignInPage() {
       if (result.error) {
         setError(result.error.message || "Invalid credentials");
       } else {
+        clearTokenCache();
         const role = (result.data.user as any)?.role;
         router.navigate({
           to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",

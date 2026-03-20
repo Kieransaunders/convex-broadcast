@@ -17,6 +17,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { authClient } from "~/lib/auth-client";
+import { clearTokenCache } from "~/lib/auth-helpers";
 
 export const Route = createFileRoute("/sign-up")({
   component: SignUpPage,
@@ -49,6 +50,7 @@ function SignUpPage() {
       if (result.error) {
         setError(result.error.message || "Failed to create account");
       } else {
+        clearTokenCache();
         setSuccess(true);
         setTimeout(() => {
           router.invalidate();

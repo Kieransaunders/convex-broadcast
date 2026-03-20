@@ -7,45 +7,29 @@ import {
 import * as React from "react";
 import { useEffect } from "react";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { createServerFn } from "@tanstack/react-start";
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { authClient } from "~/lib/auth-client";
-import { getToken } from "~/lib/auth-server";
+import { getCachedAuth } from "~/lib/auth-helpers";
 
 import { ImpersonationBanner } from "~/components/impersonation-banner";
 import appCss from "~/styles/app.css?url";
 
 import { PWAInstallPrompt } from "~/components/pwa-install-prompt";
 
-const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return await getToken();
-});
-
-// Client-side token cache — avoids a server round-trip on every navigation.
-// Cleared on sign-out so the next auth check fetches a fresh token.
-let _tokenCache: string | null = null;
-
-async function getCachedAuth(): Promise<string | null> {
-  if (_tokenCache !== null) return _tokenCache;
-  _tokenCache = (await getAuth()) ?? null;
-  return _tokenCache;
-}
-
-export function clearTokenCache() {
-  _tokenCache = null;
-}
-
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
 }>()({
   beforeLoad: async ({ context }) => {
+    // Set the auth function on the Convex client lazily.
+    // This function will only be executed when a Convex query/mutation is actually called.
     (context.convexQueryClient.convexClient as any).setAuth(async () => {
       return await getCachedAuth();
     });
-    return { token: await getCachedAuth() };
+    // NO BLOCKING AWAIT HERE - allows public pages to render immediately
+    return {};
   },
   head: () => ({
     meta: [

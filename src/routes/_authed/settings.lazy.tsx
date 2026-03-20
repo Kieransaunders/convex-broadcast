@@ -5,7 +5,7 @@ import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Bell, CheckCircle2, LogOut, Smartphone, User } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
-import { clearTokenCache } from "~/routes/__root";
+import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";

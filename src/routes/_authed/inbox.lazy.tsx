@@ -5,7 +5,7 @@ import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Tr
 import { useConvex } from "convex/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
-import { clearTokenCache } from "~/routes/__root";
+import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";

@@ -37,7 +37,7 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { authClient } from "~/lib/auth-client";
-import { clearTokenCache } from "~/routes/__root";
+import { clearTokenCache } from "~/lib/auth-helpers";
 import { api } from "../../../convex/_generated/api.js";
 
 const navigation = [
