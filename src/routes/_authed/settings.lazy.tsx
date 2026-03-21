@@ -35,7 +35,7 @@ function SettingsPage() {
 
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
-  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+  const unreadCount = messages?.items?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 
   // Update PWA app icon badge
   useAppBadge(unreadCount);

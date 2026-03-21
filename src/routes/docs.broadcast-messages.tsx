@@ -7,11 +7,9 @@ import {
   Mail,
   Send,
   Target,
-  Users,
   Zap,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
 import { DocsPageShell, FaqSection } from "~/components/docs-nav";
 
 export const Route = createFileRoute("/docs/broadcast-messages")({

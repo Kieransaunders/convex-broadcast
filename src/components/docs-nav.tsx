@@ -1,11 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Bell,
   BookOpen,
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
   Globe,
   Mail,
   Menu,
@@ -17,7 +14,14 @@ import {
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
-const DOC_LINKS = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+};
+
+const DOC_LINKS: NavItem[] = [
   { to: "/docs", label: "Overview", icon: BookOpen, exact: true },
   { to: "/docs/broadcast-messages", label: "Broadcast Messages", icon: Mail },
   { to: "/docs/notifications", label: "Push Notifications", icon: Bell },
@@ -25,11 +29,10 @@ const DOC_LINKS = [
   { to: "/docs/role-based-access", label: "Role-Based Access", icon: Shield },
   { to: "/docs/event-management", label: "Event Management", icon: Globe },
   { to: "/docs/delivery-tracking", label: "Delivery Tracking", icon: BarChart2 },
-] as const;
+];
 
 export function DocsNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -37,10 +40,6 @@ export function DocsNav() {
     if (exact) return currentPath === to;
     return currentPath.startsWith(to);
   };
-
-  const currentPage = DOC_LINKS.find((l) =>
-    l.exact ? currentPath === l.to : currentPath === l.to
-  );
 
   return (
     <>

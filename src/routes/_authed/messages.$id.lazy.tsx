@@ -31,7 +31,7 @@ function MessageDetailPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
-  const unreadCount = messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
+  const unreadCount = messages?.items?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 
   // Update PWA app icon badge
   useAppBadge(unreadCount);

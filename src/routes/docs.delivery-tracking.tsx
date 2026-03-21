@@ -4,7 +4,6 @@ import {
   BarChart2,
   CheckCircle,
   Eye,
-  Mail,
   TrendingUp,
   Users,
   Zap,
