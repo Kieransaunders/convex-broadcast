@@ -282,7 +282,7 @@ function LandingPage() {
               </div>
               <h3 className="font-bold text-[#1E1B4B] mb-2">Send Message</h3>
               <p className="text-sm text-[#1E1B4B]/70">
-                Go to the <strong>Admin Dashboard</strong>, create a message, and send or schedule it for 1 minute time.
+                Go to the <strong>Admin Dashboard</strong>, create a message, and send it immediately or schedule it at least 5 minutes in the future.
               </p>
             </div>
 
