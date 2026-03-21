@@ -581,7 +581,10 @@ export const unreadCount = query({
 export const dashboardStats = query({
   args: {},
   handler: async (ctx) => {
-    await getAdminUser(ctx);
+    const user = await safeGetUser(ctx);
+    if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
+      return null;
+    }
     const [users, allMessages, recentMessages] = await Promise.all([
       ctx.db.query("users").collect(),
       ctx.db.query("messages").collect(),
