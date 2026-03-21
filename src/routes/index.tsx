@@ -80,6 +80,12 @@ function LandingPage() {
                 </span>
               </a>
               <Link
+                to="/docs"
+                className="text-sm font-medium text-[#1E1B4B] hover:text-[#6366F1]"
+              >
+                Docs
+              </Link>
+              <Link
                 to="/sign-in"
                 className="text-sm font-medium text-[#1E1B4B] hover:text-[#6366F1]"
               >
@@ -120,6 +126,13 @@ function LandingPage() {
                   {stars !== null ? formatStars(stars) : "—"}
                 </span>
               </a>
+              <Link
+                to="/docs"
+                className="flex items-center justify-center w-full rounded-lg px-4 py-2.5 text-sm font-medium text-[#1E1B4B] hover:bg-[#6366F1]/10 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Docs
+              </Link>
               <Link
                 to="/sign-in"
                 className="flex items-center justify-center w-full rounded-lg px-4 py-2.5 text-sm font-medium text-[#1E1B4B] hover:bg-[#6366F1]/10 transition-colors"
@@ -305,6 +318,7 @@ function LandingPage() {
               icon={Mail}
               title="Broadcast Messages"
               description="Send targeted messages to specific groups or your entire organization instantly."
+              link="/docs/broadcast-messages"
             />
             <FeatureCard
               icon={Bell}
@@ -316,21 +330,25 @@ function LandingPage() {
               icon={Users}
               title="Group Management"
               description="Organize your members into groups for targeted communications."
+              link="/docs/group-management"
             />
             <FeatureCard
               icon={Shield}
               title="Role-Based Access"
               description="Control who can send messages and manage your organization."
+              link="/docs/role-based-access"
             />
             <FeatureCard
               icon={Globe}
               title="Event Management"
               description="Schedule events and send automatic updates to attendees."
+              link="/docs/event-management"
             />
             <FeatureCard
               icon={CheckCircle}
               title="Delivery Tracking"
               description="Know who has read your messages with real-time delivery stats."
+              link="/docs/delivery-tracking"
             />
           </div>
         </div>
