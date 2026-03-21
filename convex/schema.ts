@@ -16,7 +16,11 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_role", ["role"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .searchIndex("search_name_email", {
+      searchField: "name",
+      filterFields: ["role", "status"],
+    }),
 
   groups: defineTable({
     name: v.string(),
