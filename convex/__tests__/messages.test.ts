@@ -21,21 +21,21 @@ const t = convexTest(schema, import.meta.glob("../**/*.ts"));
 // feed — unauthenticated (hydration-race regression)
 // ---------------------------------------------------------------------------
 
-test("feed returns empty array when unauthenticated", async () => {
+test("feed returns empty paginated result when unauthenticated", async () => {
   // Regression test: safeGetUser() returns null when unauthenticated, so feed
-  // must short-circuit and return [] rather than throwing. This guards against
-  // the auth hydration race on the client where the query fires before the
-  // session is ready.
+  // must short-circuit and return an empty paginated result rather than
+  // throwing. This guards against the auth hydration race on the client where
+  // the query fires before the session is ready.
   const result = await t.query(api.messages.feed, {});
-  expect(result).toEqual([]);
+  expect(result).toEqual({ items: [], cursor: null, hasMore: false });
 });
 
-test("feed with filter returns empty array when unauthenticated", async () => {
+test("feed with filter returns empty paginated result when unauthenticated", async () => {
   const resultUnread = await t.query(api.messages.feed, { filter: "unread" });
-  expect(resultUnread).toEqual([]);
+  expect(resultUnread).toEqual({ items: [], cursor: null, hasMore: false });
 
   const resultRead = await t.query(api.messages.feed, { filter: "read" });
-  expect(resultRead).toEqual([]);
+  expect(resultRead).toEqual({ items: [], cursor: null, hasMore: false });
 });
 
 // ---------------------------------------------------------------------------

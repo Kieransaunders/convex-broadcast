@@ -145,12 +145,10 @@ export const removeSubscription = internalMutation({
 export const getUserUnreadCount = internalQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    // Get all deliveries for this user that haven't been read
     const deliveries = await ctx.db
       .query("deliveries")
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("readAt"), undefined))
       .collect();
-    return deliveries.length;
+    return deliveries.filter((d) => d.readAt === undefined).length;
   },
 });

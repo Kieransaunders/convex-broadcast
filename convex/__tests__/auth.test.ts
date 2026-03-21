@@ -29,21 +29,23 @@ test("getCurrentUser returns null when unauthenticated", async () => {
 // feed (regression test for hydration race fix)
 // ---------------------------------------------------------------------------
 
-test("feed returns empty array when unauthenticated", async () => {
-  // KEY regression test: the feed query must return [] — not throw — when
-  // called before the auth session is established (the hydration race window
-  // on the client). This was the bug fixed in
+test("feed returns empty paginated result when unauthenticated", async () => {
+  // KEY regression test: the feed query must return an empty paginated result
+  // — not throw — when called before the auth session is established (the
+  // hydration race window on the client). This was the bug fixed in
   // "fix: return empty feed gracefully during auth hydration race".
   const result = await t.query(api.messages.feed, {});
-  expect(result).toEqual([]);
+  expect(result).toEqual({ items: [], cursor: null, hasMore: false });
 });
 
 // ---------------------------------------------------------------------------
 // dashboardStats
 // ---------------------------------------------------------------------------
 
-test("dashboardStats throws when called unauthenticated", async () => {
-  await expect(t.query(api.messages.dashboardStats, {})).rejects.toThrow(
-    "Unauthenticated",
-  );
+test("dashboardStats returns null when called unauthenticated", async () => {
+  // dashboardStats uses safeGetUser so it returns null during the auth
+  // hydration race rather than throwing, matching the pattern used by
+  // feed/unreadCount.
+  const result = await t.query(api.messages.dashboardStats, {});
+  expect(result).toBeNull();
 });
