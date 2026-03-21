@@ -151,19 +151,19 @@ function NewMessagePage() {
         </CardContent>
       </Card>
 
-      {/* Navigation buttons (hidden on review step — actions are inside StepPreview) */}
-      {currentStep < 3 && (
-        <div className="flex items-center justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className="border-[#6366F1]/20 text-[#1E1B4B] cursor-pointer disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Back
-          </Button>
+      {/* Navigation buttons (Next hidden on review step — actions are inside StepPreview) */}
+      <div className="flex items-center justify-between">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleBack}
+          disabled={currentStep === 0}
+          className="border-[#6366F1]/20 text-[#1E1B4B] cursor-pointer disabled:cursor-not-allowed"
+        >
+          <ChevronLeft className="mr-1 h-4 w-4" />
+          Back
+        </Button>
+        {currentStep < 3 && (
           <Button
             type="button"
             onClick={handleNext}
@@ -172,8 +172,8 @@ function NewMessagePage() {
             Next
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
