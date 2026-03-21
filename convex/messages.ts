@@ -101,12 +101,18 @@ export const create = mutation({
       createdBy: user._id,
       createdAt: Date.now(),
     });
-    if (targetIds && args.audienceType !== "all") {
+    if (args.audienceType !== "all") {
       const targetType =
         args.audienceType === "groups"
           ? ("group" as const)
           : ("event" as const);
-      for (const targetId of targetIds) {
+      // Use explicit targetIds, or fall back to linkedEventId for event audience
+      const resolvedTargetIds =
+        targetIds ??
+        (args.audienceType === "event" && args.linkedEventId
+          ? [args.linkedEventId]
+          : []);
+      for (const targetId of resolvedTargetIds) {
         await ctx.db.insert("messageTargets", {
           messageId,
           targetType,
@@ -296,13 +302,18 @@ export const resolveAudience = internalMutation({
       } else {
         // Event audience: resolve via eventGroupLinks → groupMemberships
         // Each target points to an event; find linked groups, then their members
+        // Fall back to linkedEventId if no messageTargets exist (legacy data)
+        const eventIds: Array<Id<"events">> =
+          targets.length > 0
+            ? targets.map((t) => t.targetId as Id<"events">)
+            : message.linkedEventId
+              ? [message.linkedEventId]
+              : [];
         const eventGroupLinks = await Promise.all(
-          targets.map((t) =>
+          eventIds.map((eventId) =>
             ctx.db
               .query("eventGroupLinks")
-              .withIndex("by_eventId", (q) =>
-                q.eq("eventId", t.targetId as Id<"events">),
-              )
+              .withIndex("by_eventId", (q) => q.eq("eventId", eventId))
               .collect(),
           ),
         );

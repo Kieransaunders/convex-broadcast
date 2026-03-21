@@ -45,6 +45,7 @@ export function SendEventUpdateDialog({
       category: "notice" | "reminder" | "event_update" | "urgent";
       audienceType: "all" | "groups" | "event";
       linkedEventId?: Id<"events">;
+      targetIds?: string[];
       pushEnabled: boolean;
     }) => {
       return await convex.mutation(api.messages.create, data);
@@ -65,6 +66,7 @@ export function SendEventUpdateDialog({
       category,
       audienceType: "event",
       linkedEventId: eventId,
+      targetIds: [eventId],
       pushEnabled,
     });
   };
