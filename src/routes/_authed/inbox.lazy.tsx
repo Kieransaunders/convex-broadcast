@@ -31,7 +31,12 @@ function InboxPage() {
   // Check if push notifications are enabled in browser
   const { data: isPushSubscribed } = usePushSubscription();
   
-  // Fetch messages with pagination — filter client-side to avoid extra Convex calls on tab switch
+  const [loadedPages, setLoadedPages] = useState<any[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Fetch first page of messages
   const {
     data: feedData,
     isLoading: messagesLoading,
@@ -39,7 +44,19 @@ function InboxPage() {
     refetch,
   } = useQuery(convexQuery(api.messages.feed, {}));
 
-  const messages = feedData?.items ?? feedData ?? [];
+  // Sync first page data into loadedPages state
+  useEffect(() => {
+    if (feedData && feedData.items) {
+      setLoadedPages([feedData.items]);
+      setNextCursor(feedData.cursor ?? null);
+      setHasMore(feedData.hasMore ?? false);
+    }
+  }, [feedData]);
+
+  const messages = useMemo(
+    () => loadedPages.flat(),
+    [loadedPages],
+  );
 
   const displayMessages = useMemo(() => {
     if (!messages || !Array.isArray(messages)) return [];
@@ -147,6 +164,23 @@ function InboxPage() {
       setDeletingId(null);
     }
   }, [deleteMyDelivery]);
+
+  const handleLoadMore = useCallback(async () => {
+    if (!nextCursor || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      const result = await convex.query(api.messages.feed, { cursor: nextCursor });
+      if (result && result.items) {
+        setLoadedPages((prev) => [...prev, result.items]);
+        setNextCursor(result.cursor ?? null);
+        setHasMore(result.hasMore ?? false);
+      }
+    } catch (err) {
+      console.error("Failed to load more messages:", err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [nextCursor, isLoadingMore, convex]);
 
   const handleMarkAllAsRead = useCallback(async () => {
     await markAllAsRead.mutateAsync();
@@ -314,14 +348,31 @@ function InboxPage() {
               </p>
             </Card>
           ) : (
-            displayMessages.map((msg: any) => (
-              <MessageCard 
-                key={msg._id} 
-                message={msg} 
-                onDelete={() => handleDeleteMessage(msg._id)}
-                isDeleting={deletingId === msg._id}
-              />
-            ))
+            <>
+              {displayMessages.map((msg: any) => (
+                <MessageCard
+                  key={msg._id}
+                  message={msg}
+                  onDelete={() => handleDeleteMessage(msg._id)}
+                  isDeleting={deletingId === msg._id}
+                />
+              ))}
+              {hasMore && (
+                <div className="flex justify-center pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleLoadMore}
+                    disabled={isLoadingMore}
+                    className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
+                  >
+                    {isLoadingMore ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Load more messages
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

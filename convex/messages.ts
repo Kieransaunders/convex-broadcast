@@ -280,22 +280,13 @@ export const resolveAudience = internalMutation({
         .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
         .collect();
 
+      // Resolve group IDs based on audience type
+      let groupIds: Array<Id<"groups">> = [];
+
       if (message.audienceType === "groups") {
-        const membershipSets = await Promise.all(
-          targets.map((t) =>
-            ctx.db
-              .query("groupMemberships")
-              .withIndex("by_groupId", (q) =>
-                q.eq("groupId", t.targetId as Id<"groups">),
-              )
-              .collect(),
-          ),
-        );
-        const uniqueIds = new Set(membershipSets.flat().map((m) => m.userId));
-        userIds = [...uniqueIds];
+        groupIds = targets.map((t) => t.targetId as Id<"groups">);
       } else {
-        // Event audience: resolve via eventGroupLinks → groupMemberships
-        // Each target points to an event; find linked groups, then their members
+        // Event audience: resolve via eventGroupLinks
         const eventGroupLinks = await Promise.all(
           targets.map((t) =>
             ctx.db
@@ -306,18 +297,28 @@ export const resolveAudience = internalMutation({
               .collect(),
           ),
         );
-        const groupIds = eventGroupLinks.flat().map((l) => l.groupId);
-        const membershipSets = await Promise.all(
-          groupIds.map((groupId) =>
-            ctx.db
-              .query("groupMemberships")
-              .withIndex("by_groupId", (q) => q.eq("groupId", groupId))
-              .collect(),
-          ),
-        );
-        const uniqueIds = new Set(membershipSets.flat().map((m) => m.userId));
-        userIds = [...uniqueIds];
+        groupIds = eventGroupLinks.flat().map((l) => l.groupId);
       }
+
+      // Resolve group memberships and filter to active users only
+      const membershipSets = await Promise.all(
+        groupIds.map((groupId) =>
+          ctx.db
+            .query("groupMemberships")
+            .withIndex("by_groupId", (q) => q.eq("groupId", groupId))
+            .collect(),
+        ),
+      );
+      const candidateIds = new Set(membershipSets.flat().map((m) => m.userId));
+
+      // Filter out inactive users
+      const activeChecks = await Promise.all(
+        [...candidateIds].map(async (userId) => {
+          const user = await ctx.db.get("users", userId);
+          return user?.status === "active" ? userId : null;
+        }),
+      );
+      userIds = activeChecks.filter(Boolean) as Array<Id<"users">>;
     }
 
     // Create delivery records in batches to avoid the 1024 write limit.
@@ -582,15 +583,31 @@ export const dashboardStats = query({
   args: {},
   handler: async (ctx) => {
     await getAdminUser(ctx);
-    const [users, allMessages, recentMessages] = await Promise.all([
-      ctx.db.query("users").collect(),
-      ctx.db.query("messages").collect(),
-      ctx.db.query("messages").order("desc").take(5),
-    ]);
+    const [activeUsers, sentMessages, draftMessages, scheduledMessages, recentMessages] =
+      await Promise.all([
+        ctx.db
+          .query("users")
+          .withIndex("by_status", (q) => q.eq("status", "active"))
+          .collect(),
+        ctx.db
+          .query("messages")
+          .withIndex("by_status", (q) => q.eq("status", "sent"))
+          .collect(),
+        ctx.db
+          .query("messages")
+          .withIndex("by_status", (q) => q.eq("status", "draft"))
+          .collect(),
+        ctx.db
+          .query("messages")
+          .withIndex("by_status", (q) => q.eq("status", "scheduled"))
+          .collect(),
+        ctx.db.query("messages").order("desc").take(5),
+      ]);
     return {
-      userCount: users.length,
-      totalCount: allMessages.length,
-      sentCount: allMessages.filter((m) => m.status === "sent").length,
+      userCount: activeUsers.length,
+      totalCount:
+        sentMessages.length + draftMessages.length + scheduledMessages.length,
+      sentCount: sentMessages.length,
       recentMessages,
     };
   },

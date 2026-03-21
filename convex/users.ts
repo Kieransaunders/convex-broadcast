@@ -26,6 +26,32 @@ export const list = query({
   },
 });
 
+export const search = query({
+  args: {
+    query: v.string(),
+    role: v.optional(
+      v.union(
+        v.literal("member"),
+        v.literal("admin"),
+        v.literal("super_admin"),
+      ),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx);
+    let q = ctx.db
+      .query("users")
+      .withSearchIndex("search_name_email", (s) => {
+        let search = s.search("name", args.query);
+        if (args.role) {
+          search = search.eq("role", args.role);
+        }
+        return search;
+      });
+    return await q.take(50);
+  },
+});
+
 export const getById = query({
   args: { id: v.optional(v.id("users")) },
   handler: async (ctx, args) => {
