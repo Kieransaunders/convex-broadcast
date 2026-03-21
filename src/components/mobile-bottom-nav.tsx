@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutDashboard, Settings } from "lucide-react";
+import { Home, LayoutDashboard, Settings, MessageSquare, Users } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 interface MobileBottomNavProps {
@@ -11,10 +11,10 @@ export function MobileBottomNav({ isAdmin, unreadCount }: MobileBottomNavProps) 
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
-  const navItems = [
+  const memberNavItems = [
     {
       to: "/inbox",
-      label: "Messages",
+      label: "Inbox",
       icon: Home,
       active: currentPath === "/inbox" || currentPath.startsWith("/messages/"),
     },
@@ -24,17 +24,36 @@ export function MobileBottomNav({ isAdmin, unreadCount }: MobileBottomNavProps) 
       icon: Settings,
       active: currentPath === "/settings",
     },
-    ...(isAdmin
-      ? [
-          {
-            to: "/dashboard",
-            label: "Admin",
-            icon: LayoutDashboard,
-            active: currentPath.startsWith("/dashboard"),
-          },
-        ]
-      : []),
   ];
+
+  const adminNavItems = [
+    {
+      to: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      active: currentPath === "/dashboard",
+    },
+    {
+      to: "/messages",
+      label: "Messages",
+      icon: MessageSquare,
+      active: currentPath.startsWith("/messages"),
+    },
+    {
+      to: "/users",
+      label: "Users",
+      icon: Users,
+      active: currentPath.startsWith("/users"),
+    },
+    {
+      to: "/settings",
+      label: "Settings",
+      icon: Settings,
+      active: currentPath === "/settings",
+    },
+  ];
+
+  const navItems = isAdmin ? adminNavItems : memberNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] backdrop-blur-sm sm:hidden">
