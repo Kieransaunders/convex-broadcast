@@ -14,6 +14,7 @@ function DashboardPage() {
   const { data: stats, isLoading } = useQuery(
     convexQuery(api.messages.dashboardStats, {}),
   );
+  const loading = isLoading || stats === null;
 
   return (
     <div className="space-y-6">
@@ -30,21 +31,21 @@ function DashboardPage() {
           title="Total Users"
           value={stats?.userCount ?? 0}
           icon={Users}
-          loading={isLoading}
+          loading={loading}
           href="/users"
         />
         <StatCard
           title="Messages Sent"
           value={stats?.sentCount ?? 0}
           icon={Mail}
-          loading={isLoading}
+          loading={loading}
           href="/messages"
         />
         <StatCard
           title="Total Messages"
           value={stats?.totalCount ?? 0}
           icon={Eye}
-          loading={isLoading}
+          loading={loading}
           href="/messages"
         />
       </div>
@@ -72,7 +73,7 @@ function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {loading ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />

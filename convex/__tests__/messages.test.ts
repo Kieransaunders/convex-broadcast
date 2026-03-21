@@ -81,8 +81,9 @@ test("create throws when unauthenticated", async () => {
 // dashboardStats — unauthenticated
 // ---------------------------------------------------------------------------
 
-test("dashboardStats throws when unauthenticated", async () => {
-  await expect(t.query(api.messages.dashboardStats, {})).rejects.toThrow(
-    "Unauthenticated",
-  );
+test("dashboardStats returns null when unauthenticated", async () => {
+  // dashboardStats uses safeGetUser so it returns null during the auth
+  // hydration race rather than throwing, matching the pattern used by feed/unreadCount.
+  const result = await t.query(api.messages.dashboardStats, {});
+  expect(result).toBeNull();
 });
