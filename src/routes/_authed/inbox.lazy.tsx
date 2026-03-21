@@ -31,16 +31,18 @@ function InboxPage() {
   // Check if push notifications are enabled in browser
   const { data: isPushSubscribed } = usePushSubscription();
   
-  // Fetch all messages once — filter client-side to avoid extra Convex calls on tab switch
+  // Fetch messages with pagination — filter client-side to avoid extra Convex calls on tab switch
   const {
-    data: messages,
+    data: feedData,
     isLoading: messagesLoading,
     error: messagesError,
     refetch,
   } = useQuery(convexQuery(api.messages.feed, {}));
 
+  const messages = feedData?.items ?? feedData ?? [];
+
   const displayMessages = useMemo(() => {
-    if (!messages) return [];
+    if (!messages || !Array.isArray(messages)) return [];
     if (filter === "unread") return messages.filter((m: any) => !m.delivery?.readAt);
     if (filter === "read") return messages.filter((m: any) => !!m.delivery?.readAt);
     return messages;
@@ -71,10 +73,12 @@ function InboxPage() {
       // Optimistically update to mark all as read
       queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, (old: any) => {
         if (!old) return old;
-        return old.map((msg: any) => ({
+        const items = old.items ?? old;
+        const updated = (Array.isArray(items) ? items : []).map((msg: any) => ({
           ...msg,
           delivery: { ...msg.delivery, readAt: Date.now() }
         }));
+        return old.items ? { ...old, items: updated } : updated;
       });
       
       return { previousMessages };
@@ -104,7 +108,9 @@ function InboxPage() {
       // Optimistically remove the message
       queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, (old: any) => {
         if (!old) return old;
-        return old.filter((msg: any) => msg._id !== messageId);
+        const items = old.items ?? old;
+        const filtered = (Array.isArray(items) ? items : []).filter((msg: any) => msg._id !== messageId);
+        return old.items ? { ...old, items: filtered } : filtered;
       });
       
       return { previousMessages };
@@ -123,7 +129,7 @@ function InboxPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const unreadCount = useMemo(
-    () => messages?.filter((msg: any) => !msg.delivery?.readAt).length ?? 0,
+    () => (Array.isArray(messages) ? messages : []).filter((msg: any) => !msg.delivery?.readAt).length ?? 0,
     [messages],
   );
 

@@ -44,6 +44,33 @@ export const getById = query({
   },
 });
 
+export const search = query({
+  args: {
+    query: v.string(),
+    status: v.optional(
+      v.union(
+        v.literal("draft"),
+        v.literal("scheduled"),
+        v.literal("sent"),
+        v.literal("archived"),
+      ),
+    ),
+  },
+  handler: async (ctx, args) => {
+    await getAdminUser(ctx);
+    let q = ctx.db
+      .query("messages")
+      .withSearchIndex("search_title_body", (s) => {
+        let search = s.search("title", args.query);
+        if (args.status) {
+          search = search.eq("status", args.status);
+        }
+        return search;
+      });
+    return await q.take(50);
+  },
+});
+
 // --- Mutations ---
 
 export const create = mutation({
@@ -267,24 +294,69 @@ export const resolveAudience = internalMutation({
         const uniqueIds = new Set(membershipSets.flat().map((m) => m.userId));
         userIds = [...uniqueIds];
       } else {
-        // Event audience: for now, all active users
-        const allUsers = await ctx.db
-          .query("users")
-          .withIndex("by_status", (q) => q.eq("status", "active"))
-          .collect();
-        userIds = allUsers.map((u) => u._id);
+        // Event audience: resolve via eventGroupLinks → groupMemberships
+        // Each target points to an event; find linked groups, then their members
+        const eventGroupLinks = await Promise.all(
+          targets.map((t) =>
+            ctx.db
+              .query("eventGroupLinks")
+              .withIndex("by_eventId", (q) =>
+                q.eq("eventId", t.targetId as Id<"events">),
+              )
+              .collect(),
+          ),
+        );
+        const groupIds = eventGroupLinks.flat().map((l) => l.groupId);
+        const membershipSets = await Promise.all(
+          groupIds.map((groupId) =>
+            ctx.db
+              .query("groupMemberships")
+              .withIndex("by_groupId", (q) => q.eq("groupId", groupId))
+              .collect(),
+          ),
+        );
+        const uniqueIds = new Set(membershipSets.flat().map((m) => m.userId));
+        userIds = [...uniqueIds];
       }
     }
 
-    // Create delivery records
+    // Create delivery records in batches to avoid the 1024 write limit.
+    // Each batch handles up to 200 users (leaving headroom for other writes).
+    const BATCH_SIZE = 200;
     const now = Date.now();
-    for (const userId of userIds) {
-      await ctx.db.insert("deliveries", {
-        messageId: args.messageId,
-        userId,
-        deliveredAt: now,
-        pushStatus: message.pushEnabled ? "pending" : "none",
-      });
+
+    if (userIds.length <= BATCH_SIZE) {
+      // Small audience: create all deliveries inline
+      for (const userId of userIds) {
+        await ctx.db.insert("deliveries", {
+          messageId: args.messageId,
+          userId,
+          deliveredAt: now,
+          pushStatus: message.pushEnabled ? "pending" : "none",
+        });
+      }
+    } else {
+      // Large audience: create first batch inline, schedule the rest
+      const firstBatch = userIds.slice(0, BATCH_SIZE);
+      for (const userId of firstBatch) {
+        await ctx.db.insert("deliveries", {
+          messageId: args.messageId,
+          userId,
+          deliveredAt: now,
+          pushStatus: message.pushEnabled ? "pending" : "none",
+        });
+      }
+      const remaining = userIds.slice(BATCH_SIZE);
+      await ctx.scheduler.runAfter(
+        0,
+        internal.messages.resolveAudienceBatch,
+        {
+          messageId: args.messageId,
+          userIds: remaining,
+          pushEnabled: message.pushEnabled,
+        },
+      );
+      return userIds;
     }
 
     // Schedule push after deliveries exist to avoid race condition
@@ -295,6 +367,52 @@ export const resolveAudience = internalMutation({
     }
 
     return userIds;
+  },
+});
+
+// Internal: Continue creating delivery records for large audiences in batches
+export const resolveAudienceBatch = internalMutation({
+  args: {
+    messageId: v.id("messages"),
+    userIds: v.array(v.id("users")),
+    pushEnabled: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const BATCH_SIZE = 200;
+    const now = Date.now();
+    const batch = args.userIds.slice(0, BATCH_SIZE);
+    const remaining = args.userIds.slice(BATCH_SIZE);
+
+    for (const userId of batch) {
+      await ctx.db.insert("deliveries", {
+        messageId: args.messageId,
+        userId,
+        deliveredAt: now,
+        pushStatus: args.pushEnabled ? "pending" : "none",
+      });
+    }
+
+    if (remaining.length > 0) {
+      // More users to process — schedule next batch
+      await ctx.scheduler.runAfter(
+        0,
+        internal.messages.resolveAudienceBatch,
+        {
+          messageId: args.messageId,
+          userIds: remaining,
+          pushEnabled: args.pushEnabled,
+        },
+      );
+    } else {
+      // All deliveries created — now trigger push notifications
+      if (args.pushEnabled) {
+        await ctx.scheduler.runAfter(
+          0,
+          internal.pushActions.sendPushForMessage,
+          { messageId: args.messageId },
+        );
+      }
+    }
   },
 });
 
@@ -394,15 +512,22 @@ export const executeSend = internalMutation({
 export const feed = query({
   args: {
     filter: v.optional(v.union(v.literal("all"), v.literal("read"), v.literal("unread"))),
+    cursor: v.optional(v.string()),
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const user = await safeGetUser(ctx);
-    if (!user) return [];
-    let deliveries = await ctx.db
+    if (!user) return { items: [], cursor: null, hasMore: false };
+
+    const pageSize = Math.min(args.limit ?? 20, 50);
+
+    const result = await ctx.db
       .query("deliveries")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))
       .order("desc")
-      .take(50);
+      .paginate({ numItems: pageSize, cursor: args.cursor ?? null });
+
+    let deliveries = result.page;
 
     // Apply read/unread filter
     if (args.filter === "read") {
@@ -411,16 +536,18 @@ export const feed = query({
       deliveries = deliveries.filter((d) => d.readAt === undefined);
     }
 
-    // Fetch messages using Promise.all - while this is N queries, each is a
-    // fast primary key lookup (db.get). Convex automatically batches these
-    // internally within the same transaction for better performance.
     const messages = await Promise.all(
       deliveries.map(async (d) => {
         const message = await ctx.db.get("messages", d.messageId);
         return message ? { ...message, delivery: d } : null;
       }),
     );
-    return messages.filter(Boolean);
+
+    return {
+      items: messages.filter(Boolean),
+      cursor: result.continueCursor,
+      hasMore: result.isDone === false,
+    };
   },
 });
 

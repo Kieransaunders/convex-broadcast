@@ -94,7 +94,11 @@ export default defineSchema({
   })
     .index("by_status", ["status"])
     .index("by_createdBy", ["createdBy"])
-    .index("by_scheduledFor", ["scheduledFor"]),
+    .index("by_scheduledFor", ["scheduledFor"])
+    .searchIndex("search_title_body", {
+      searchField: "title",
+      filterFields: ["status", "category"],
+    }),
 
   messageTargets: defineTable({
     messageId: v.id("messages"),
