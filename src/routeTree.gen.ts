@@ -15,7 +15,13 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs.index'
+import { Route as DocsRoleBasedAccessRouteImport } from './routes/docs.role-based-access'
 import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
+import { Route as DocsGroupManagementRouteImport } from './routes/docs.group-management'
+import { Route as DocsEventManagementRouteImport } from './routes/docs.event-management'
+import { Route as DocsDeliveryTrackingRouteImport } from './routes/docs.delivery-tracking'
+import { Route as DocsBroadcastMessagesRouteImport } from './routes/docs.broadcast-messages'
 import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -74,6 +80,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedSettingsLazyRoute = AuthedSettingsLazyRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -81,9 +92,34 @@ const AuthedSettingsLazyRoute = AuthedSettingsLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/_authed/settings.lazy').then((d) => d.Route),
 )
+const DocsRoleBasedAccessRoute = DocsRoleBasedAccessRouteImport.update({
+  id: '/docs/role-based-access',
+  path: '/docs/role-based-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsNotificationsRoute = DocsNotificationsRouteImport.update({
   id: '/docs/notifications',
   path: '/docs/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsGroupManagementRoute = DocsGroupManagementRouteImport.update({
+  id: '/docs/group-management',
+  path: '/docs/group-management',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsEventManagementRoute = DocsEventManagementRouteImport.update({
+  id: '/docs/event-management',
+  path: '/docs/event-management',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsDeliveryTrackingRoute = DocsDeliveryTrackingRouteImport.update({
+  id: '/docs/delivery-tracking',
+  path: '/docs/delivery-tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsBroadcastMessagesRoute = DocsBroadcastMessagesRouteImport.update({
+  id: '/docs/broadcast-messages',
+  path: '/docs/broadcast-messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedInboxRoute = AuthedInboxRouteImport.update({
@@ -195,8 +231,14 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
+  '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
+  '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
+  '/docs/event-management': typeof DocsEventManagementRoute
+  '/docs/group-management': typeof DocsGroupManagementRoute
   '/docs/notifications': typeof DocsNotificationsRoute
+  '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/settings': typeof AuthedSettingsLazyRoute
+  '/docs/': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
@@ -215,8 +257,14 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
+  '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
+  '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
+  '/docs/event-management': typeof DocsEventManagementRoute
+  '/docs/group-management': typeof DocsGroupManagementRoute
   '/docs/notifications': typeof DocsNotificationsRoute
+  '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/settings': typeof AuthedSettingsLazyRoute
+  '/docs': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
@@ -238,8 +286,14 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
   '/_authed/inbox': typeof AuthedInboxRoute
+  '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
+  '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
+  '/docs/event-management': typeof DocsEventManagementRoute
+  '/docs/group-management': typeof DocsGroupManagementRoute
   '/docs/notifications': typeof DocsNotificationsRoute
+  '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/_authed/settings': typeof AuthedSettingsLazyRoute
+  '/docs/': typeof DocsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/_admin/dashboard': typeof AuthedAdminDashboardLazyRoute
   '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
@@ -260,8 +314,14 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
+    | '/docs/broadcast-messages'
+    | '/docs/delivery-tracking'
+    | '/docs/event-management'
+    | '/docs/group-management'
     | '/docs/notifications'
+    | '/docs/role-based-access'
     | '/settings'
+    | '/docs/'
     | '/api/auth/$'
     | '/dashboard'
     | '/system-settings'
@@ -280,8 +340,14 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
+    | '/docs/broadcast-messages'
+    | '/docs/delivery-tracking'
+    | '/docs/event-management'
+    | '/docs/group-management'
     | '/docs/notifications'
+    | '/docs/role-based-access'
     | '/settings'
+    | '/docs'
     | '/api/auth/$'
     | '/dashboard'
     | '/system-settings'
@@ -302,8 +368,14 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/_authed/_admin'
     | '/_authed/inbox'
+    | '/docs/broadcast-messages'
+    | '/docs/delivery-tracking'
+    | '/docs/event-management'
+    | '/docs/group-management'
     | '/docs/notifications'
+    | '/docs/role-based-access'
     | '/_authed/settings'
+    | '/docs/'
     | '/api/auth/$'
     | '/_authed/_admin/dashboard'
     | '/_authed/_admin/system-settings'
@@ -323,7 +395,13 @@ export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  DocsBroadcastMessagesRoute: typeof DocsBroadcastMessagesRoute
+  DocsDeliveryTrackingRoute: typeof DocsDeliveryTrackingRoute
+  DocsEventManagementRoute: typeof DocsEventManagementRoute
+  DocsGroupManagementRoute: typeof DocsGroupManagementRoute
   DocsNotificationsRoute: typeof DocsNotificationsRoute
+  DocsRoleBasedAccessRoute: typeof DocsRoleBasedAccessRoute
+  DocsIndexRoute: typeof DocsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -357,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed/settings': {
       id: '/_authed/settings'
       path: '/settings'
@@ -364,11 +449,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsLazyRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/docs/role-based-access': {
+      id: '/docs/role-based-access'
+      path: '/docs/role-based-access'
+      fullPath: '/docs/role-based-access'
+      preLoaderRoute: typeof DocsRoleBasedAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs/notifications': {
       id: '/docs/notifications'
       path: '/docs/notifications'
       fullPath: '/docs/notifications'
       preLoaderRoute: typeof DocsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/group-management': {
+      id: '/docs/group-management'
+      path: '/docs/group-management'
+      fullPath: '/docs/group-management'
+      preLoaderRoute: typeof DocsGroupManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/event-management': {
+      id: '/docs/event-management'
+      path: '/docs/event-management'
+      fullPath: '/docs/event-management'
+      preLoaderRoute: typeof DocsEventManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/delivery-tracking': {
+      id: '/docs/delivery-tracking'
+      path: '/docs/delivery-tracking'
+      fullPath: '/docs/delivery-tracking'
+      preLoaderRoute: typeof DocsDeliveryTrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/broadcast-messages': {
+      id: '/docs/broadcast-messages'
+      path: '/docs/broadcast-messages'
+      fullPath: '/docs/broadcast-messages'
+      preLoaderRoute: typeof DocsBroadcastMessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/inbox': {
@@ -524,7 +644,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  DocsBroadcastMessagesRoute: DocsBroadcastMessagesRoute,
+  DocsDeliveryTrackingRoute: DocsDeliveryTrackingRoute,
+  DocsEventManagementRoute: DocsEventManagementRoute,
+  DocsGroupManagementRoute: DocsGroupManagementRoute,
   DocsNotificationsRoute: DocsNotificationsRoute,
+  DocsRoleBasedAccessRoute: DocsRoleBasedAccessRoute,
+  DocsIndexRoute: DocsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

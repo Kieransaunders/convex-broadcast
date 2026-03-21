@@ -4,8 +4,6 @@ import {
   Bell,
   CheckCircle,
   Code,
-  Globe,
-  Lock,
   Shield,
   Smartphone,
 } from "lucide-react";

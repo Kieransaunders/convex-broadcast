@@ -4,7 +4,6 @@ import {
   CheckCircle,
   Crown,
   Lock,
-  Settings,
   Shield,
   User,
   UserCheck,
