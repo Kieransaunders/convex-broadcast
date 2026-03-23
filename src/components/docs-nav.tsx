@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import React, { useState } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
   Bell,
   BookOpen,
@@ -17,7 +17,7 @@ import { Button } from "~/components/ui/button";
 type NavItem = {
   to: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   exact?: boolean;
 };
 
@@ -182,7 +182,7 @@ export function DocsNav() {
 }
 
 /** Wrapper that provides the consistent docs page shell */
-export function DocsPageShell({ children }: { children: React.ReactNode }) {
+export function DocsPageShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;

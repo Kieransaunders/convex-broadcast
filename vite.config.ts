@@ -8,6 +8,9 @@ export default defineConfig(({ mode }) => {
   // Load env vars from .env.local
   const env = loadEnv(mode, process.cwd(), "") as Record<string, string | undefined>;
 
+  const isNodeModule = (id: string, pkg: string) =>
+    id.includes(`/node_modules/${pkg}/`) || id.includes(`\\node_modules\\${pkg}\\`);
+
   return {
     server: {
       port: 3000,
@@ -26,11 +29,31 @@ export default defineConfig(({ mode }) => {
           manualChunks: (id) => {
             // Only chunk node_modules, not source files
             if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) return 'vendor';
-              if (id.includes('@tanstack/react-router')) return 'router';
-              if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query-core')) return 'query';
-              if (id.includes('convex') || id.includes('@convex-dev')) return 'convex';
-              if (id.includes('lucide-react')) return 'icons';
+              if (isNodeModule(id, 'react') || isNodeModule(id, 'react-dom')) {
+                return 'vendor';
+              }
+              if (
+                isNodeModule(id, '@tanstack/react-router') ||
+                isNodeModule(id, '@tanstack/router-core') ||
+                isNodeModule(id, '@tanstack/react-start')
+              ) {
+                return 'router';
+              }
+              if (
+                isNodeModule(id, '@tanstack/react-query') ||
+                isNodeModule(id, '@tanstack/query-core')
+              ) {
+                return 'query';
+              }
+              if (
+                isNodeModule(id, 'convex') ||
+                isNodeModule(id, '@convex-dev/better-auth') ||
+                isNodeModule(id, '@convex-dev/react-query') ||
+                isNodeModule(id, '@convex-dev/resend')
+              ) {
+                return 'convex';
+              }
+              if (isNodeModule(id, 'lucide-react')) return 'icons';
             }
           },
         },

@@ -9,7 +9,7 @@ import {
   Tag,
 } from "lucide-react";
 import { useState } from "react";
-import { articles, getArticleBySlug } from "~/lib/articles";
+import { getArticleBySlug } from "~/lib/articles";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -108,7 +108,7 @@ function ArticlePage() {
             </Link>
 
             <Link
-              to="/articles/"
+              to="/articles"
               className="flex items-center gap-1.5 text-sm font-medium text-[#1E1B4B]/70 hover:text-[#6366F1] transition-colors"
             >
               <ArrowRight className="h-4 w-4 rotate-180" />
@@ -127,7 +127,7 @@ function ArticlePage() {
             </Link>
             <span>/</span>
             <Link
-              to="/articles/"
+              to="/articles"
               className="hover:text-[#6366F1] transition-colors"
             >
               Articles
