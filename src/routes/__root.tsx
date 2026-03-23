@@ -42,33 +42,33 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Org Comms",
+        title: "Org Comms | Internal Communication App for Organisations",
       },
       {
         name: "description",
         content:
-          "Org Comms — broadcast messaging and push notifications for organisations. Send targeted messages to members by group or event. One deployment, one organisation.",
+          "Broadcast messages to members, staff, and volunteers with Org Comms, the internal communication app for organisations.",
       },
       { property: "og:type", content: "website" },
       {
         property: "og:title",
-        content: "Org Comms — Organisation Broadcast Messaging",
+        content: "Org Comms | Internal Communication App for Organisations",
       },
       {
         property: "og:description",
         content:
-          "Send targeted broadcast messages and push notifications to your organisation's members. Group-based targeting, delivery tracking, and PWA support.",
+          "Broadcast messages to members, staff, and volunteers with Org Comms, the internal communication app for organisations.",
       },
       { property: "og:site_name", content: "Org Comms" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Org Comms — Organisation Broadcast Messaging",
+        content: "Org Comms | Internal Communication App for Organisations",
       },
       {
         name: "twitter:description",
         content:
-          "Send targeted broadcast messages and push notifications to your organisation's members.",
+          "Broadcast messages to members, staff, and volunteers with Org Comms, the internal communication app for organisations.",
       },
       { name: "theme-color", content: "#6366F1" },
       { name: "robots", content: "index, follow" },

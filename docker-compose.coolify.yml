@@ -1,0 +1,36 @@
+# Docker Compose for Coolify Deployment
+# Use this if you prefer docker-compose over Dockerfile in Coolify
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_CONVEX_URL=${VITE_CONVEX_URL}
+        - VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
+        - CONVEX_URL=${CONVEX_URL}
+        - CONVEX_SITE_URL=${CONVEX_SITE_URL}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Convex
+      - VITE_CONVEX_URL=${VITE_CONVEX_URL}
+      - VITE_CONVEX_SITE_URL=${VITE_CONVEX_SITE_URL}
+      # Better Auth
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - SITE_URL=${SITE_URL}
+      # Optional
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped

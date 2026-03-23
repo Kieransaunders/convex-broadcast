@@ -24,22 +24,21 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title:
-          "Org Comms — Broadcast Messaging for Organisations | Open Source PWA",
+        title: "Org Comms | Internal Communication App for Organisations",
       },
       {
         name: "description",
         content:
-          "The open-source PWA boilerplate for organisational communications. Send targeted broadcast messages, push notifications, and manage members by group or event.",
+          "Broadcast messages to members, staff, and volunteers with Org Comms, the internal communication app for organisations.",
       },
       {
         property: "og:title",
-        content: "Org Comms — Broadcast Messaging for Organisations",
+        content: "Org Comms | Internal Communication App for Organisations",
       },
       {
         property: "og:description",
         content:
-          "The open-source PWA boilerplate for organisational communications. Send targeted broadcast messages, push notifications, and manage members by group or event.",
+          "Broadcast messages to members, staff, and volunteers with Org Comms, the internal communication app for organisations.",
       },
       { property: "og:url", content: "https://orgcomms.app" },
       { property: "og:type", content: "website" },
@@ -184,13 +183,13 @@ function LandingPage() {
             Streamline your organization communications
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-[#1E1B4B] sm:text-6xl mb-6">
-            Keep your team
-            <span className="text-[#6366F1]"> connected</span>
+            Broadcast messages to
+            <span className="text-[#6366F1]"> members, staff, and volunteers</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-[#1E1B4B]/70 mb-10">
-            Org Comms is the all-in-one communication platform for
-            organizations. Send messages, manage events, and keep everyone
-            informed with ease.
+            Org Comms is the internal communication app for organisations.
+            Send targeted updates, manage events, and keep every audience
+            informed from one place.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button

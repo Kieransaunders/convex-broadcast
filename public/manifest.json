@@ -1,7 +1,7 @@
 {
   "name": "Org Comms",
   "short_name": "OrgComms",
-  "description": "Organisation Communications App",
+  "description": "Internal communication app for organisations",
   "start_url": "/inbox",
   "display": "standalone",
   "background_color": "#F5F3FF",
