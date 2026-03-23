@@ -21,6 +21,31 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      {
+        title:
+          "Org Comms — Broadcast Messaging for Organisations | Open Source PWA",
+      },
+      {
+        name: "description",
+        content:
+          "The open-source PWA boilerplate for organisational communications. Send targeted broadcast messages, push notifications, and manage members by group or event.",
+      },
+      {
+        property: "og:title",
+        content: "Org Comms — Broadcast Messaging for Organisations",
+      },
+      {
+        property: "og:description",
+        content:
+          "The open-source PWA boilerplate for organisational communications. Send targeted broadcast messages, push notifications, and manage members by group or event.",
+      },
+      { property: "og:url", content: "https://orgcomms.app" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: LandingPage,
 });
 
@@ -350,6 +375,76 @@ function LandingPage() {
               description="Know who has read your messages with real-time delivery stats."
               link="/docs/delivery-tracking"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Articles & Resources Section */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-4">
+              Communication Resources
+            </h2>
+            <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
+              Practical guides to help your organisation communicate better
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+            {[
+              {
+                category: "Communication Strategy",
+                title: "The Real Cost of Poor Internal Communication",
+                desc: "Discover how communication failures cost organisations time, money, and member engagement.",
+                slug: "real-cost-of-poor-internal-communication",
+              },
+              {
+                category: "Tools & Technology",
+                title: "Group Chat vs Broadcast Messaging",
+                desc: "Understand when to use each communication mode and which is right for your organisation.",
+                slug: "group-chat-vs-broadcast-messaging",
+              },
+              {
+                category: "Best Practices",
+                title: "How to Build a Member Communication Strategy",
+                desc: "A practical 6-step guide to building a communication strategy that actually works.",
+                slug: "member-communication-strategy",
+              },
+            ].map((article) => (
+              <Link
+                key={article.slug}
+                to="/articles/$slug"
+                params={{ slug: article.slug }}
+                className="group"
+              >
+                <Card className="border-[#6366F1]/10 bg-white hover:shadow-lg transition-shadow h-full">
+                  <CardContent className="pt-6 flex flex-col h-full">
+                    <span className="inline-block rounded-full bg-[#6366F1]/10 px-3 py-1 text-xs font-semibold text-[#6366F1] mb-3">
+                      {article.category}
+                    </span>
+                    <h3 className="text-base font-semibold text-[#1E1B4B] mb-2 group-hover:text-[#6366F1] transition-colors">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-[#1E1B4B]/70 mb-4 flex-1">
+                      {article.desc}
+                    </p>
+                    <span className="text-sm font-medium text-[#6366F1]">
+                      Read more →
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/articles"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[#6366F1] hover:text-[#6366F1]/80 transition-colors"
+            >
+              View All Articles →
+            </Link>
           </div>
         </div>
       </section>
