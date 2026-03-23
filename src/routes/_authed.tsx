@@ -12,7 +12,10 @@ export const Route = createFileRoute("/_authed")({
   beforeLoad: async ({ location }) => {
     const token = await getCachedAuth();
     if (!token)
-      throw redirect({ to: "/sign-in", search: { redirect: location.href } });
+      throw redirect({ 
+        to: "/sign-in", 
+        search: { redirect: location.pathname + location.search } 
+      });
     return { token };
   },
   errorComponent: ({ error }) => {

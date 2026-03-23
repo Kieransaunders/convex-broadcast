@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Bell, CheckCircle2, LogOut, Smartphone, User } from "lucide-react";
+import { ArrowLeft, Bell, CheckCircle2, Loader2, LogOut, Smartphone, User } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -32,6 +32,7 @@ function SettingsPage() {
   const updatePreference = useMutation(api.push.updatePreference);
   const subscribe = useMutation(api.push.subscribe);
   const unsubscribe = useMutation(api.push.unsubscribe);
+  const sendTest = useMutation(api.push.sendTest);
 
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
@@ -126,6 +127,24 @@ function SettingsPage() {
   const handlePreferenceChange = async (value: "all" | "urgent" | "none") => {
     setPreference(value);
     await updatePreference({ preference: value });
+  };
+
+  const [testLoading, setTestLoading] = useState(false);
+
+  const handleSendTest = async () => {
+    setTestLoading(true);
+    try {
+      await sendTest({
+        title: "Push is working!",
+        body: "Your device is successfully registered for Org Comms broadcasts."
+      });
+      alert("Test notification sent! It should arrive in a few seconds.");
+    } catch (error) {
+      console.error("Failed to send test push:", error);
+      alert("Failed to send test notification. Check console for details.");
+    } finally {
+      setTestLoading(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -227,6 +246,25 @@ function SettingsPage() {
                       <Label htmlFor="none">None (in-app only)</Label>
                     </div>
                   </RadioGroup>
+                </div>
+              )}
+
+              {pushEnabled && (
+                <div className="pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full border-amber-200 text-amber-700 hover:bg-amber-50"
+                    onClick={handleSendTest}
+                    disabled={testLoading}
+                  >
+                    {testLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Bell className="mr-2 h-4 w-4" />
+                    )}
+                    Send Test Notification
+                  </Button>
                 </div>
               )}
             </CardContent>

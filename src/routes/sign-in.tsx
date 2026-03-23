@@ -46,9 +46,16 @@ function SignInPage() {
       } else {
         clearTokenCache();
         const role = (result.data.user as any)?.role;
-        router.navigate({
-          to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",
-        });
+        
+        // Respect redirect search param if present
+        const search = Route.useSearch();
+        if (search.redirect && search.redirect !== "/sign-in") {
+          router.navigate({ to: search.redirect });
+        } else {
+          router.navigate({
+            to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",
+          });
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");

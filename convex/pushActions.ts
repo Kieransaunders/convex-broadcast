@@ -88,3 +88,56 @@ export const sendPushForMessage = internalAction({
     }
   },
 });
+
+export const sendTestPush = internalAction({
+  args: {
+    userId: v.id("users"),
+    title: v.string(),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const vapidPublic = process.env.VAPID_PUBLIC_KEY;
+    const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
+
+    if (!vapidPublic || !vapidPrivate) {
+      console.error("Missing VAPID keys for test push.");
+      return;
+    }
+
+    const contactEmail =
+      process.env.VAPID_CONTACT_EMAIL ?? "mailto:admin@orgcomms.app";
+    webpush.setVapidDetails(contactEmail, vapidPublic, vapidPrivate);
+
+    const subs = await ctx.runQuery(internal.push.getUserSubscriptions, {
+      userId: args.userId,
+    });
+
+    const unreadCount = await ctx.runQuery(internal.push.getUserUnreadCount, {
+      userId: args.userId,
+    });
+
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: { p256dh: sub.p256dh, auth: sub.auth },
+          },
+          JSON.stringify({
+            title: `[Test] ${args.title}`,
+            body: args.body,
+            url: "/inbox",
+            badgeCount: unreadCount,
+          }),
+        );
+      } catch (error) {
+        console.error("Test push failed for subscription", sub._id, error);
+        if ((error as any)?.statusCode === 410) {
+          await ctx.runMutation(internal.push.removeSubscription, {
+            subscriptionId: sub._id,
+          });
+        }
+      }
+    }
+  },
+});

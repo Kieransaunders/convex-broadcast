@@ -15,6 +15,9 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { usePushSubscription } from "~/hooks/use-push-subscription";
 import { cn } from "~/lib/utils";
+import { Input } from "~/components/ui/input";
+import { Search, X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export const Route = createLazyFileRoute("/_authed/inbox")({
   component: InboxPage,
@@ -27,6 +30,7 @@ type FilterType = "all" | "unread" | "read";
 function InboxPage() {
   const { notice } = routeApi.useSearch();
   const [filter, setFilter] = useState<FilterType>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Check if push notifications are enabled in browser
   const { data: isPushSubscribed } = usePushSubscription();
@@ -60,10 +64,24 @@ function InboxPage() {
 
   const displayMessages = useMemo(() => {
     if (!messages || !Array.isArray(messages)) return [];
-    if (filter === "unread") return messages.filter((m: any) => !m.delivery?.readAt);
-    if (filter === "read") return messages.filter((m: any) => !!m.delivery?.readAt);
-    return messages;
-  }, [messages, filter]);
+    
+    let filtered = messages;
+    
+    // Filter by read/unread status
+    if (filter === "unread") filtered = messages.filter((m: any) => !m.delivery?.readAt);
+    else if (filter === "read") filtered = messages.filter((m: any) => !!m.delivery?.readAt);
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((m: any) => 
+        m.title.toLowerCase().includes(query) || 
+        m.body.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  }, [messages, filter, searchQuery]);
   
   const convex = useConvex();
   
@@ -101,7 +119,13 @@ function InboxPage() {
       return { previousMessages };
     },
     onError: (_err, _variables, context) => {
-      // Rollback on error
+      // If offline, queue the action instead of just rolling back
+      if (!navigator.onLine) {
+        queueOfflineAction({ type: "markAllAsRead" });
+        return; // Keep optimistic state
+      }
+      
+      // Rollback on true error
       if (context?.previousMessages) {
         queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, context.previousMessages);
       }
@@ -132,7 +156,12 @@ function InboxPage() {
       
       return { previousMessages };
     },
-    onError: (_err, _variables, context) => {
+    onError: (_err, variables, context) => {
+      if (!navigator.onLine) {
+        queueOfflineAction({ type: "deleteMessage", id: variables });
+        return;
+      }
+
       if (context?.previousMessages) {
         queryClient.setQueryData(convexQuery(api.messages.feed, {}).queryKey, context.previousMessages);
       }
@@ -144,6 +173,48 @@ function InboxPage() {
   });
   
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // --- Offline Sync Logic ---
+  useEffect(() => {
+    const syncOfflineActions = async () => {
+      if (!navigator.onLine) return;
+      
+      const queue = JSON.parse(localStorage.getItem("offline_actions") || "[]");
+      if (queue.length === 0) return;
+      
+      console.log(`Syncing ${queue.length} offline actions...`);
+      const newQueue = [];
+      
+      for (const action of queue) {
+        try {
+          if (action.type === "markAllAsRead") {
+            await convex.mutation(api.messages.markAllAsRead, {});
+          } else if (action.type === "deleteMessage") {
+            await convex.mutation(api.messages.deleteMyDelivery, { messageId: action.id });
+          }
+        } catch (e) {
+          console.error("Failed to sync offline action", action, e);
+          newQueue.push(action); // Keep failed actions in queue
+        }
+      }
+      
+      localStorage.setItem("offline_actions", JSON.stringify(newQueue));
+      if (newQueue.length < queue.length) {
+        queryClient.invalidateQueries({ queryKey: convexQuery(api.messages.feed, {}).queryKey });
+      }
+    };
+
+    window.addEventListener("online", syncOfflineActions);
+    syncOfflineActions(); // Check on mount
+    
+    return () => window.removeEventListener("online", syncOfflineActions);
+  }, [convex, queryClient]);
+
+  const queueOfflineAction = (action: any) => {
+    const queue = JSON.parse(localStorage.getItem("offline_actions") || "[]");
+    queue.push(action);
+    localStorage.setItem("offline_actions", JSON.stringify(queue));
+  };
 
   const unreadCount = useMemo(
     () => (Array.isArray(messages) ? messages : []).filter((msg: any) => !msg.delivery?.readAt).length ?? 0,
@@ -308,6 +379,25 @@ function InboxPage() {
             )}
           </div>
           
+          {/* Search bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Input
+              placeholder="Search messages..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10 border-[#6366F1]/10 bg-white"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          
           {/* Filter tabs */}
           <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
             {[
@@ -435,7 +525,12 @@ function MessageCard({
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2 pr-8">
                 {isUnread && (
-                  <span className="h-2 w-2 rounded-full bg-[#6366F1] flex-shrink-0" />
+                  <span className={cn(
+                    "h-2.5 w-2.5 rounded-full flex-shrink-0",
+                    message.category === "urgent" 
+                      ? "bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" 
+                      : "bg-[#6366F1]"
+                  )} />
                 )}
                 <CardTitle className="text-base">{message.title}</CardTitle>
               </div>
@@ -445,7 +540,9 @@ function MessageCard({
             </div>
           </CardHeader>
           <CardContent>
-            <p className="line-clamp-2 text-sm text-gray-600">{message.body}</p>
+            <div className="line-clamp-2 text-sm text-gray-600 prose prose-sm prose-slate max-w-none">
+              <ReactMarkdown>{message.body}</ReactMarkdown>
+            </div>
             <p className="mt-2 text-xs text-gray-400">
               {new Date(message.createdAt).toLocaleDateString()}
             </p>

@@ -5,6 +5,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { getUser } from "./auth";
 
 // --- Subscription Management ---
@@ -150,5 +151,25 @@ export const getUserUnreadCount = internalQuery({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .collect();
     return deliveries.filter((d) => d.readAt === undefined).length;
+  },
+});
+// --- Test Notification ---
+
+export const sendTest = mutation({
+  args: {
+    title: v.string(),
+    body: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+    
+    // Schedule the internal action to send push
+    await ctx.scheduler.runAfter(0, internal.pushActions.sendTestPush, {
+      userId: user._id,
+      title: args.title,
+      body: args.body,
+    });
+    
+    return { success: true };
   },
 });

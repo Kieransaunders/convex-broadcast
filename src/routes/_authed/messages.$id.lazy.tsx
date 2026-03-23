@@ -10,6 +10,8 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
+import { cn } from "~/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 export const Route = createLazyFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
@@ -95,10 +97,20 @@ function MessageDetailPage() {
       <main className="container mx-auto max-w-2xl px-4 py-6 pb-24 sm:pb-6">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl text-[#1E1B4B]">
-                {message.title}
-              </CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                {message.category === "urgent" && (
+                  <Badge className="bg-red-500 text-white animate-pulse mb-2 border-none">
+                    Urgent Priority
+                  </Badge>
+                )}
+                <CardTitle className={cn(
+                  "text-xl",
+                  message.category === "urgent" ? "text-red-700 font-bold" : "text-[#1E1B4B]"
+                )}>
+                  {message.title}
+                </CardTitle>
+              </div>
               <Badge className={categoryColors[message.category] || ""}>
                 {message.category}
               </Badge>
@@ -108,7 +120,9 @@ function MessageDetailPage() {
             </p>
           </CardHeader>
           <CardContent>
-            <p className="whitespace-pre-wrap text-gray-700">{message.body}</p>
+            <div className="prose prose-slate max-w-none dark:prose-invert text-gray-700">
+              <ReactMarkdown>{message.body}</ReactMarkdown>
+            </div>
           </CardContent>
         </Card>
       </main>

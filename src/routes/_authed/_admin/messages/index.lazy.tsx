@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 export const Route = createLazyFileRoute("/_authed/_admin/messages/")({
   component: MessagesPage,
@@ -172,6 +173,42 @@ function MessagesPage() {
     return future ? `in ${minutes}m` : `${minutes}m ago`;
   };
 
+  const MessageStats = ({ messageId }: { messageId: string }) => {
+    const { data: stats, isLoading } = useQuery(
+      convexQuery(api.messages.getDeliveryStats, { messageId: messageId as any }),
+    );
+
+    if (isLoading)
+      return <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />;
+    if (!stats || stats.total === 0) return null;
+
+    const readPercentage = Math.round((stats.read / stats.total) * 100);
+
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-medium text-[#1E1B4B]/60">Read Rate</span>
+          <span className="font-bold text-[#1E1B4B]">
+            {readPercentage}% ({stats.read}/{stats.total})
+          </span>
+        </div>
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+          <div
+            className={cn(
+              "h-full transition-all duration-1000",
+              readPercentage > 75
+                ? "bg-green-500"
+                : readPercentage > 30
+                  ? "bg-[#6366F1]"
+                  : "bg-gray-400",
+            )}
+            style={{ width: `${readPercentage}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
+
   const MessageCard = ({
     message,
     showDraftActions,
@@ -184,18 +221,18 @@ function MessagesPage() {
     showDeleteSent?: boolean;
   }) => (
     <Link to="/messages/detail" search={{ id: message._id }}>
-      <Card className="border-[#6366F1]/10 hover:shadow-md transition-shadow cursor-pointer">
+      <Card className="border-[#6366F1]/10 transition-shadow hover:shadow-md cursor-pointer">
         <CardContent className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-[#1E1B4B] truncate">
+                <h3 className="truncate font-semibold text-[#1E1B4B]">
                   {message.title}
                 </h3>
               </div>
-              <p className="text-sm text-[#1E1B4B]/60 line-clamp-2">
-                {message.body}
-              </p>
+              <div className="line-clamp-2 text-sm text-[#1E1B4B]/60 prose prose-sm prose-slate max-w-none">
+                <ReactMarkdown>{message.body}</ReactMarkdown>
+              </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Badge className={getCategoryColor(message.category)}>
                   {getCategoryLabel(message.category)}
@@ -221,7 +258,7 @@ function MessagesPage() {
                 {message.scheduledFor && (
                   <Badge
                     variant="outline"
-                    className="border-amber-200 text-amber-700 flex items-center gap-1"
+                    className="flex items-center gap-1 border-amber-200 text-amber-700"
                   >
                     <Clock className="h-3 w-3" />
                     {new Date(message.scheduledFor).toLocaleString(undefined, {
@@ -236,9 +273,9 @@ function MessagesPage() {
                   </Badge>
                 )}
                 {message.sentAt && (
-                  <span className="text-xs text-[#1E1B4B]/40">
-                    Sent {new Date(message.sentAt).toLocaleDateString()}
-                  </span>
+                  <div className="mt-4 pt-4 border-t border-gray-50 w-full">
+                    <MessageStats messageId={message._id} />
+                  </div>
                 )}
               </div>
             </div>
@@ -253,9 +290,9 @@ function MessagesPage() {
                       e.stopPropagation();
                       setConfirmDialog({ type: "send", message });
                     }}
-                    className="bg-[#10B981] hover:bg-[#10B981]/90 text-white cursor-pointer"
+                    className="cursor-pointer bg-[#10B981] text-white hover:bg-[#10B981]/90"
                   >
-                    <Send className="h-3 w-3 mr-1" />
+                    <Send className="mr-1 h-3 w-3" />
                     Send
                   </Button>
                   <Button
@@ -266,7 +303,7 @@ function MessagesPage() {
                       e.stopPropagation();
                       setConfirmDialog({ type: "delete", message });
                     }}
-                    className="border-red-200 text-red-600 hover:bg-red-50 cursor-pointer"
+                    className="cursor-pointer border-red-200 text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -281,7 +318,7 @@ function MessagesPage() {
                     e.stopPropagation();
                     setConfirmDialog({ type: "cancel", message });
                   }}
-                  className="border-amber-200 text-amber-700 hover:bg-amber-50 cursor-pointer"
+                  className="cursor-pointer border-amber-200 text-amber-700 hover:bg-amber-50"
                 >
                   Cancel
                 </Button>
@@ -298,7 +335,7 @@ function MessagesPage() {
                         e.stopPropagation();
                         setConfirmDialog({ type: "deleteSent", message });
                       }}
-                      className="border-red-200 text-red-600 hover:bg-red-50 cursor-pointer ml-2"
+                      className="ml-2 cursor-pointer border-red-200 text-red-600 hover:bg-red-50"
                       title="Delete for all users (Super Admin only)"
                     >
                       <ShieldAlert className="h-3 w-3" />
@@ -327,8 +364,8 @@ function MessagesPage() {
       {[...Array(3)].map((_, i) => (
         <Card key={i} className="border-[#6366F1]/10">
           <CardContent className="p-6">
-            <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse mb-2" />
-            <div className="h-4 w-full bg-gray-100 rounded animate-pulse" />
+            <div className="mb-2 h-6 w-1/3 animate-pulse rounded bg-gray-100" />
+            <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
           </CardContent>
         </Card>
       ))}
@@ -372,15 +409,15 @@ function MessagesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#1E1B4B]">Messages</h1>
-          <p className="text-[#1E1B4B]/60 mt-1">
+          <p className="mt-1 text-[#1E1B4B]/60">
             Create and manage messages to your organisation.
           </p>
         </div>
         <Link to="/messages/new">
-          <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white cursor-pointer">
+          <Button className="cursor-pointer bg-[#6366F1] text-white hover:bg-[#6366F1]/90">
             <Plus className="mr-2 h-4 w-4" />
             New Message
           </Button>
@@ -416,7 +453,7 @@ function MessagesPage() {
             type="button"
             onClick={() => setActiveTab(key)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 cursor-pointer",
+              "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150",
               activeTab === key
                 ? "bg-white text-[#1E1B4B] shadow-sm"
                 : "text-[#1E1B4B]/50 hover:text-[#1E1B4B]/80",
@@ -480,7 +517,7 @@ function MessagesPage() {
               return (
                 <>
                   <DialogHeader>
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="mb-1 flex items-center gap-3">
                       <div
                         className={cn(
                           "p-2 rounded-lg",
