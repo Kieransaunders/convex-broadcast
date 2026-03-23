@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /inbox
+Disallow: /dashboard
+Disallow: /messages
+Disallow: /groups
+Disallow: /events
+Disallow: /users
+Disallow: /settings
+Disallow: /system-settings
+Disallow: /api/
+Crawl-delay: 1
+
+Sitemap: https://orgcomms.app/sitemap.xml

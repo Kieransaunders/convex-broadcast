@@ -44,8 +44,37 @@ export const Route = createRootRouteWithContext<{
       {
         title: "Org Comms",
       },
+      {
+        name: "description",
+        content:
+          "Org Comms — broadcast messaging and push notifications for organisations. Send targeted messages to members by group or event. One deployment, one organisation.",
+      },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:title",
+        content: "Org Comms — Organisation Broadcast Messaging",
+      },
+      {
+        property: "og:description",
+        content:
+          "Send targeted broadcast messages and push notifications to your organisation's members. Group-based targeting, delivery tracking, and PWA support.",
+      },
+      { property: "og:site_name", content: "Org Comms" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Org Comms — Organisation Broadcast Messaging",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Send targeted broadcast messages and push notifications to your organisation's members.",
+      },
+      { name: "theme-color", content: "#6366F1" },
+      { name: "robots", content: "index, follow" },
     ],
     links: [
+      { rel: "canonical", href: "https://orgcomms.app" },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
