@@ -24,7 +24,7 @@ export const Route = createFileRoute("/sign-in")({
 
 function SignInPage() {
   const router = useRouter();
-  const { demo } = Route.useSearch();
+  const { demo, redirect } = Route.useSearch();
   const [email, setEmail] = useState(demo ? "demo@orgcomms.test" : "");
   const [password, setPassword] = useState(demo ? "demopass123!" : "");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,9 +48,8 @@ function SignInPage() {
         const role = (result.data.user as any)?.role;
         
         // Respect redirect search param if present
-        const search = Route.useSearch();
-        if (search.redirect && search.redirect !== "/sign-in") {
-          router.navigate({ to: search.redirect });
+        if (redirect && redirect !== "/sign-in") {
+          router.navigate({ to: redirect });
         } else {
           router.navigate({
             to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",

@@ -1,4 +1,4 @@
-const CACHE_NAME = "orgcomms-v2";
+const CACHE_NAME = "orgcomms-v3";
 // Precache critical routes for offline access
 const PRECACHE_URLS = ["/", "/inbox", "/settings", "/sign-in"];
 
@@ -41,6 +41,16 @@ self.addEventListener("fetch", (event) => {
     request.url.includes("/api/") ||
     request.url.includes("/_server") ||
     request.url.includes("/convex")
+  )
+    return;
+
+  // Skip Vite dev server module URLs (no content hash → become stale instantly)
+  if (
+    request.url.includes("/@") ||
+    request.url.includes("/src/") ||
+    request.url.includes("?v=") ||
+    request.url.includes("?t=") ||
+    self.location.hostname === "localhost"
   )
     return;
 
