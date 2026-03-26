@@ -100,8 +100,7 @@ export const sendTestPush = internalAction({
     const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
 
     if (!vapidPublic || !vapidPrivate) {
-      console.error("Missing VAPID keys for test push.");
-      return;
+      throw new Error("VAPID keys not configured. Please set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY in Convex dashboard.");
     }
 
     const contactEmail =
@@ -112,9 +111,16 @@ export const sendTestPush = internalAction({
       userId: args.userId,
     });
 
+    if (subs.length === 0) {
+      throw new Error("No push subscriptions found. Please enable push notifications first.");
+    }
+
     const unreadCount = await ctx.runQuery(internal.push.getUserUnreadCount, {
       userId: args.userId,
     });
+
+    let sentCount = 0;
+    let failedCount = 0;
 
     for (const sub of subs) {
       try {
@@ -130,8 +136,10 @@ export const sendTestPush = internalAction({
             badgeCount: unreadCount,
           }),
         );
+        sentCount++;
       } catch (error) {
         console.error("Test push failed for subscription", sub._id, error);
+        failedCount++;
         if ((error as any)?.statusCode === 410) {
           await ctx.runMutation(internal.push.removeSubscription, {
             subscriptionId: sub._id,
@@ -139,5 +147,11 @@ export const sendTestPush = internalAction({
         }
       }
     }
+
+    if (sentCount === 0) {
+      throw new Error(`Failed to send test notification to any device. ${failedCount} subscription(s) failed.`);
+    }
+
+    return { sentCount, failedCount };
   },
 });
