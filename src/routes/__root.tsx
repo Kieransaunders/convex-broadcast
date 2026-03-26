@@ -18,6 +18,7 @@ import appCss from "~/styles/app.css?url";
 
 import { PWAInstallPrompt } from "~/components/pwa-install-prompt";
 import { SWUpdatePrompt } from "~/components/sw-update-prompt";
+import { Toaster } from "~/components/ui/sonner";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -160,6 +161,7 @@ function RootComponent() {
           <ImpersonationBanner />
           <PWAInstallPrompt />
           <SWUpdatePrompt />
+          <Toaster position="top-center" />
         </ConvexBetterAuthProvider>
       </QueryClientProvider>
     </RootDocument>

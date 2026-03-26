@@ -4,6 +4,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Bell, CheckCircle2, Loader2, LogOut, Smartphone, User } from "lucide-react";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -38,7 +39,12 @@ function SettingsPage() {
   });
   
   const subscribe = useMutation({
-    mutationFn: async (args: { endpoint: string; p256dh: string; auth: string; preference: string }) => {
+    mutationFn: async (args: {
+      endpoint: string;
+      p256dh: string;
+      auth: string;
+      preference: "all" | "urgent" | "none";
+    }) => {
       return await convex.mutation(api.push.subscribe, args);
     },
   });
@@ -88,9 +94,7 @@ function SettingsPage() {
         // Request permission and subscribe
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-          alert(
-            "Notification permission denied. Please enable notifications in your browser settings.",
-          );
+          toast.error("Notification permission denied. Please enable notifications in your browser settings.");
           setPushEnabled(false);
           return;
         }
@@ -98,9 +102,7 @@ function SettingsPage() {
         const keyToUse = vapidKey || import.meta.env.VITE_VAPID_PUBLIC_KEY;
         if (!keyToUse) {
           console.error("VAPID public key not configured");
-          alert(
-            "Push notification system is still initializing. Please try again in 5 seconds.",
-          );
+          toast.error("Push notification system is still initializing. Please try again in 5 seconds.");
           setPushEnabled(false);
           return;
         }
@@ -121,7 +123,7 @@ function SettingsPage() {
         setPushEnabled(true);
         // Invalidate push subscription status to update UI in inbox
         queryClient.invalidateQueries({ queryKey: ["push-subscription-status"] });
-        alert("Push notifications enabled successfully!");
+        toast.success("Push notifications enabled.");
       } else {
         // Unsubscribe
         const registration = await navigator.serviceWorker.ready;
@@ -134,11 +136,11 @@ function SettingsPage() {
         setPushEnabled(false);
         // Invalidate push subscription status to update UI in inbox
         queryClient.invalidateQueries({ queryKey: ["push-subscription-status"] });
-        alert("Push notifications disabled.");
+        toast("Push notifications disabled.");
       }
     } catch (error) {
       console.error("Error toggling push notifications:", error);
-      alert("Failed to update push notification settings. Please try again.");
+      toast.error("Failed to update push notification settings. Please try again.");
       setPushEnabled(!enabled);
     } finally {
       setPushLoading(false);
@@ -159,10 +161,10 @@ function SettingsPage() {
         title: "Push is working!",
         body: "Your device is successfully registered for Org Comms broadcasts."
       });
-      alert("Test notification sent! It should arrive in a few seconds.");
+      toast.success("Test notification sent — it should arrive in a few seconds.");
     } catch (error) {
       console.error("Failed to send test push:", error);
-      alert("Failed to send test notification. Check console for details.");
+      toast.error("Failed to send test notification. Check console for details.");
     } finally {
       setTestLoading(false);
     }

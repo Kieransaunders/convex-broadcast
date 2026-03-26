@@ -1,6 +1,6 @@
-const CACHE_NAME = "orgcomms-v3";
+const CACHE_NAME = "orgcomms-v4";
 // Precache critical routes for offline access
-const PRECACHE_URLS = ["/", "/inbox", "/settings", "/sign-in"];
+const PRECACHE_URLS = ["/", "/launch", "/sign-in"];
 
 // Install: precache app shell
 self.addEventListener("install", (event) => {
@@ -134,7 +134,18 @@ self.addEventListener("notificationclick", (event) => {
   if (event.action === "" || event.action === "view") {
     event.waitUntil(
       Promise.all([
-        clients.openWindow(url),
+        // Focus existing window if open (important for desktop PWA), otherwise open new
+        clients
+          .matchAll({ type: "window", includeUncontrolled: true })
+          .then((clientList) => {
+            for (const client of clientList) {
+              if ("focus" in client) {
+                client.navigate(url);
+                return client.focus();
+              }
+            }
+            return clients.openWindow(url);
+          }),
         // Clear badge when user clicks notification
         "clearAppBadge" in self.navigator
           ? self.navigator.clearAppBadge().catch(() => {})
