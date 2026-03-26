@@ -4,9 +4,9 @@ import { convexQuery } from "@convex-dev/react-query";
 import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Search, Settings, Trash2, X  } from "lucide-react";
 import { useConvex } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { api } from "../../../convex/_generated/api";
 import { clearTokenCache } from "~/lib/auth-helpers";
+import { getMessagePreview } from "~/lib/message-preview";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
@@ -537,9 +537,9 @@ function MessageCard({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="line-clamp-2 text-sm text-gray-600 prose prose-sm prose-slate max-w-none">
-              <ReactMarkdown>{message.body}</ReactMarkdown>
-            </div>
+            <p className="line-clamp-2 text-sm text-gray-600">
+              {getMessagePreview(message.body)}
+            </p>
             <p className="mt-2 text-xs text-gray-400">
               {new Date(message.createdAt).toLocaleDateString()}
             </p>
@@ -589,4 +589,3 @@ function MessageSkeleton() {
     </Card>
   );
 }
-

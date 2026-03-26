@@ -2,7 +2,7 @@
   "name": "Org Comms",
   "short_name": "OrgComms",
   "description": "Internal communication app for organisations",
-  "start_url": "/inbox",
+  "start_url": "/launch",
   "display": "standalone",
   "background_color": "#F5F3FF",
   "theme_color": "#6366F1",

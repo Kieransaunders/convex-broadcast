@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as LaunchRouteImport } from './routes/launch'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
@@ -71,6 +72,11 @@ const SignUpRoute = SignUpRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaunchRoute = LaunchRouteImport.update({
+  id: '/launch',
+  path: '/launch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRoute = AuthedRouteImport.update({
@@ -240,6 +246,7 @@ const AuthedAdminEventsDetailLazyRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/launch': typeof LaunchRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
@@ -268,6 +275,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/launch': typeof LaunchRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
+  '/launch': typeof LaunchRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
@@ -329,6 +338,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/launch'
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
@@ -357,6 +367,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/launch'
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authed'
+    | '/launch'
     | '/sign-in'
     | '/sign-up'
     | '/_authed/_admin'
@@ -417,6 +429,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
+  LaunchRoute: typeof LaunchRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
@@ -445,6 +458,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/launch': {
+      id: '/launch'
+      path: '/launch'
+      fullPath: '/launch'
+      preLoaderRoute: typeof LaunchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -682,6 +702,7 @@ const AuthedRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
+  LaunchRoute: LaunchRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
