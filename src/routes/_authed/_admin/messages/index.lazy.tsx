@@ -7,7 +7,6 @@ import {
   Mail,
   Plus,
   Send,
-  ShieldAlert,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
@@ -67,7 +66,7 @@ function MessagesPage() {
   const [activeTab, setActiveTab] = useState<FilterTab>("drafts");
 
   const [confirmDialog, setConfirmDialog] = useState<{
-    type: "send" | "delete" | "cancel" | "deleteSent";
+    type: "send" | "delete" | "cancel";
     message: Message;
   } | null>(null);
 
@@ -91,20 +90,6 @@ function MessagesPage() {
     },
   });
 
-  const deleteSentMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await convex.mutation(api.messages.deleteMessage, { id: id as any });
-    },
-    onSuccess: () => {
-      refetch();
-      setConfirmDialog(null);
-    },
-    onError: (error) => {
-      alert("Only super admins can delete sent messages. " + error.message);
-      setConfirmDialog(null);
-    },
-  });
-
   const cancelMutation = useMutation({
     mutationFn: async (id: string) => {
       await convex.mutation(api.messages.cancelScheduled, { id: id as any });
@@ -118,8 +103,7 @@ function MessagesPage() {
   const isActionPending =
     sendMutation.isPending ||
     deleteMutation.isPending ||
-    cancelMutation.isPending ||
-    deleteSentMutation.isPending;
+    cancelMutation.isPending;
 
   const handleConfirm = () => {
     if (!confirmDialog) return;
@@ -127,7 +111,6 @@ function MessagesPage() {
     if (type === "send") sendMutation.mutate(message._id);
     if (type === "delete") deleteMutation.mutate(message._id);
     if (type === "cancel") cancelMutation.mutate(message._id);
-    if (type === "deleteSent") deleteSentMutation.mutate(message._id);
   };
 
   const getCategoryColor = (category: string) => {
@@ -213,12 +196,10 @@ function MessagesPage() {
     message,
     showDraftActions,
     showScheduledActions,
-    showDeleteSent,
   }: {
     message: Message;
     showDraftActions?: boolean;
     showScheduledActions?: boolean;
-    showDeleteSent?: boolean;
   }) => (
     <Link to="/messages/detail" search={{ id: message._id }}>
       <Card className="border-[#6366F1]/10 transition-shadow hover:shadow-md cursor-pointer">
@@ -324,24 +305,7 @@ function MessagesPage() {
                 </Button>
               )}
               {!showDraftActions && !showScheduledActions && (
-                <>
-                  <ArrowRight className="h-5 w-5 text-[#6366F1]/40" />
-                  {showDeleteSent && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setConfirmDialog({ type: "deleteSent", message });
-                      }}
-                      className="ml-2 cursor-pointer border-red-200 text-red-600 hover:bg-red-50"
-                      title="Delete for all users (Super Admin only)"
-                    >
-                      <ShieldAlert className="h-3 w-3" />
-                    </Button>
-                  )}
-                </>
+                <ArrowRight className="h-5 w-5 text-[#6366F1]/40" />
               )}
             </div>
           </div>
@@ -396,14 +360,6 @@ function MessagesPage() {
       icon: AlertTriangle,
       buttonLabel: "Cancel Schedule",
       buttonClass: "bg-amber-600 hover:bg-amber-700 text-white",
-    },
-    deleteSent: {
-      title: "Delete Message for All Users?",
-      description:
-        "This will permanently delete this message for ALL users. This action cannot be undone and requires super admin privileges.",
-      icon: ShieldAlert,
-      buttonLabel: "Delete for All",
-      buttonClass: "bg-red-600 hover:bg-red-700 text-white",
     },
   };
 

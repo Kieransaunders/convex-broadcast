@@ -1,7 +1,7 @@
 import { ConvexError, v  } from "convex/values";
 import { internalMutation, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getAdminUser, getSuperAdminUser, getUser, safeGetUser } from "./auth";
+import { getAdminUser, getUser, safeGetUser } from "./auth";
 import type { Id } from "./_generated/dataModel";
 
 // --- Queries ---
@@ -187,63 +187,6 @@ export const deleteDraft = mutation({
   },
 });
 
-// Admin: Delete any message (sent or draft) - removes from all users
-// Uses internal action to handle large batches of deliveries without hitting limits
-export const deleteMessage = mutation({
-  args: { id: v.id("messages") },
-  handler: async (ctx, args) => {
-    await getSuperAdminUser(ctx);
-    const message = await ctx.db.get("messages", args.id);
-    if (!message) throw new ConvexError("Message not found");
-
-    // Delete message targets (usually small number)
-    const targets = await ctx.db
-      .query("messageTargets")
-      .withIndex("by_messageId", (q) => q.eq("messageId", args.id))
-      .take(100);
-    for (const target of targets) {
-      await ctx.db.delete("messageTargets", target._id);
-    }
-
-    // Delete the message itself first to prevent new deliveries
-    await ctx.db.delete("messages", args.id);
-
-    // Schedule background cleanup of deliveries (could be thousands)
-    // This avoids hitting the 1024 operation limit per mutation
-    await ctx.scheduler.runAfter(0, internal.messages.cleanupDeliveries, {
-      messageId: args.id,
-    });
-  },
-});
-
-// Internal: Cleanup deliveries for a deleted message in batches
-export const cleanupDeliveries = internalMutation({
-  args: { messageId: v.id("messages") },
-  handler: async (ctx, args) => {
-    // Get up to 100 deliveries at a time
-    const deliveries = await ctx.db
-      .query("deliveries")
-      .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))
-      .take(100);
-
-    if (deliveries.length === 0) {
-      // No more deliveries to delete, we're done
-      return;
-    }
-
-    // Delete this batch
-    for (const delivery of deliveries) {
-      await ctx.db.delete("deliveries", delivery._id);
-    }
-
-    // Schedule next batch if we found 100 (there might be more)
-    if (deliveries.length === 100) {
-      await ctx.scheduler.runAfter(0, internal.messages.cleanupDeliveries, {
-        messageId: args.messageId,
-      });
-    }
-  },
-});
 
 // User: Delete a message from their own feed (removes delivery record)
 export const deleteMyDelivery = mutation({

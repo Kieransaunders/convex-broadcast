@@ -15,18 +15,26 @@ import {
   Loader2,
   MessageSquare,
   Send,
-  ShieldAlert,
   Trash2,
   Users,
 } from "lucide-react";
 import { useConvex } from "convex/react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../../../convex/_generated/api.js";
 import type { Id } from "../../../../../convex/_generated/dataModel.js";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 
 const CATEGORY_CONFIG = {
   urgent: {
@@ -100,7 +108,7 @@ function MessageDetailPage() {
   const { id } = useSearch({ from: "/_authed/_admin/messages/detail" }) as unknown as { id: string };
   const convex = useConvex();
   const navigate = useNavigate();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const { data: message, isLoading } = useQuery(
     convexQuery(api.messages.getById, { id: id as Id<"messages"> }),
@@ -111,10 +119,6 @@ function MessageDetailPage() {
     }),
     enabled: message?.status === "sent",
   });
-  const { data: user } = useQuery(convexQuery(api.auth.getCurrentUser, {}));
-
-  const isSuperAdmin = user?.role === "super_admin";
-
   const sendMutation = useMutation({
     mutationFn: async () => {
       return await convex.mutation(api.messages.sendNow, {
@@ -125,40 +129,18 @@ function MessageDetailPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (message?.status === "draft") {
-        return await convex.mutation(api.messages.deleteDraft, {
-          id: id as Id<"messages">,
-        });
-      } else {
-        // For sent/scheduled messages, only super admin can delete
-        return await convex.mutation(api.messages.deleteMessage, {
-          id: id as Id<"messages">,
-        });
-      }
+      return await convex.mutation(api.messages.deleteDraft, {
+        id: id as Id<"messages">,
+      });
     },
     onSuccess: () => {
       navigate({ to: "/messages" });
     },
     onError: (error) => {
-      setIsDeleting(false);
-      alert(error.message);
+      setConfirmDelete(false);
+      toast.error(error.message);
     },
   });
-
-  const handleDelete = () => {
-    const isSent = message?.status === "sent" || message?.status === "scheduled";
-    if (isSent && !isSuperAdmin) {
-      alert("Only super admins can delete sent or scheduled messages.");
-      return;
-    }
-    const confirmMessage = isSent
-      ? "WARNING: This will delete this message for ALL users. This action cannot be undone. Are you sure?"
-      : "Delete this draft message?";
-    if (confirm(confirmMessage)) {
-      setIsDeleting(true);
-      deleteMutation.mutate();
-    }
-  };
 
   if (isLoading) {
     return (
@@ -439,22 +421,17 @@ function MessageDetailPage() {
                 </Button>
               )}
 
-              <Button
-                variant="outline"
-                onClick={handleDelete}
-                disabled={isDeleting || (message.status !== "draft" && !isSuperAdmin)}
-                className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 justify-start disabled:opacity-50 disabled:cursor-not-allowed"
-                title={message.status !== "draft" && !isSuperAdmin ? "Only super admins can delete sent messages" : ""}
-              >
-                {isDeleting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : message.status !== "draft" ? (
-                  <ShieldAlert className="mr-2 h-4 w-4" />
-                ) : (
+              {message.status === "draft" && (
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmDelete(true)}
+                  disabled={deleteMutation.isPending}
+                  className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 justify-start"
+                >
                   <Trash2 className="mr-2 h-4 w-4" />
-                )}
-                {message.status !== "draft" ? "Delete for All" : "Delete Message"}
-              </Button>
+                  Delete Draft
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -543,6 +520,46 @@ function MessageDetailPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <div className="mb-1 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-red-100">
+                <Trash2 className="h-5 w-5 text-red-600" />
+              </div>
+              <DialogTitle>Delete Draft?</DialogTitle>
+            </div>
+            <DialogDescription>
+              <strong className="text-[#1E1B4B]">{message.title}</strong>
+              <br />
+              This will permanently delete this draft. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDelete(false)}
+              disabled={deleteMutation.isPending}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 h-4 w-4" />
+              )}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
