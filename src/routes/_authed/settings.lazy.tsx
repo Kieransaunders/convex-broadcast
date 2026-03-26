@@ -1,7 +1,7 @@
 import { Link, createLazyFileRoute  } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { useMutation } from "convex/react";
+import { useConvex } from "convex/react";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Bell, CheckCircle2, Loader2, LogOut, Smartphone, User } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
@@ -29,10 +29,31 @@ function SettingsPage() {
   const { data: vapidKey } = useQuery(
     convexQuery(api.push.getVapidPublicKey, user ? {} : "skip"),
   );
-  const updatePreference = useMutation(api.push.updatePreference);
-  const subscribe = useMutation(api.push.subscribe);
-  const unsubscribe = useMutation(api.push.unsubscribe);
-  const sendTest = useMutation(api.push.sendTest);
+  const convex = useConvex();
+  
+  const updatePreference = useMutation({
+    mutationFn: async (args: { preference: "all" | "urgent" | "none" }) => {
+      return await convex.mutation(api.push.updatePreference, args);
+    },
+  });
+  
+  const subscribe = useMutation({
+    mutationFn: async (args: { endpoint: string; p256dh: string; auth: string; preference: string }) => {
+      return await convex.mutation(api.push.subscribe, args);
+    },
+  });
+  
+  const unsubscribe = useMutation({
+    mutationFn: async (args: { endpoint: string }) => {
+      return await convex.mutation(api.push.unsubscribe, args);
+    },
+  });
+  
+  const sendTest = useMutation({
+    mutationFn: async (args: { title: string; body: string }) => {
+      return await convex.mutation(api.push.sendTest, args);
+    },
+  });
 
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const { data: messages } = useQuery(convexQuery(api.messages.feed, {}));
@@ -91,7 +112,7 @@ function SettingsPage() {
           applicationServerKey: urlBase64ToUint8Array(keyToUse) as BufferSource,
         });
 
-        await subscribe({
+        await subscribe.mutateAsync({
           endpoint: pushSubscription.endpoint,
           p256dh: arrayBufferToBase64(pushSubscription.getKey("p256dh")!),
           auth: arrayBufferToBase64(pushSubscription.getKey("auth")!),
@@ -107,7 +128,7 @@ function SettingsPage() {
         const pushSubscription =
           await registration.pushManager.getSubscription();
         if (pushSubscription) {
-          await unsubscribe({ endpoint: pushSubscription.endpoint });
+          await unsubscribe.mutateAsync({ endpoint: pushSubscription.endpoint });
           await pushSubscription.unsubscribe();
         }
         setPushEnabled(false);
@@ -126,7 +147,7 @@ function SettingsPage() {
 
   const handlePreferenceChange = async (value: "all" | "urgent" | "none") => {
     setPreference(value);
-    await updatePreference({ preference: value });
+    await updatePreference.mutateAsync({ preference: value });
   };
 
   const [testLoading, setTestLoading] = useState(false);
@@ -134,7 +155,7 @@ function SettingsPage() {
   const handleSendTest = async () => {
     setTestLoading(true);
     try {
-      await sendTest({
+      await sendTest.mutateAsync({
         title: "Push is working!",
         body: "Your device is successfully registered for Org Comms broadcasts."
       });
