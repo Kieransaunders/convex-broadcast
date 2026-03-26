@@ -23,11 +23,11 @@ export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
 }>()({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: ({ context }) => {
     // Set the auth function on the Convex client lazily.
     // This function will only be executed when a Convex query/mutation is actually called.
-    (context.convexQueryClient.convexClient as any).setAuth(async () => {
-      return await getCachedAuth();
+    (context.convexQueryClient.convexClient as any).setAuth(() => {
+      return getCachedAuth();
     });
     // NO BLOCKING AWAIT HERE - allows public pages to render immediately
     return {};

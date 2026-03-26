@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutDashboard, Settings, MessageSquare, Users } from "lucide-react";
+import { Home, LayoutDashboard, MessageSquare, Settings, Users } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 interface MobileBottomNavProps {

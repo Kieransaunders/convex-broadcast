@@ -28,6 +28,12 @@ npm run lint
 
 # Format
 npm run format
+
+# Run tests (convex-test + vitest, edge-runtime environment)
+npm run test
+
+# Watch mode
+npm run test:watch
 ```
 
 Dev server runs at `http://localhost:3000`.
@@ -58,9 +64,11 @@ File-based routing in `src/routes/`:
 
 - `__root.tsx` — root layout, sets up `ConvexBetterAuthProvider`, registers service worker, renders `ImpersonationBanner` + `PWAInstallPrompt`
 - `_authed.tsx` — auth guard (redirects to `/sign-in` if no token)
-- `_authed/_admin.tsx` — admin role guard
-- `_authed/inbox.tsx` — member message feed
-- `_authed/_admin/` — admin dashboard, messages, groups, events, users, system-settings
+- `_authed/_admin.tsx` — admin role guard (eager); `_authed/_admin.lazy.tsx` — lazy-loaded admin layout shell
+- `_authed/inbox.tsx` / `inbox.lazy.tsx` — member message feed
+- `_authed/_admin/` — dashboard, messages (list/new/detail), groups, events, users, system-settings (all `.lazy.tsx`)
+- `articles/` — SEO content pages (`index.tsx`, `$slug.tsx`)
+- `docs.*` — documentation routes (broadcast-messages, delivery-tracking, event-management, group-management, notifications, role-based-access)
 
 Auth flows via `~/lib/auth-client.tsx` (Better Auth client with `convexClient()` and `adminClient()` plugins). Server-side token retrieval in `~/lib/auth-server.ts`.
 
@@ -100,3 +108,15 @@ Service worker at `public/sw.js`. Manifest at `public/manifest.json`. Push notif
 - All timestamps are Unix milliseconds (`.number()` in schema)
 - UI components are shadcn/ui in `src/components/ui/` — add new ones with `npx shadcn add <component>`
 - Tailwind v4 — uses CSS-first configuration in `src/styles/app.css`, not `tailwind.config.js`
+
+## Convex Backend Rules
+
+- Always include argument validators (`v.*`) for **all** Convex functions — public and internal alike
+- Use `internalQuery` / `internalMutation` / `internalAction` for private functions; use `query` / `mutation` / `action` only for public API surface
+- Never use `filter` in queries — define an index in `schema.ts` and use `withIndex` instead
+- Never use `.collect()` unbounded — use `.take(n)` or `.paginate()`. Never use `.collect().length` for counts
+- Don't use `ctx.db` inside actions; use `ctx.runQuery` / `ctx.runMutation` to cross into DB from actions
+- Add `"use node";` at the top of action files that use Node built-ins; never mix it with query/mutation exports
+- Cron jobs: use only `crons.interval` or `crons.cron` — not `crons.hourly/daily/weekly`
+- Index naming convention: include all indexed fields, e.g. `by_userId_and_createdAt`
+- Tests live inside `convex/` and use `convex-test` + `vitest` with `environment: "edge-runtime"`

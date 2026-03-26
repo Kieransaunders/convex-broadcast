@@ -39,14 +39,14 @@ export const search = query({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    let q = ctx.db
+    const q = ctx.db
       .query("users")
       .withSearchIndex("search_name_email", (s) => {
-        let search = s.search("name", args.query);
+        let searchQuery = s.search("name", args.query);
         if (args.role) {
-          search = search.eq("role", args.role);
+          searchQuery = searchQuery.eq("role", args.role);
         }
-        return search;
+        return searchQuery;
       });
     return await q.take(50);
   },

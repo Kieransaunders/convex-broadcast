@@ -1,7 +1,7 @@
 export interface ArticleSection {
   heading: string;
   content: string;
-  list?: string[];
+  list?: Array<string>;
 }
 
 export interface HowToStep {
@@ -11,7 +11,7 @@ export interface HowToStep {
 
 export interface HowTo {
   name: string;
-  steps: HowToStep[];
+  steps: Array<HowToStep>;
 }
 
 export interface FAQ {
@@ -26,16 +26,16 @@ export interface Article {
   metaDescription: string;
   intro: string;
   category: string;
-  tags: string[];
+  tags: Array<string>;
   readingTime: string;
   publishedAt: string;
   updatedAt: string;
-  sections: ArticleSection[];
+  sections: Array<ArticleSection>;
   howTo?: HowTo;
-  faqs: FAQ[];
+  faqs: Array<FAQ>;
 }
 
-export const articles: Article[] = [
+export const articles: Array<Article> = [
   {
     slug: "how-to-send-broadcast-messages-to-your-organisation",
     title: "How to Send Broadcast Messages to Your Organisation",

@@ -1,6 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState, type ComponentType, type ReactNode } from "react";
+import {   useState } from "react";
 import {
+  ArrowRight,
+  BarChart2,
   Bell,
   BookOpen,
   Globe,
@@ -9,9 +11,8 @@ import {
   Shield,
   Users,
   X,
-  BarChart2,
-  ArrowRight,
 } from "lucide-react";
+import type {ComponentType, ReactNode} from "react";
 import { Button } from "~/components/ui/button";
 
 type NavItem = {
@@ -21,7 +22,7 @@ type NavItem = {
   exact?: boolean;
 };
 
-const DOC_LINKS: NavItem[] = [
+const DOC_LINKS: Array<NavItem> = [
   { to: "/docs", label: "Overview", icon: BookOpen, exact: true },
   { to: "/docs/broadcast-messages", label: "Broadcast Messages", icon: Mail },
   { to: "/docs/notifications", label: "Push Notifications", icon: Bell },
@@ -354,7 +355,7 @@ export function DocsPageShell({ children }: { children: ReactNode }) {
 export function FaqSection({
   items,
 }: {
-  items: { q: string; a: string }[];
+  items: Array<{ q: string; a: string }>;
 }) {
   return (
     <section className="mt-12 mb-8">

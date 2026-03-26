@@ -1,9 +1,10 @@
 import { Link, createLazyFileRoute, getRouteApi } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
-import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Settings, Trash2 } from "lucide-react";
+import { Bell, BellOff, CheckCheck, Inbox, Loader2, Mail, MailOpen, Search, Settings, Trash2, X  } from "lucide-react";
 import { useConvex } from "convex/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { api } from "../../../convex/_generated/api";
 import { clearTokenCache } from "~/lib/auth-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -16,8 +17,6 @@ import { useAppBadge } from "~/hooks/use-app-badge";
 import { usePushSubscription } from "~/hooks/use-push-subscription";
 import { cn } from "~/lib/utils";
 import { Input } from "~/components/ui/input";
-import { Search, X } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 
 export const Route = createLazyFileRoute("/_authed/inbox")({
   component: InboxPage,
@@ -35,7 +34,7 @@ function InboxPage() {
   // Check if push notifications are enabled in browser
   const { data: isPushSubscribed } = usePushSubscription();
   
-  const [loadedPages, setLoadedPages] = useState<any[]>([]);
+  const [loadedPages, setLoadedPages] = useState<Array<any>>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -50,10 +49,10 @@ function InboxPage() {
 
   // Sync first page data into loadedPages state
   useEffect(() => {
-    if (feedData && feedData.items) {
+    if (feedData?.items) {
       setLoadedPages([feedData.items]);
-      setNextCursor(feedData.cursor ?? null);
-      setHasMore(feedData.hasMore ?? false);
+      setNextCursor(feedData.cursor);
+      setHasMore(feedData.hasMore);
     }
   }, [feedData]);
 
@@ -63,7 +62,7 @@ function InboxPage() {
   );
 
   const displayMessages = useMemo(() => {
-    if (!messages || !Array.isArray(messages)) return [];
+    if (!Array.isArray(messages)) return [];
     
     let filtered = messages;
     
@@ -217,7 +216,7 @@ function InboxPage() {
   };
 
   const unreadCount = useMemo(
-    () => (Array.isArray(messages) ? messages : []).filter((msg: any) => !msg.delivery?.readAt).length ?? 0,
+    () => (Array.isArray(messages) ? messages : []).filter((msg: any) => !msg.delivery?.readAt).length,
     [messages],
   );
 
@@ -241,11 +240,9 @@ function InboxPage() {
     setIsLoadingMore(true);
     try {
       const result = await convex.query(api.messages.feed, { cursor: nextCursor });
-      if (result && result.items) {
-        setLoadedPages((prev) => [...prev, result.items]);
-        setNextCursor(result.cursor ?? null);
-        setHasMore(result.hasMore ?? false);
-      }
+      setLoadedPages((prev) => [...prev, result.items]);
+      setNextCursor(result.cursor);
+      setHasMore(result.hasMore);
     } catch (err) {
       console.error("Failed to load more messages:", err);
     } finally {

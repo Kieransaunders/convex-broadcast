@@ -1,11 +1,11 @@
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
-import { getCachedAuth, clearTokenCache } from "~/lib/auth-helpers";
-import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { authClient } from "~/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { api } from "../../convex/_generated/api";
+import { clearTokenCache, getCachedAuth } from "~/lib/auth-helpers";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { authClient } from "~/lib/auth-client";
 import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed")({

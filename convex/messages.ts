@@ -58,14 +58,14 @@ export const search = query({
   },
   handler: async (ctx, args) => {
     await getAdminUser(ctx);
-    let q = ctx.db
+    const q = ctx.db
       .query("messages")
       .withSearchIndex("search_title_body", (s) => {
-        let search = s.search("title", args.query);
+        let searchQuery = s.search("title", args.query);
         if (args.status) {
-          search = search.eq("status", args.status);
+          searchQuery = searchQuery.eq("status", args.status);
         }
-        return search;
+        return searchQuery;
       });
     return await q.take(50);
   },

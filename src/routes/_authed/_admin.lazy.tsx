@@ -16,6 +16,7 @@ import {
   Settings,
   Users,
 } from "lucide-react";
+import { api } from "../../../convex/_generated/api.js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +39,6 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { authClient } from "~/lib/auth-client";
 import { clearTokenCache } from "~/lib/auth-helpers";
-import { api } from "../../../convex/_generated/api.js";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

@@ -15,6 +15,7 @@ import { Link, createLazyFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
+import ReactMarkdown from "react-markdown";
 import { api } from "../../../../../convex/_generated/api.js";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -28,7 +29,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
-import ReactMarkdown from "react-markdown";
 
 export const Route = createLazyFileRoute("/_authed/_admin/messages/")({
   component: MessagesPage,
@@ -174,11 +174,11 @@ function MessagesPage() {
   };
 
   const MessageStats = ({ messageId }: { messageId: string }) => {
-    const { data: stats, isLoading } = useQuery(
+    const { data: stats, isLoading: statsLoading } = useQuery(
       convexQuery(api.messages.getDeliveryStats, { messageId: messageId as any }),
     );
 
-    if (isLoading)
+    if (statsLoading)
       return <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />;
     if (!stats || stats.total === 0) return null;
 

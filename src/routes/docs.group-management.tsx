@@ -5,8 +5,8 @@ import {
   Plus,
   Search,
   Tag,
-  Users,
   UserPlus,
+  Users,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { DocsPageShell, FaqSection } from "~/components/docs-nav";
