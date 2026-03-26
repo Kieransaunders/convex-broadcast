@@ -6,7 +6,7 @@ import {
   query,
 } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { getUser } from "./auth";
+import { getUser, safeGetUser } from "./auth";
 
 // --- Subscription Management ---
 
@@ -78,7 +78,8 @@ export const updatePreference = mutation({
 export const getMySubscription = query({
   args: {},
   handler: async (ctx) => {
-    const user = await getUser(ctx);
+    const user = await safeGetUser(ctx);
+    if (!user) return null;
     const subs = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_userId", (q) => q.eq("userId", user._id))

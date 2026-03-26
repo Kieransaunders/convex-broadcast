@@ -1,11 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAdminUser, getUser } from "./auth";
+import { getAdminUser, getUser, safeGetUser } from "./auth";
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    await getUser(ctx);
+    const user = await safeGetUser(ctx);
+    if (!user) return [];
     return await ctx.db.query("events").order("desc").collect();
   },
 });

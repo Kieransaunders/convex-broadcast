@@ -21,6 +21,7 @@ test("subscribe throws when unauthenticated", async () => {
   ).rejects.toThrow();
 });
 
-test("getMySubscription throws when unauthenticated", async () => {
-  await expect(t.query(api.push.getMySubscription, {})).rejects.toThrow();
+test("getMySubscription returns null when unauthenticated", async () => {
+  const result = await t.query(api.push.getMySubscription, {});
+  expect(result).toBeNull();
 });

@@ -5,8 +5,9 @@ import { api } from "../_generated/api";
 
 const t = convexTest(schema, import.meta.glob("../**/*.ts"));
 
-test("list throws when unauthenticated", async () => {
-  await expect(t.query(api.groups.list, {})).rejects.toThrow();
+test("list returns empty array when unauthenticated", async () => {
+  const result = await t.query(api.groups.list, {});
+  expect(result).toEqual([]);
 });
 
 test("create throws when unauthenticated", async () => {

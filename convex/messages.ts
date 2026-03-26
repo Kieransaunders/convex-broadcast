@@ -18,7 +18,8 @@ export const list = query({
     ),
   },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx);
+    const user = await safeGetUser(ctx);
+    if (!user || (user.role !== "admin" && user.role !== "super_admin")) return [];
     if (args.status) {
       return await ctx.db
         .query("messages")
@@ -662,7 +663,8 @@ export const markAllAsRead = mutation({
 export const getDeliveryStats = query({
   args: { messageId: v.id("messages") },
   handler: async (ctx, args) => {
-    await getAdminUser(ctx);
+    const user = await safeGetUser(ctx);
+    if (!user || (user.role !== "admin" && user.role !== "super_admin")) return null;
     const deliveries = await ctx.db
       .query("deliveries")
       .withIndex("by_messageId", (q) => q.eq("messageId", args.messageId))

@@ -5,6 +5,6 @@ export default defineConfig({
     // edge-runtime emulates the Convex V8 environment required by convex-test
     environment: "edge-runtime",
     server: { deps: { inline: ["convex-test"] } },
-    include: ["convex/__tests__/**/*.test.ts"],
+    include: ["convex/__tests__/**/*.test.ts", "src/**/*.test.ts"],
   },
 });
