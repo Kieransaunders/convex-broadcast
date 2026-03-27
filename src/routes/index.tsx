@@ -424,6 +424,91 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Build Upon This Section */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-4">
+              Build Upon This Starter
+            </h2>
+            <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
+              Org Comms is a foundation you can extend. Here are some ways 
+              organisations have customised it for their needs.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-[#6366F1]/10 bg-white h-full">
+              <CardContent className="pt-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 mb-4">
+                  <span className="text-xl">🚨</span>
+                </div>
+                <h3 className="font-semibold text-[#1E1B4B] mb-2">
+                  Emergency Alert System
+                </h3>
+                <p className="text-sm text-[#1E1B4B]/70">
+                  Add priority levels, loud alarm notifications, and instant 
+                  SMS fallback for critical safety alerts to all staff or residents.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-[#6366F1]/10 bg-white h-full">
+              <CardContent className="pt-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 mb-4">
+                  <span className="text-xl">📋</span>
+                </div>
+                <h3 className="font-semibold text-[#1E1B4B] mb-2">
+                  Volunteer Coordination
+                </h3>
+                <p className="text-sm text-[#1E1B4B]/70">
+                  Add shift sign-ups, availability calendars, and skill matching 
+                  so volunteers can easily manage their commitments.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-[#6366F1]/10 bg-white h-full">
+              <CardContent className="pt-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 mb-4">
+                  <span className="text-xl">📚</span>
+                </div>
+                <h3 className="font-semibold text-[#1E1B4B] mb-2">
+                  School Parent Portal
+                </h3>
+                <p className="text-sm text-[#1E1B4B]/70">
+                  Add class-specific channels, homework updates, permission slips 
+                  with digital signatures, and parent-teacher meeting booking.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-[#6366F1]/10 bg-white h-full">
+              <CardContent className="pt-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 mb-4">
+                  <span className="text-xl">🏥</span>
+                </div>
+                <h3 className="font-semibold text-[#1E1B4B] mb-2">
+                  Healthcare Updates
+                </h3>
+                <p className="text-sm text-[#1E1B4B]/70">
+                  Add appointment reminders, care plan updates for families, 
+                  and secure document sharing between patients and providers.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-[#1E1B4B]/60">
+              These are just ideas — you can extend Org Comms with any features 
+              your organisation needs.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-16">
