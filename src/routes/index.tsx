@@ -179,35 +179,114 @@ function LandingPage() {
       <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-[#6366F1]/10 px-4 py-1.5 text-sm font-medium text-[#6366F1] mb-8">
-            <Zap className="h-4 w-4" />
-            Streamline your organization communications
+            <Github className="h-4 w-4" />
+            Free Open Source Boilerplate
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-[#1E1B4B] sm:text-6xl mb-6">
-            Broadcast messages to
-            <span className="text-[#6366F1]"> members, staff, and volunteers</span>
+            Build your own
+            <span className="text-[#6366F1]"> organisation communication app</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-[#1E1B4B]/70 mb-10">
-            Org Comms is the internal communication app for organisations.
-            Send targeted updates, manage events, and keep every audience
-            informed from one place.
+          <p className="mx-auto max-w-3xl text-lg text-[#1E1B4B]/70 mb-6">
+            Org Comms is a <strong>free, self-hosted boilerplate</strong> for charities, 
+            community groups, and organisations who need to communicate with their members, 
+            staff, or volunteers.
+          </p>
+          <p className="mx-auto max-w-2xl text-base text-[#1E1B4B]/60 mb-10">
+            Not a SaaS. You deploy it once for your organisation, add your branding, 
+            and own your data. Free for charities and small businesses.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white px-8"
+            <a
+              href="https://github.com/Kieransaunders/convex-broadcast"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Link to="/sign-up" className="flex items-center">
-                Get Started Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+              <Button
+                size="lg"
+                className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white px-8"
+              >
+                <Github className="mr-2 h-5 w-5" />
+                Get the Code on GitHub
+              </Button>
+            </a>
             <Button
               variant="outline"
               size="lg"
               className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
             >
-              <Link to="/sign-in">Sign In</Link>
+              <Link to="/sign-in" search={{ demo: true }}>
+                Test the demo
+              </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* What This Is Section */}
+      <section className="px-4 py-12 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="border-green-200 bg-green-50/30">
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold text-[#1E1B4B] mb-3 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  What this IS
+                </h3>
+                <ul className="space-y-3 text-sm text-[#1E1B4B]/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <span>A <strong>free starting point</strong> for building your own app</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <span>You <strong>self-host it</strong> for your own organisation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <span>You <strong>customise the branding</strong> (logo, colours, name)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <span>You <strong>own your data</strong> — it stays in your database</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">✓</span>
+                    <span>Your members install <strong>your branded app</strong> on their phones</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-red-200 bg-red-50/30">
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold text-[#1E1B4B] mb-3 flex items-center gap-2">
+                  <X className="h-5 w-5 text-red-500" />
+                  What this is NOT
+                </h3>
+                <ul className="space-y-3 text-sm text-[#1E1B4B]/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 font-bold">✗</span>
+                    <span><strong>Not a SaaS</strong> you sign up for monthly</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 font-bold">✗</span>
+                    <span><strong>Not a service</strong> we host for you</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 font-bold">✗</span>
+                    <span><strong>Not multi-tenant</strong> — one deployment per organisation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 font-bold">✗</span>
+                    <span><strong>Not for resale</strong> — you can't sell it to other companies</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-red-500 font-bold">✗</span>
+                    <span><strong>Not a finished product</strong> — it's code you build on</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -261,26 +340,27 @@ function LandingPage() {
       </section>
 
       {/* Quick Start Guide for Testers */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8 bg-white/50">
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-[#1E1B4B]">
-              Quick Start for Testers
+              How It Works
             </h2>
-            <p className="text-[#1E1B4B]/70 mt-2">
-              Follow these steps to experience the full power of the Org Comms boilerplate.
+            <p className="text-[#1E1B4B]/70 mt-2 max-w-2xl mx-auto">
+              Three simple steps to have your own branded communication app 
+              for your organisation.
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-3">
             <div className="flex flex-col items-center text-center">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
                 1
               </div>
-              <h3 className="font-bold text-[#1E1B4B] mb-2">Login as Admin</h3>
-              <p className="text-sm text-[#1E1B4B]/60 italic mb-3">demo@orgcomms.test</p>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Fork & Deploy</h3>
               <p className="text-sm text-[#1E1B4B]/70">
-                Use the demo account above to access both Member and Admin capabilities.
+                Fork the repo and deploy to Vercel or Netlify. 
+                One deployment = one organisation.
               </p>
             </div>
 
@@ -288,15 +368,10 @@ function LandingPage() {
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
                 2
               </div>
-              <h3 className="font-bold text-[#1E1B4B] mb-2">Enable Alerts</h3>
-              <div className="mb-3 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold">
-                REQUIRED FOR PUSH
-              </div>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Add Your Branding</h3>
               <p className="text-sm text-[#1E1B4B]/70">
-                On the Messages page, click <strong>"Enable Alerts"</strong> to grant push permissions in your browser.{" "}
-                <Link to="/docs/notifications" className="text-[#6366F1] underline hover:text-[#6366F1]/80">
-                  Why this is needed.
-                </Link>
+                Change the name, logo, colours, and domain. 
+                Make it look like <em>your</em> app.
               </p>
             </div>
 
@@ -304,25 +379,48 @@ function LandingPage() {
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
                 3
               </div>
-              <h3 className="font-bold text-[#1E1B4B] mb-2">Send Message</h3>
+              <h3 className="font-bold text-[#1E1B4B] mb-2">Invite Your Members</h3>
               <p className="text-sm text-[#1E1B4B]/70">
-                Go to the <strong>Admin Dashboard</strong>, create a message, and send it immediately or schedule it at least 5 minutes in the future.
+                Add your members, create groups, and start broadcasting. 
+                They install your branded PWA on their phones.
               </p>
             </div>
+          </div>
 
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#6366F1] text-white font-bold shadow-lg shadow-[#6366F1]/20">
-                4
-              </div>
-              <h3 className="font-bold text-[#1E1B4B] mb-2">Install App</h3>
-              <div className="flex gap-2 mb-3">
-                <Smartphone className="h-4 w-4 text-[#6366F1]" />
-                <Layout className="h-4 w-4 text-[#6366F1]" />
-              </div>
-              <p className="text-sm text-[#1E1B4B]/70">
-                Add to Home Screen on iOS/Android to test the full <strong>PWA experience</strong> and notifications.
-              </p>
-            </div>
+          <div className="mt-12 text-center">
+            <Card className="border-[#6366F1]/20 bg-white max-w-2xl mx-auto">
+              <CardContent className="py-6">
+                <p className="text-sm text-[#1E1B4B]/70 mb-4">
+                  Want to try it first? The demo lets you experience the full app 
+                  with a pre-configured account.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2 text-sm">
+                    <Mail className="h-4 w-4 text-[#6366F1]" />
+                    <span className="font-mono text-[#1E1B4B]">demo@orgcomms.test</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2 text-sm">
+                    <Lock className="h-4 w-4 text-[#6366F1]" />
+                    <span className="font-mono text-[#1E1B4B]">demopass123!</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-[#1E1B4B]/60 text-sm">
+              Need help building your perfect communication app?{" "}
+              <a 
+                href="https://iConenctIT.co.uk" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#6366F1] font-medium hover:underline"
+              >
+                iConenctIT.co.uk
+              </a>{" "}
+              can help you customise and deploy Org Comms for your organisation.
+            </p>
           </div>
         </div>
       </section>
