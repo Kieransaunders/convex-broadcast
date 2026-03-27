@@ -6,16 +6,12 @@ import {
   CheckCircle,
   Github,
   Globe,
-  Layout,
-  Lock,
   Mail,
   Menu,
   Shield,
-  Smartphone,
   Star,
   Users,
   X,
-  Zap,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
