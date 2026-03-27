@@ -12,13 +12,26 @@ The licensor grants you a non-exclusive, royalty-free, worldwide, non-sublicensa
 
 ## Limitations
 
+### Permitted Uses
+
 You may use the software for your own personal, non-commercial use without charge. This includes:
 - Personal projects
 - Educational purposes
 - Evaluation and testing
 - Non-profit organizations
+- Self-hosted internal communication for your own organisation
 
-**Small Business Exemption**: You may also use the software for commercial purposes if you are a "Small Business" as defined below without charge.
+**Small Business Exemption**: You may also use the software for commercial purposes if you are a "Small Business" as defined below without charge, provided the use is for your own internal purposes only.
+
+### Prohibited Uses (Without Explicit Permission)
+
+You may NOT use the software for:
+- **SaaS/Multi-tenant Services**: Hosting the software as a service where multiple unrelated organisations or users access it through a single instance
+- **Resale**: Selling, licensing, or distributing the software to third parties as a standalone product or service
+- **White-labeling**: Providing the software to clients under your own brand without a separate commercial agreement
+- **Competing Products**: Creating a product or service that directly competes with Org Comms without authorization
+- **Training AI/ML**: Training artificial intelligence or machine learning models using the software without explicit permission
+- **Any use that violates applicable laws or regulations**
 
 ## Small Business Definition
 
@@ -32,13 +45,6 @@ A "Small Business" is an entity or individual that meets ANY of the following cr
 If you do not meet the Small Business criteria above and wish to use this software for commercial purposes, you must obtain a commercial license from the licensor.
 
 To obtain a commercial license, please contact: [Your Contact Email]
-
-## Prohibited Uses
-
-You may not use the software for:
-- Creating competing products or services without authorization
-- Training artificial intelligence or machine learning models without explicit permission
-- Any use that violates applicable laws or regulations
 
 ## Patents
 

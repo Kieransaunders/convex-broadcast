@@ -6,16 +6,22 @@ An open-source boilerplate for building **organisation communication Progressive
 
 ## 🎯 Who Is This For?
 
-Org Comms is built as a **starting point** for organisations and charities who need a simple, effective way to communicate with their clients, members, volunteers, or staff.
+Org Comms is built as a **starting point for organisations and charities** who need a simple, effective way to communicate with their own clients, members, volunteers, or staff.
 
-**Common use cases:**
-- **Charities** keeping volunteers informed about events and opportunities
-- **Community organisations** broadcasting updates to members
-- **Educational institutions** sending announcements to students and parents
-- **Small businesses** coordinating with staff and contractors
-- **Membership organisations** sharing news with their members
+**Permitted use cases:**
+- **Charities** keeping their volunteers informed about events and opportunities
+- **Community organisations** broadcasting updates to their own members
+- **Educational institutions** sending announcements to their students and parents
+- **Small businesses** coordinating with their own staff and contractors
+- **Membership organisations** sharing news with their own members
+- **Organisations** building their own internal branded communication app
 
-You can take this boilerplate, **customise it with your own branding**, and **extend it** with features specific to your organisation's needs.
+**Not permitted:**
+- ❌ Hosting this as a service to sell to other companies
+- ❌ Using it as part of a multi-tenant SaaS product
+- ❌ Reselling the software to third parties
+
+You can take this boilerplate, **customise it with your own branding**, and **extend it** with features specific to **your organisation's internal use**.
 
 ## ✨ Features
 
@@ -201,11 +207,16 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 
 [Sustainable Use License 1.0](./LICENSE)
 
+**For self-hosted internal use:**
 - ✅ **Free** for personal, educational, and non-commercial use
 - ✅ **Free** for small businesses (< 50 employees or < $1M revenue)
+- ✅ **Free** for charities and non-profits
 - 📧 **Commercial license** required for larger organisations
 
-This license allows charities and non-profits to use and modify the project at no cost.
+**Not permitted without explicit permission:**
+- ❌ Hosting as a service to sell to others
+- ❌ SaaS or multi-tenant usage
+- ❌ Reselling or redistribution
 
 ---
 
