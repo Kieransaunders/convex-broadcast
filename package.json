@@ -1,6 +1,8 @@
 {
-  "name": "tanstack-start",
-  "private": true,
+  "name": "org-comms",
+  "version": "1.0.0",
+  "license": "Sustainable Use License 1.0",
+  "private": false,
   "sideEffects": false,
   "type": "module",
   "scripts": {
