@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
@@ -20,50 +18,27 @@ import { Route as DocsIndexRouteImport } from './routes/docs.index'
 import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
 import { Route as DocsRoleBasedAccessRouteImport } from './routes/docs.role-based-access'
 import { Route as DocsNotificationsRouteImport } from './routes/docs.notifications'
+import { Route as DocsLicensingRouteImport } from './routes/docs.licensing'
 import { Route as DocsGroupManagementRouteImport } from './routes/docs.group-management'
 import { Route as DocsEventManagementRouteImport } from './routes/docs.event-management'
 import { Route as DocsDeliveryTrackingRouteImport } from './routes/docs.delivery-tracking'
 import { Route as DocsBroadcastMessagesRouteImport } from './routes/docs.broadcast-messages'
-import { Route as DocsLicensingRouteImport } from './routes/docs.licensing'
 import { Route as ArticlesSlugRouteImport } from './routes/articles/$slug'
+import { Route as AuthedSettingsRouteImport } from './routes/_authed/settings'
 import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-
-const AuthedSettingsLazyRouteImport = createFileRoute('/_authed/settings')()
-const AuthedMessagesIdLazyRouteImport = createFileRoute(
-  '/_authed/messages/$id',
-)()
-const AuthedAdminSystemSettingsLazyRouteImport = createFileRoute(
-  '/_authed/_admin/system-settings',
-)()
-const AuthedAdminDashboardLazyRouteImport = createFileRoute(
-  '/_authed/_admin/dashboard',
-)()
-const AuthedAdminUsersIndexLazyRouteImport = createFileRoute(
-  '/_authed/_admin/users/',
-)()
-const AuthedAdminMessagesIndexLazyRouteImport = createFileRoute(
-  '/_authed/_admin/messages/',
-)()
-const AuthedAdminGroupsIndexLazyRouteImport = createFileRoute(
-  '/_authed/_admin/groups/',
-)()
-const AuthedAdminEventsIndexLazyRouteImport = createFileRoute(
-  '/_authed/_admin/events/',
-)()
-const AuthedAdminMessagesNewLazyRouteImport = createFileRoute(
-  '/_authed/_admin/messages/new',
-)()
-const AuthedAdminMessagesDetailLazyRouteImport = createFileRoute(
-  '/_authed/_admin/messages/detail',
-)()
-const AuthedAdminGroupsDetailLazyRouteImport = createFileRoute(
-  '/_authed/_admin/groups/detail',
-)()
-const AuthedAdminEventsDetailLazyRouteImport = createFileRoute(
-  '/_authed/_admin/events/detail',
-)()
+import { Route as AuthedMessagesIdRouteImport } from './routes/_authed/messages.$id'
+import { Route as AuthedAdminSystemSettingsRouteImport } from './routes/_authed/_admin/system-settings'
+import { Route as AuthedAdminDashboardRouteImport } from './routes/_authed/_admin/dashboard'
+import { Route as AuthedAdminUsersIndexRouteImport } from './routes/_authed/_admin/users/index'
+import { Route as AuthedAdminMessagesIndexRouteImport } from './routes/_authed/_admin/messages/index'
+import { Route as AuthedAdminGroupsIndexRouteImport } from './routes/_authed/_admin/groups/index'
+import { Route as AuthedAdminEventsIndexRouteImport } from './routes/_authed/_admin/events/index'
+import { Route as AuthedAdminMessagesNewRouteImport } from './routes/_authed/_admin/messages/new'
+import { Route as AuthedAdminMessagesDetailRouteImport } from './routes/_authed/_admin/messages/detail'
+import { Route as AuthedAdminGroupsDetailRouteImport } from './routes/_authed/_admin/groups/detail'
+import { Route as AuthedAdminEventsDetailRouteImport } from './routes/_authed/_admin/events/detail'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -99,13 +74,6 @@ const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
   path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedSettingsLazyRoute = AuthedSettingsLazyRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthedRoute,
-} as any).lazy(() =>
-  import('./routes/_authed/settings.lazy').then((d) => d.Route),
-)
 const DocsRoleBasedAccessRoute = DocsRoleBasedAccessRouteImport.update({
   id: '/docs/role-based-access',
   path: '/docs/role-based-access',
@@ -114,6 +82,11 @@ const DocsRoleBasedAccessRoute = DocsRoleBasedAccessRouteImport.update({
 const DocsNotificationsRoute = DocsNotificationsRouteImport.update({
   id: '/docs/notifications',
   path: '/docs/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsLicensingRoute = DocsLicensingRouteImport.update({
+  id: '/docs/licensing',
+  path: '/docs/licensing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsGroupManagementRoute = DocsGroupManagementRouteImport.update({
@@ -136,119 +109,88 @@ const DocsBroadcastMessagesRoute = DocsBroadcastMessagesRouteImport.update({
   path: '/docs/broadcast-messages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsLicensingRoute = DocsLicensingRouteImport.update({
-  id: '/docs/licensing',
-  path: '/docs/licensing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   id: '/articles/$slug',
   path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedInboxRoute = AuthedInboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
   getParentRoute: () => AuthedRoute,
-} as any).lazy(() => import('./routes/_authed/inbox.lazy').then((d) => d.Route))
+} as any)
 const AuthedAdminRoute = AuthedAdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthedRoute,
-} as any).lazy(() =>
-  import('./routes/_authed/_admin.lazy').then((d) => d.Route),
-)
-const AuthedMessagesIdLazyRoute = AuthedMessagesIdLazyRouteImport.update({
-  id: '/messages/$id',
-  path: '/messages/$id',
-  getParentRoute: () => AuthedRoute,
-} as any).lazy(() =>
-  import('./routes/_authed/messages.$id.lazy').then((d) => d.Route),
-)
-const AuthedAdminSystemSettingsLazyRoute =
-  AuthedAdminSystemSettingsLazyRouteImport.update({
-    id: '/system-settings',
-    path: '/system-settings',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/system-settings.lazy').then((d) => d.Route),
-  )
-const AuthedAdminDashboardLazyRoute =
-  AuthedAdminDashboardLazyRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/dashboard.lazy').then((d) => d.Route),
-  )
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedAdminUsersIndexLazyRoute =
-  AuthedAdminUsersIndexLazyRouteImport.update({
-    id: '/users/',
-    path: '/users/',
+const AuthedMessagesIdRoute = AuthedMessagesIdRouteImport.update({
+  id: '/messages/$id',
+  path: '/messages/$id',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAdminSystemSettingsRoute =
+  AuthedAdminSystemSettingsRouteImport.update({
+    id: '/system-settings',
+    path: '/system-settings',
     getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/users/index.lazy').then((d) => d.Route),
-  )
-const AuthedAdminMessagesIndexLazyRoute =
-  AuthedAdminMessagesIndexLazyRouteImport.update({
+  } as any)
+const AuthedAdminDashboardRoute = AuthedAdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminUsersIndexRoute = AuthedAdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesIndexRoute =
+  AuthedAdminMessagesIndexRouteImport.update({
     id: '/messages/',
     path: '/messages/',
     getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/messages/index.lazy').then((d) => d.Route),
-  )
-const AuthedAdminGroupsIndexLazyRoute =
-  AuthedAdminGroupsIndexLazyRouteImport.update({
-    id: '/groups/',
-    path: '/groups/',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/groups/index.lazy').then((d) => d.Route),
-  )
-const AuthedAdminEventsIndexLazyRoute =
-  AuthedAdminEventsIndexLazyRouteImport.update({
-    id: '/events/',
-    path: '/events/',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/events/index.lazy').then((d) => d.Route),
-  )
-const AuthedAdminMessagesNewLazyRoute =
-  AuthedAdminMessagesNewLazyRouteImport.update({
-    id: '/messages/new',
-    path: '/messages/new',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/messages/new.lazy').then((d) => d.Route),
-  )
-const AuthedAdminMessagesDetailLazyRoute =
-  AuthedAdminMessagesDetailLazyRouteImport.update({
+  } as any)
+const AuthedAdminGroupsIndexRoute = AuthedAdminGroupsIndexRouteImport.update({
+  id: '/groups/',
+  path: '/groups/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminEventsIndexRoute = AuthedAdminEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesNewRoute = AuthedAdminMessagesNewRouteImport.update({
+  id: '/messages/new',
+  path: '/messages/new',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminMessagesDetailRoute =
+  AuthedAdminMessagesDetailRouteImport.update({
     id: '/messages/detail',
     path: '/messages/detail',
     getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/messages/detail.lazy').then((d) => d.Route),
-  )
-const AuthedAdminGroupsDetailLazyRoute =
-  AuthedAdminGroupsDetailLazyRouteImport.update({
-    id: '/groups/detail',
-    path: '/groups/detail',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/groups/detail.lazy').then((d) => d.Route),
-  )
-const AuthedAdminEventsDetailLazyRoute =
-  AuthedAdminEventsDetailLazyRouteImport.update({
-    id: '/events/detail',
-    path: '/events/detail',
-    getParentRoute: () => AuthedAdminRoute,
-  } as any).lazy(() =>
-    import('./routes/_authed/_admin/events/detail.lazy').then((d) => d.Route),
-  )
+  } as any)
+const AuthedAdminGroupsDetailRoute = AuthedAdminGroupsDetailRouteImport.update({
+  id: '/groups/detail',
+  path: '/groups/detail',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
+const AuthedAdminEventsDetailRoute = AuthedAdminEventsDetailRouteImport.update({
+  id: '/events/detail',
+  path: '/events/detail',
+  getParentRoute: () => AuthedAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -256,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
+  '/settings': typeof AuthedSettingsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
@@ -264,21 +207,20 @@ export interface FileRoutesByFullPath {
   '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
-  '/settings': typeof AuthedSettingsLazyRoute
   '/articles/': typeof ArticlesIndexRoute
   '/docs/': typeof DocsIndexRoute
+  '/dashboard': typeof AuthedAdminDashboardRoute
+  '/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/messages/$id': typeof AuthedMessagesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/dashboard': typeof AuthedAdminDashboardLazyRoute
-  '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
-  '/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/events/detail': typeof AuthedAdminEventsDetailLazyRoute
-  '/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
-  '/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
-  '/messages/new': typeof AuthedAdminMessagesNewLazyRoute
-  '/events/': typeof AuthedAdminEventsIndexLazyRoute
-  '/groups/': typeof AuthedAdminGroupsIndexLazyRoute
-  '/messages/': typeof AuthedAdminMessagesIndexLazyRoute
-  '/users/': typeof AuthedAdminUsersIndexLazyRoute
+  '/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/events/': typeof AuthedAdminEventsIndexRoute
+  '/groups/': typeof AuthedAdminGroupsIndexRoute
+  '/messages/': typeof AuthedAdminMessagesIndexRoute
+  '/users/': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -286,6 +228,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/inbox': typeof AuthedInboxRoute
+  '/settings': typeof AuthedSettingsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
@@ -294,21 +237,20 @@ export interface FileRoutesByTo {
   '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
-  '/settings': typeof AuthedSettingsLazyRoute
   '/articles': typeof ArticlesIndexRoute
   '/docs': typeof DocsIndexRoute
+  '/dashboard': typeof AuthedAdminDashboardRoute
+  '/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/messages/$id': typeof AuthedMessagesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/dashboard': typeof AuthedAdminDashboardLazyRoute
-  '/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
-  '/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/events/detail': typeof AuthedAdminEventsDetailLazyRoute
-  '/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
-  '/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
-  '/messages/new': typeof AuthedAdminMessagesNewLazyRoute
-  '/events': typeof AuthedAdminEventsIndexLazyRoute
-  '/groups': typeof AuthedAdminGroupsIndexLazyRoute
-  '/messages': typeof AuthedAdminMessagesIndexLazyRoute
-  '/users': typeof AuthedAdminUsersIndexLazyRoute
+  '/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/events': typeof AuthedAdminEventsIndexRoute
+  '/groups': typeof AuthedAdminGroupsIndexRoute
+  '/messages': typeof AuthedAdminMessagesIndexRoute
+  '/users': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -319,6 +261,7 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/_authed/_admin': typeof AuthedAdminRouteWithChildren
   '/_authed/inbox': typeof AuthedInboxRoute
+  '/_authed/settings': typeof AuthedSettingsRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/docs/broadcast-messages': typeof DocsBroadcastMessagesRoute
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
@@ -327,21 +270,20 @@ export interface FileRoutesById {
   '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
-  '/_authed/settings': typeof AuthedSettingsLazyRoute
   '/articles/': typeof ArticlesIndexRoute
   '/docs/': typeof DocsIndexRoute
+  '/_authed/_admin/dashboard': typeof AuthedAdminDashboardRoute
+  '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsRoute
+  '/_authed/messages/$id': typeof AuthedMessagesIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/_authed/_admin/dashboard': typeof AuthedAdminDashboardLazyRoute
-  '/_authed/_admin/system-settings': typeof AuthedAdminSystemSettingsLazyRoute
-  '/_authed/messages/$id': typeof AuthedMessagesIdLazyRoute
-  '/_authed/_admin/events/detail': typeof AuthedAdminEventsDetailLazyRoute
-  '/_authed/_admin/groups/detail': typeof AuthedAdminGroupsDetailLazyRoute
-  '/_authed/_admin/messages/detail': typeof AuthedAdminMessagesDetailLazyRoute
-  '/_authed/_admin/messages/new': typeof AuthedAdminMessagesNewLazyRoute
-  '/_authed/_admin/events/': typeof AuthedAdminEventsIndexLazyRoute
-  '/_authed/_admin/groups/': typeof AuthedAdminGroupsIndexLazyRoute
-  '/_authed/_admin/messages/': typeof AuthedAdminMessagesIndexLazyRoute
-  '/_authed/_admin/users/': typeof AuthedAdminUsersIndexLazyRoute
+  '/_authed/_admin/events/detail': typeof AuthedAdminEventsDetailRoute
+  '/_authed/_admin/groups/detail': typeof AuthedAdminGroupsDetailRoute
+  '/_authed/_admin/messages/detail': typeof AuthedAdminMessagesDetailRoute
+  '/_authed/_admin/messages/new': typeof AuthedAdminMessagesNewRoute
+  '/_authed/_admin/events/': typeof AuthedAdminEventsIndexRoute
+  '/_authed/_admin/groups/': typeof AuthedAdminGroupsIndexRoute
+  '/_authed/_admin/messages/': typeof AuthedAdminMessagesIndexRoute
+  '/_authed/_admin/users/': typeof AuthedAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -351,6 +293,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
+    | '/settings'
     | '/articles/$slug'
     | '/docs/broadcast-messages'
     | '/docs/delivery-tracking'
@@ -359,13 +302,12 @@ export interface FileRouteTypes {
     | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
-    | '/settings'
     | '/articles/'
     | '/docs/'
-    | '/api/auth/$'
     | '/dashboard'
     | '/system-settings'
     | '/messages/$id'
+    | '/api/auth/$'
     | '/events/detail'
     | '/groups/detail'
     | '/messages/detail'
@@ -381,6 +323,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/inbox'
+    | '/settings'
     | '/articles/$slug'
     | '/docs/broadcast-messages'
     | '/docs/delivery-tracking'
@@ -389,13 +332,12 @@ export interface FileRouteTypes {
     | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
-    | '/settings'
     | '/articles'
     | '/docs'
-    | '/api/auth/$'
     | '/dashboard'
     | '/system-settings'
     | '/messages/$id'
+    | '/api/auth/$'
     | '/events/detail'
     | '/groups/detail'
     | '/messages/detail'
@@ -413,6 +355,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/_authed/_admin'
     | '/_authed/inbox'
+    | '/_authed/settings'
     | '/articles/$slug'
     | '/docs/broadcast-messages'
     | '/docs/delivery-tracking'
@@ -421,13 +364,12 @@ export interface FileRouteTypes {
     | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
-    | '/_authed/settings'
     | '/articles/'
     | '/docs/'
-    | '/api/auth/$'
     | '/_authed/_admin/dashboard'
     | '/_authed/_admin/system-settings'
     | '/_authed/messages/$id'
+    | '/api/auth/$'
     | '/_authed/_admin/events/detail'
     | '/_authed/_admin/groups/detail'
     | '/_authed/_admin/messages/detail'
@@ -508,13 +450,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/settings': {
-      id: '/_authed/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthedSettingsLazyRouteImport
-      parentRoute: typeof AuthedRoute
-    }
     '/docs/role-based-access': {
       id: '/docs/role-based-access'
       path: '/docs/role-based-access'
@@ -527,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/docs/notifications'
       fullPath: '/docs/notifications'
       preLoaderRoute: typeof DocsNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/licensing': {
+      id: '/docs/licensing'
+      path: '/docs/licensing'
+      fullPath: '/docs/licensing'
+      preLoaderRoute: typeof DocsLicensingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/group-management': {
@@ -557,19 +499,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsBroadcastMessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs/licensing': {
-      id: '/docs/licensing'
-      path: '/docs/licensing'
-      fullPath: '/docs/licensing'
-      preLoaderRoute: typeof DocsLicensingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/articles/$slug': {
       id: '/articles/$slug'
       path: '/articles/$slug'
       fullPath: '/articles/$slug'
       preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/settings': {
+      id: '/_authed/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthedSettingsRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/_authed/inbox': {
       id: '/_authed/inbox'
@@ -585,27 +527,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/messages/$id': {
-      id: '/_authed/messages/$id'
-      path: '/messages/$id'
-      fullPath: '/messages/$id'
-      preLoaderRoute: typeof AuthedMessagesIdLazyRouteImport
-      parentRoute: typeof AuthedRoute
-    }
-    '/_authed/_admin/system-settings': {
-      id: '/_authed/_admin/system-settings'
-      path: '/system-settings'
-      fullPath: '/system-settings'
-      preLoaderRoute: typeof AuthedAdminSystemSettingsLazyRouteImport
-      parentRoute: typeof AuthedAdminRoute
-    }
-    '/_authed/_admin/dashboard': {
-      id: '/_authed/_admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthedAdminDashboardLazyRouteImport
-      parentRoute: typeof AuthedAdminRoute
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -613,89 +534,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/messages/$id': {
+      id: '/_authed/messages/$id'
+      path: '/messages/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof AuthedMessagesIdRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/_admin/system-settings': {
+      id: '/_authed/_admin/system-settings'
+      path: '/system-settings'
+      fullPath: '/system-settings'
+      preLoaderRoute: typeof AuthedAdminSystemSettingsRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
+    '/_authed/_admin/dashboard': {
+      id: '/_authed/_admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthedAdminDashboardRouteImport
+      parentRoute: typeof AuthedAdminRoute
+    }
     '/_authed/_admin/users/': {
       id: '/_authed/_admin/users/'
       path: '/users'
       fullPath: '/users/'
-      preLoaderRoute: typeof AuthedAdminUsersIndexLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminUsersIndexRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/messages/': {
       id: '/_authed/_admin/messages/'
       path: '/messages'
       fullPath: '/messages/'
-      preLoaderRoute: typeof AuthedAdminMessagesIndexLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminMessagesIndexRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/groups/': {
       id: '/_authed/_admin/groups/'
       path: '/groups'
       fullPath: '/groups/'
-      preLoaderRoute: typeof AuthedAdminGroupsIndexLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminGroupsIndexRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/events/': {
       id: '/_authed/_admin/events/'
       path: '/events'
       fullPath: '/events/'
-      preLoaderRoute: typeof AuthedAdminEventsIndexLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminEventsIndexRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/messages/new': {
       id: '/_authed/_admin/messages/new'
       path: '/messages/new'
       fullPath: '/messages/new'
-      preLoaderRoute: typeof AuthedAdminMessagesNewLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminMessagesNewRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/messages/detail': {
       id: '/_authed/_admin/messages/detail'
       path: '/messages/detail'
       fullPath: '/messages/detail'
-      preLoaderRoute: typeof AuthedAdminMessagesDetailLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminMessagesDetailRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/groups/detail': {
       id: '/_authed/_admin/groups/detail'
       path: '/groups/detail'
       fullPath: '/groups/detail'
-      preLoaderRoute: typeof AuthedAdminGroupsDetailLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminGroupsDetailRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
     '/_authed/_admin/events/detail': {
       id: '/_authed/_admin/events/detail'
       path: '/events/detail'
       fullPath: '/events/detail'
-      preLoaderRoute: typeof AuthedAdminEventsDetailLazyRouteImport
+      preLoaderRoute: typeof AuthedAdminEventsDetailRouteImport
       parentRoute: typeof AuthedAdminRoute
     }
   }
 }
 
 interface AuthedAdminRouteChildren {
-  AuthedAdminDashboardLazyRoute: typeof AuthedAdminDashboardLazyRoute
-  AuthedAdminSystemSettingsLazyRoute: typeof AuthedAdminSystemSettingsLazyRoute
-  AuthedAdminEventsDetailLazyRoute: typeof AuthedAdminEventsDetailLazyRoute
-  AuthedAdminGroupsDetailLazyRoute: typeof AuthedAdminGroupsDetailLazyRoute
-  AuthedAdminMessagesDetailLazyRoute: typeof AuthedAdminMessagesDetailLazyRoute
-  AuthedAdminMessagesNewLazyRoute: typeof AuthedAdminMessagesNewLazyRoute
-  AuthedAdminEventsIndexLazyRoute: typeof AuthedAdminEventsIndexLazyRoute
-  AuthedAdminGroupsIndexLazyRoute: typeof AuthedAdminGroupsIndexLazyRoute
-  AuthedAdminMessagesIndexLazyRoute: typeof AuthedAdminMessagesIndexLazyRoute
-  AuthedAdminUsersIndexLazyRoute: typeof AuthedAdminUsersIndexLazyRoute
+  AuthedAdminDashboardRoute: typeof AuthedAdminDashboardRoute
+  AuthedAdminSystemSettingsRoute: typeof AuthedAdminSystemSettingsRoute
+  AuthedAdminEventsDetailRoute: typeof AuthedAdminEventsDetailRoute
+  AuthedAdminGroupsDetailRoute: typeof AuthedAdminGroupsDetailRoute
+  AuthedAdminMessagesDetailRoute: typeof AuthedAdminMessagesDetailRoute
+  AuthedAdminMessagesNewRoute: typeof AuthedAdminMessagesNewRoute
+  AuthedAdminEventsIndexRoute: typeof AuthedAdminEventsIndexRoute
+  AuthedAdminGroupsIndexRoute: typeof AuthedAdminGroupsIndexRoute
+  AuthedAdminMessagesIndexRoute: typeof AuthedAdminMessagesIndexRoute
+  AuthedAdminUsersIndexRoute: typeof AuthedAdminUsersIndexRoute
 }
 
 const AuthedAdminRouteChildren: AuthedAdminRouteChildren = {
-  AuthedAdminDashboardLazyRoute: AuthedAdminDashboardLazyRoute,
-  AuthedAdminSystemSettingsLazyRoute: AuthedAdminSystemSettingsLazyRoute,
-  AuthedAdminEventsDetailLazyRoute: AuthedAdminEventsDetailLazyRoute,
-  AuthedAdminGroupsDetailLazyRoute: AuthedAdminGroupsDetailLazyRoute,
-  AuthedAdminMessagesDetailLazyRoute: AuthedAdminMessagesDetailLazyRoute,
-  AuthedAdminMessagesNewLazyRoute: AuthedAdminMessagesNewLazyRoute,
-  AuthedAdminEventsIndexLazyRoute: AuthedAdminEventsIndexLazyRoute,
-  AuthedAdminGroupsIndexLazyRoute: AuthedAdminGroupsIndexLazyRoute,
-  AuthedAdminMessagesIndexLazyRoute: AuthedAdminMessagesIndexLazyRoute,
-  AuthedAdminUsersIndexLazyRoute: AuthedAdminUsersIndexLazyRoute,
+  AuthedAdminDashboardRoute: AuthedAdminDashboardRoute,
+  AuthedAdminSystemSettingsRoute: AuthedAdminSystemSettingsRoute,
+  AuthedAdminEventsDetailRoute: AuthedAdminEventsDetailRoute,
+  AuthedAdminGroupsDetailRoute: AuthedAdminGroupsDetailRoute,
+  AuthedAdminMessagesDetailRoute: AuthedAdminMessagesDetailRoute,
+  AuthedAdminMessagesNewRoute: AuthedAdminMessagesNewRoute,
+  AuthedAdminEventsIndexRoute: AuthedAdminEventsIndexRoute,
+  AuthedAdminGroupsIndexRoute: AuthedAdminGroupsIndexRoute,
+  AuthedAdminMessagesIndexRoute: AuthedAdminMessagesIndexRoute,
+  AuthedAdminUsersIndexRoute: AuthedAdminUsersIndexRoute,
 }
 
 const AuthedAdminRouteWithChildren = AuthedAdminRoute._addFileChildren(
@@ -705,15 +647,15 @@ const AuthedAdminRouteWithChildren = AuthedAdminRoute._addFileChildren(
 interface AuthedRouteChildren {
   AuthedAdminRoute: typeof AuthedAdminRouteWithChildren
   AuthedInboxRoute: typeof AuthedInboxRoute
-  AuthedSettingsLazyRoute: typeof AuthedSettingsLazyRoute
-  AuthedMessagesIdLazyRoute: typeof AuthedMessagesIdLazyRoute
+  AuthedSettingsRoute: typeof AuthedSettingsRoute
+  AuthedMessagesIdRoute: typeof AuthedMessagesIdRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAdminRoute: AuthedAdminRouteWithChildren,
   AuthedInboxRoute: AuthedInboxRoute,
-  AuthedSettingsLazyRoute: AuthedSettingsLazyRoute,
-  AuthedMessagesIdLazyRoute: AuthedMessagesIdLazyRoute,
+  AuthedSettingsRoute: AuthedSettingsRoute,
+  AuthedMessagesIdRoute: AuthedMessagesIdRoute,
 }
 
 const AuthedRouteWithChildren =
