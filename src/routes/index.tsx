@@ -115,9 +115,16 @@ function LandingPage() {
               >
                 Sign In
               </Link>
-              <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
-                <Link to="/sign-up">Get Started</Link>
-              </Button>
+              <a
+                href="https://github.com/Kieransaunders/convex-broadcast"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
+                  <Github className="mr-2 h-4 w-4" />
+                  Get the Code
+                </Button>
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -164,12 +171,18 @@ function LandingPage() {
               >
                 Sign In
               </Link>
-              <Button 
-                className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
+              <a
+                href="https://github.com/Kieransaunders/convex-broadcast"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Link to="/sign-up" className="w-full">Get Started</Link>
-              </Button>
+                <Button className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white">
+                  <Github className="mr-2 h-4 w-4" />
+                  Get the Code
+                </Button>
+              </a>
             </div>
           )}
         </div>
@@ -222,8 +235,58 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Who Is This For + Demo */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-4">
+              Built For Organisations Like Yours
+            </h2>
+            <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
+              If you need to communicate with a group of people and want your 
+              own branded app instead of using WhatsApp, Slack, or email groups.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {[
+              { icon: "💝", title: "Charities", desc: "Keep volunteers informed about opportunities and events" },
+              { icon: "🏫", title: "Schools", desc: "Update parents on events, closures, and announcements" },
+              { icon: "🏢", title: "Small Businesses", desc: "Coordinate staff without paying per-user fees" },
+              { icon: "🤝", title: "Community Groups", desc: "Engage members with your own branded app" },
+            ].map((item) => (
+              <div key={item.title} className="bg-white border border-[#6366F1]/10 rounded-xl p-5">
+                <div className="text-2xl mb-2">{item.icon}</div>
+                <h3 className="font-semibold text-[#1E1B4B] mb-1">{item.title}</h3>
+                <p className="text-sm text-[#1E1B4B]/70">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Demo Box */}
+          <div className="bg-[#6366F1] rounded-xl p-6 text-white">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold mb-1">Try the Demo First</h3>
+                <p className="text-white/80 text-sm">
+                  Experience the full app with demo@orgcomms.test / demopass123!
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="border-white text-[#6366F1] bg-white hover:bg-white/90 shrink-0"
+              >
+                <Link to="/sign-in" search={{ demo: true }}>
+                  Test the Demo
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* What This Is Section */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8 bg-white/50">
+      <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="border-green-200 bg-green-50/30">
@@ -239,19 +302,19 @@ function LandingPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">✓</span>
-                    <span>You <strong>self-host it</strong> for your own organisation</span>
+                    <span>You <strong>self-host it</strong> — we don't host it for you</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">✓</span>
-                    <span>You <strong>customise the branding</strong> (logo, colours, name)</span>
+                    <span>You <strong>customise everything</strong> — name, logo, colours</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">✓</span>
-                    <span>You <strong>own your data</strong> — it stays in your database</span>
+                    <span>You <strong>own your data</strong> — stays in your database</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">✓</span>
-                    <span>Your members install <strong>your branded app</strong> on their phones</span>
+                    <span>Members install <strong>your branded app</strong> — not "Org Comms"</span>
                   </li>
                 </ul>
               </CardContent>
@@ -266,76 +329,28 @@ function LandingPage() {
                 <ul className="space-y-3 text-sm text-[#1E1B4B]/80">
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold">✗</span>
-                    <span><strong>Not a SaaS</strong> you sign up for monthly</span>
+                    <span><strong>Not a SaaS</strong> — no monthly subscription to us</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold">✗</span>
-                    <span><strong>Not a service</strong> we host for you</span>
+                    <span><strong>Not a service</strong> — you deploy and run it yourself</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold">✗</span>
-                    <span><strong>Not multi-tenant</strong> — one deployment per organisation</span>
+                    <span><strong>Not multi-tenant</strong> — one deployment per org</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold">✗</span>
-                    <span><strong>Not for resale</strong> — you can't sell it to other companies</span>
+                    <span><strong>Not for resale</strong> — can't sell to other companies</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold">✗</span>
-                    <span><strong>Not a finished product</strong> — it's code you build on</span>
+                    <span><strong>Not a finished product</strong> — you'll need a developer</span>
                   </li>
                 </ul>
               </CardContent>
             </Card>
           </div>
-        </div>
-      </section>
-
-      {/* Demo Credentials Section */}
-      <section className="px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-lg">
-          <Card className="border-[#6366F1]/20 bg-white shadow-lg overflow-hidden">
-            <div className="bg-[#6366F1] px-6 py-3">
-              <div className="flex items-center gap-2 text-white">
-                <Zap className="h-4 w-4" />
-                <span className="text-sm font-semibold">Try the demo — test push notifications instantly</span>
-              </div>
-            </div>
-            <CardContent className="pt-5 pb-6">
-              <p className="text-sm text-[#1E1B4B]/60 mb-4">
-                Sign in with the demo admin account to send messages and test browser push notifications.
-              </p>
-              <div className="space-y-2 mb-5">
-                <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2.5">
-                  <Mail className="h-4 w-4 text-[#6366F1] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs text-[#1E1B4B]/50">Email</span>
-                    <p className="text-sm font-mono font-medium text-[#1E1B4B]">demo@orgcomms.test</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2.5">
-                  <Lock className="h-4 w-4 text-[#6366F1] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs text-[#1E1B4B]/50">Password</span>
-                    <p className="text-sm font-mono font-medium text-[#1E1B4B]">demopass123!</p>
-                  </div>
-                </div>
-              </div>
-              <Button
-                className="w-full bg-[#6366F1] hover:bg-[#6366F1]/90 text-white"
-                size="lg"
-              >
-                <Link
-                  to="/sign-in"
-                  search={{ demo: true }}
-                  className="flex items-center justify-center w-full"
-                >
-                  Try Demo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
@@ -387,40 +402,73 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-12 text-center">
-            <Card className="border-[#6366F1]/20 bg-white max-w-2xl mx-auto">
-              <CardContent className="py-6">
-                <p className="text-sm text-[#1E1B4B]/70 mb-4">
-                  Want to try it first? The demo lets you experience the full app 
-                  with a pre-configured account.
+          <div className="mt-12 p-6 bg-amber-50 border border-amber-200 rounded-xl">
+            <div className="flex items-start gap-4">
+              <div className="text-2xl">⚠️</div>
+              <div>
+                <h4 className="font-semibold text-amber-900 mb-1">
+                  Requires Technical Knowledge
+                </h4>
+                <p className="text-sm text-amber-800">
+                  You'll need someone who knows React/TypeScript to customise and deploy this. 
+                  If you don't have a developer,{" "}
+                  <a 
+                    href="https://iConenctIT.co.uk" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    iConenctIT.co.uk
+                  </a>{" "}
+                  can help you build and deploy your customised app.
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2 text-sm">
-                    <Mail className="h-4 w-4 text-[#6366F1]" />
-                    <span className="font-mono text-[#1E1B4B]">demo@orgcomms.test</span>
-                  </div>
-                  <div className="flex items-center gap-3 rounded-lg bg-[#F5F3FF] px-4 py-2 text-sm">
-                    <Lock className="h-4 w-4 text-[#6366F1]" />
-                    <span className="font-mono text-[#1E1B4B]">demopass123!</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Section */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 bg-white/50">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-4">
+              Why Build Your Own Instead of Using WhatsApp or Slack?
+            </h2>
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-[#1E1B4B]/60 text-sm">
-              Need help building your perfect communication app?{" "}
-              <a 
-                href="https://iConenctIT.co.uk" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#6366F1] font-medium hover:underline"
-              >
-                iConenctIT.co.uk
-              </a>{" "}
-              can help you customise and deploy Org Comms for your organisation.
-            </p>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-[#6366F1]/20">
+                  <th className="text-left py-4 px-4 font-semibold text-[#1E1B4B]">Feature</th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#1E1B4B]">WhatsApp Groups</th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#1E1B4B]">Slack/Teams</th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#6366F1] bg-[#6366F1]/5 rounded-t-lg">
+                    Your Org Comms App
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {[
+                  { feature: "Your branding & name", whatsapp: "❌ No", slack: "❌ No", orgcomms: "✅ Yes" },
+                  { feature: "Members see your logo on their phone", whatsapp: "❌ No", slack: "❌ No", orgcomms: "✅ Yes" },
+                  { feature: "Broadcast-only (no reply chaos)", whatsapp: "❌ No", slack: "❌ No", orgcomms: "✅ Yes" },
+                  { feature: "Delivery & read receipts", whatsapp: "⚠️ Limited", slack: "❌ No", orgcomms: "✅ Full tracking" },
+                  { feature: "Target specific groups easily", whatsapp: "❌ Manual", slack: "✅ Yes", orgcomms: "✅ Yes" },
+                  { feature: "No per-user monthly fees", whatsapp: "✅ Free", slack: "❌ Paid", orgcomms: "✅ Free" },
+                  { feature: "You own the data", whatsapp: "❌ Meta owns it", slack: "❌ Slack owns it", orgcomms: "✅ You own it" },
+                  { feature: "No ads or distractions", whatsapp: "❌ Ads", slack: "✅ No ads", orgcomms: "✅ No ads" },
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-[#6366F1]/10">
+                    <td className="py-3 px-4 text-[#1E1B4B]">{row.feature}</td>
+                    <td className="py-3 px-4 text-center text-[#1E1B4B]/70">{row.whatsapp}</td>
+                    <td className="py-3 px-4 text-center text-[#1E1B4B]/70">{row.slack}</td>
+                    <td className="py-3 px-4 text-center bg-[#6366F1]/5 font-medium text-[#6366F1]">{row.orgcomms}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -695,21 +743,26 @@ function LandingPage() {
           <Card className="border-none bg-gradient-to-r from-[#6366F1] to-[#818CF8]">
             <CardContent className="py-16 px-8 text-center">
               <h2 className="text-3xl font-bold text-white mb-4">
-                Ready to transform your communications?
+                Ready to build your organisation's app?
               </h2>
               <p className="text-white/80 mb-8 max-w-xl mx-auto">
-                Join organizations already using Org Comms to keep their teams
-                connected and informed.
+                Fork the repository, customise it with your branding, and deploy 
+                your own communication platform.
               </p>
-              <Button
-                size="lg"
-                className="bg-white text-[#6366F1] hover:bg-white/90"
+              <a
+                href="https://github.com/Kieransaunders/convex-broadcast"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Link to="/sign-up" className="flex items-center">
-                  Get Started Free
+                <Button
+                  size="lg"
+                  className="bg-white text-[#6366F1] hover:bg-white/90"
+                >
+                  <Github className="mr-2 h-5 w-5" />
+                  Get the Code on GitHub
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+                </Button>
+              </a>
             </CardContent>
           </Card>
         </div>
