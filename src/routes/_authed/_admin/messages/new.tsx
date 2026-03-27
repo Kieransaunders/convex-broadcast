@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, createLazyFileRoute, useRouter } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useConvex } from "convex/react";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
@@ -13,7 +13,7 @@ import { StepDelivery } from "~/components/compose/step-delivery";
 import { StepPreview } from "~/components/compose/step-preview";
 import { useComposeForm } from "~/components/compose/use-compose-form";
 
-export const Route = createLazyFileRoute("/_authed/_admin/messages/new")({
+export const Route = createFileRoute("/_authed/_admin/messages/new")({
   component: NewMessagePage,
 });
 

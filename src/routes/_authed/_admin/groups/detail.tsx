@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { Link, createFileRoute, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import {
@@ -45,7 +45,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 
-export const Route = createLazyFileRoute("/_authed/_admin/groups/detail")({
+export const Route = createFileRoute("/_authed/_admin/groups/detail")({
   component: GroupDetailPage,
 });
 

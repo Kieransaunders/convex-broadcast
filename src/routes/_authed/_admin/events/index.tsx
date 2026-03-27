@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { ArrowRight, Calendar, CalendarDays } from "lucide-react";
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-export const Route = createLazyFileRoute("/_authed/_admin/events/")({
+export const Route = createFileRoute("/_authed/_admin/events/")({
   component: EventsPage,
 });
 

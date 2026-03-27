@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute, useNavigate  } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate  } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useMutation } from "convex/react";
@@ -13,7 +13,7 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { cn } from "~/lib/utils";
 
-export const Route = createLazyFileRoute("/_authed/messages/$id")({
+export const Route = createFileRoute("/_authed/messages/$id")({
   component: MessageDetailPage,
 });
 
@@ -31,7 +31,7 @@ function MessageDetailPage() {
   const markRead = useMutation(api.messages.markRead);
   const deleteMyDelivery = useMutation(api.messages.deleteMyDelivery);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const isAdmin = user && (user.role === "admin" || user.role === "super_admin");
   const unreadCount = messages?.items.filter((msg: any) => !msg.delivery?.readAt).length ?? 0;
 

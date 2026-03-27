@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import {
@@ -100,7 +100,7 @@ const AUDIENCE_CONFIG = {
   },
 } as const;
 
-export const Route = createLazyFileRoute("/_authed/_admin/messages/detail")({
+export const Route = createFileRoute("/_authed/_admin/messages/detail")({
   component: MessageDetailPage,
 });
 

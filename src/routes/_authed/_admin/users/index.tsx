@@ -1,4 +1,4 @@
-import { createLazyFileRoute, useRouter  } from "@tanstack/react-router";
+import { createFileRoute, useRouter  } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { Eye, Loader2, Mail, Plus, Shield, Trash2, User } from "lucide-react";
@@ -35,7 +35,7 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { authClient } from "~/lib/auth-client";
 
-export const Route = createLazyFileRoute("/_authed/_admin/users/")({
+export const Route = createFileRoute("/_authed/_admin/users/")({
   component: UsersPage,
 });
 

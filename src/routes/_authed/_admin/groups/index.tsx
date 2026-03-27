@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { ArrowRight, FolderOpen, Loader2, Plus, Users } from "lucide-react";
@@ -20,7 +20,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 
-export const Route = createLazyFileRoute("/_authed/_admin/groups/")({
+export const Route = createFileRoute("/_authed/_admin/groups/")({
   component: GroupsPage,
 });
 

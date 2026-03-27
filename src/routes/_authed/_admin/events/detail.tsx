@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute, useSearch } from "@tanstack/react-router";
+import { Link, createFileRoute, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { ArrowLeft, Calendar, CalendarDays, Clock, MapPin } from "lucide-react";
@@ -12,7 +12,7 @@ import { EditEventDialog } from "~/components/events/edit-event-dialog";
 import { CancelEventDialog } from "~/components/events/cancel-event-dialog";
 import { SendEventUpdateDialog } from "~/components/events/send-event-update-dialog";
 
-export const Route = createLazyFileRoute("/_authed/_admin/events/detail")({
+export const Route = createFileRoute("/_authed/_admin/events/detail")({
   component: EventDetailPage,
 });
 

@@ -1,4 +1,4 @@
-import { Link, createLazyFileRoute  } from "@tanstack/react-router";
+import { Link, createFileRoute  } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { useConvex } from "convex/react";
@@ -17,7 +17,7 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 import { useAppBadge } from "~/hooks/use-app-badge";
 import { usePWAInstall } from "~/hooks/use-pwa-install";
 
-export const Route = createLazyFileRoute("/_authed/settings")({
+export const Route = createFileRoute("/_authed/settings")({
   component: SettingsPage,
 });
 
@@ -31,13 +31,13 @@ function SettingsPage() {
     convexQuery(api.push.getVapidPublicKey, user ? {} : "skip"),
   );
   const convex = useConvex();
-  
+
   const updatePreference = useMutation({
     mutationFn: async (args: { preference: "all" | "urgent" | "none" }) => {
       return await convex.mutation(api.push.updatePreference, args);
     },
   });
-  
+
   const subscribe = useMutation({
     mutationFn: async (args: {
       endpoint: string;
@@ -48,13 +48,13 @@ function SettingsPage() {
       return await convex.mutation(api.push.subscribe, args);
     },
   });
-  
+
   const unsubscribe = useMutation({
     mutationFn: async (args: { endpoint: string }) => {
       return await convex.mutation(api.push.unsubscribe, args);
     },
   });
-  
+
   const sendTest = useMutation({
     mutationFn: async (args: { title: string; body: string }) => {
       return await convex.mutation(api.push.sendTest, args);
@@ -274,9 +274,9 @@ function SettingsPage() {
 
               {pushEnabled && (
                 <div className="pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="w-full border-amber-200 text-amber-700 hover:bg-amber-50"
                     onClick={handleSendTest}
                     disabled={testLoading}

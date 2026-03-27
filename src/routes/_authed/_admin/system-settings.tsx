@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import { Bell, ExternalLink, Info, Loader2, Mail, Save } from "lucide-react";
@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-export const Route = createLazyFileRoute("/_authed/_admin/system-settings")({
+export const Route = createFileRoute("/_authed/_admin/system-settings")({
   component: AdminSettingsPage,
 });
 
