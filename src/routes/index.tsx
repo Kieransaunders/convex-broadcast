@@ -448,6 +448,64 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* License Section */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <Card className="border-[#6366F1]/10 bg-white">
+            <CardContent className="py-12 px-8">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#1E1B4B] mb-4">
+                    Free for Charities & Small Businesses
+                  </h2>
+                  <p className="text-[#1E1B4B]/70 mb-6">
+                    Org Comms is available under the Sustainable Use License. 
+                    Use it for your own organisation at no cost.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                      <span className="text-sm text-[#1E1B4B]">
+                        <strong>Free</strong> for charities & non-profits
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                      <span className="text-sm text-[#1E1B4B]">
+                        <strong>Free</strong> for small businesses (&lt;50 employees)
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                      <span className="text-sm text-[#1E1B4B]">
+                        Self-host and customise with your branding
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <p className="text-sm text-amber-800">
+                      <strong>Not permitted:</strong> Selling hosting services, 
+                      multi-tenant SaaS, or reselling to third parties.
+                    </p>
+                  </div>
+                </div>
+                <div className="text-center md:text-right">
+                  <Link to="/docs/licensing">
+                    <Button
+                      variant="outline"
+                      className="border-[#6366F1] text-[#6366F1] hover:bg-[#6366F1]/10"
+                    >
+                      Read Full License
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">

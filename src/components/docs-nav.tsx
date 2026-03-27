@@ -5,6 +5,7 @@ import {
   BarChart2,
   Bell,
   BookOpen,
+  FileText,
   Globe,
   Mail,
   Menu,
@@ -30,6 +31,7 @@ const DOC_LINKS: Array<NavItem> = [
   { to: "/docs/role-based-access", label: "Role-Based Access", icon: Shield },
   { to: "/docs/event-management", label: "Event Management", icon: Globe },
   { to: "/docs/delivery-tracking", label: "Delivery Tracking", icon: BarChart2 },
+  { to: "/docs/licensing", label: "Licensing", icon: FileText },
 ];
 
 export function DocsNav() {
