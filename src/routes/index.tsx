@@ -9,6 +9,7 @@ import {
   Mail,
   Menu,
   Shield,
+  Smartphone,
   Star,
   Users,
   X,
@@ -185,48 +186,149 @@ function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#6366F1]/10 px-4 py-1.5 text-sm font-medium text-[#6366F1] mb-8">
-            <Github className="h-4 w-4" />
-            Free Open Source Boilerplate
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight text-[#1E1B4B] sm:text-6xl mb-6">
-            Build your own
-            <span className="text-[#6366F1]"> organisation communication app</span>
-          </h1>
-          <p className="mx-auto max-w-3xl text-lg text-[#1E1B4B]/70 mb-6">
-            Org Comms is a <strong>free, self-hosted boilerplate</strong> for charities, 
-            community groups, and organisations who need to communicate with their members, 
-            staff, or volunteers.
-          </p>
-          <p className="mx-auto max-w-2xl text-base text-[#1E1B4B]/60 mb-10">
-            Not a SaaS. You deploy it once for your organisation, add your branding, 
-            and own your data. Free for charities and small businesses.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="https://github.com/Kieransaunders/convex-broadcast"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                size="lg"
-                className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white px-8"
-              >
-                <Github className="mr-2 h-5 w-5" />
-                Get the Code on GitHub
-              </Button>
-            </a>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
-            >
-              <Link to="/sign-in" search={{ demo: true }}>
-                Test the demo
-              </Link>
-            </Button>
+      <section className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            {/* Text content */}
+            <div className="flex-1 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#6366F1]/10 px-4 py-1.5 text-sm font-medium text-[#6366F1] mb-8">
+                <Github className="h-4 w-4" />
+                Free Open Source Boilerplate
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight text-[#1E1B4B] sm:text-5xl lg:text-6xl mb-6">
+                Build your own
+                <span className="text-[#6366F1]"> organisation communication app</span>
+              </h1>
+              <p className="text-lg text-[#1E1B4B]/70 mb-6 max-w-xl">
+                Org Comms is a <strong>free, self-hosted boilerplate</strong> for charities,
+                community groups, and organisations who need to communicate with their members,
+                staff, or volunteers.
+              </p>
+              <p className="text-base text-[#1E1B4B]/60 mb-10 max-w-lg">
+                Not a SaaS. You deploy it once for your organisation, add your branding,
+                and own your data. Free for charities and small businesses.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <a
+                  href="https://github.com/Kieransaunders/convex-broadcast"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button
+                    size="lg"
+                    className="bg-[#6366F1] hover:bg-[#6366F1]/90 text-white px-8"
+                  >
+                    <Github className="mr-2 h-5 w-5" />
+                    Get the Code on GitHub
+                  </Button>
+                </a>
+                <Link to="/sign-in" search={{ demo: true }}>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-[#6366F1]/20 text-[#6366F1] hover:bg-[#6366F1]/10"
+                  >
+                    Try the demo
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* App mockup */}
+            <div className="hidden lg:block flex-shrink-0 w-72">
+              <div className="relative mx-auto">
+                {/* Phone frame */}
+                <div className="rounded-3xl border-4 border-[#1E1B4B]/10 bg-white shadow-2xl shadow-[#6366F1]/10 overflow-hidden">
+                  {/* Status bar */}
+                  <div className="bg-[#6366F1] px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 w-6 rounded bg-white/20 flex items-center justify-center">
+                        <Mail className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-white text-sm font-semibold">YourOrg App</span>
+                    </div>
+                    <Bell className="h-4 w-4 text-white/80" />
+                  </div>
+
+                  {/* Message feed */}
+                  <div className="divide-y divide-[#6366F1]/5">
+                    {/* Message 1 */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-start gap-2 mb-1">
+                        <span className="text-base">📢</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#1E1B4B] truncate">Emergency closure today</p>
+                          <p className="text-xs text-[#1E1B4B]/60 mt-0.5 line-clamp-2">The building will be closed due to maintenance. Please work from home.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 mt-2">
+                        <span className="text-xs text-[#1E1B4B]/40 flex items-center gap-1">
+                          <Users className="h-3 w-3" /> 142 members
+                        </span>
+                        <span className="text-xs text-green-600 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" /> 98 read
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Message 2 */}
+                    <div className="px-4 py-3">
+                      <div className="flex items-start gap-2 mb-1">
+                        <span className="text-base">📅</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#1E1B4B] truncate">Volunteer shift — Saturday</p>
+                          <p className="text-xs text-[#1E1B4B]/60 mt-0.5 line-clamp-2">We need 6 volunteers for the community event this Saturday at 10am.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 mt-2">
+                        <span className="text-xs text-[#1E1B4B]/40 flex items-center gap-1">
+                          <Users className="h-3 w-3" /> Volunteers
+                        </span>
+                        <span className="text-xs text-green-600 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" /> 34 read
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Message 3 */}
+                    <div className="px-4 py-3 bg-[#6366F1]/3">
+                      <div className="flex items-start gap-2 mb-1">
+                        <span className="text-base">🔔</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#1E1B4B] truncate">Monthly newsletter — March</p>
+                          <p className="text-xs text-[#1E1B4B]/60 mt-0.5 line-clamp-2">Read about what's happening across the organisation this month.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 mt-2">
+                        <span className="text-xs text-[#1E1B4B]/40 flex items-center gap-1">
+                          <Users className="h-3 w-3" /> All members
+                        </span>
+                        <span className="text-xs text-[#1E1B4B]/40 flex items-center gap-1">
+                          <CheckCircle className="h-3 w-3" /> 12 read
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom bar */}
+                  <div className="px-4 py-2 bg-[#F5F3FF] flex items-center justify-center gap-1">
+                    <Smartphone className="h-3 w-3 text-[#6366F1]/60" />
+                    <span className="text-xs text-[#6366F1]/60">Installs as a PWA on any phone</span>
+                  </div>
+                </div>
+
+                {/* Push notification toast */}
+                <div className="absolute -top-3 -right-4 bg-white rounded-xl shadow-lg border border-[#6366F1]/10 px-3 py-2 flex items-center gap-2 w-52">
+                  <div className="h-7 w-7 rounded bg-[#6366F1] flex items-center justify-center shrink-0">
+                    <Bell className="h-3.5 w-3.5 text-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-[#1E1B4B] truncate">YourOrg App</p>
+                    <p className="text-xs text-[#1E1B4B]/60 truncate">New message from Admin</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -268,14 +370,14 @@ function LandingPage() {
                   Experience the full app with demo@orgcomms.test / demopass123!
                 </p>
               </div>
-              <Button
-                variant="outline"
-                className="border-white text-[#6366F1] bg-white hover:bg-white/90 shrink-0"
-              >
-                <Link to="/sign-in" search={{ demo: true }}>
+              <Link to="/sign-in" search={{ demo: true }}>
+                <Button
+                  variant="outline"
+                  className="border-white text-[#6366F1] bg-white hover:bg-white/90 shrink-0"
+                >
                   Test the Demo
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -284,6 +386,14 @@ function LandingPage() {
       {/* What This Is Section */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-[#1E1B4B] mb-3">
+              Be clear on what you're getting
+            </h2>
+            <p className="text-[#1E1B4B]/70 max-w-2xl mx-auto">
+              This is a developer boilerplate, not a hosted service. Read this before you get started.
+            </p>
+          </div>
           <div className="grid md:grid-cols-2 gap-8">
             <Card className="border-green-200 bg-green-50/30">
               <CardContent className="pt-6">
@@ -409,7 +519,7 @@ function LandingPage() {
                   You'll need someone who knows React/TypeScript to customise and deploy this. 
                   If you don't have a developer,{" "}
                   <a 
-                    href="https://iConenctIT.co.uk" 
+                    href="https://iConnectIT.co.uk" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="underline font-medium"
@@ -441,7 +551,7 @@ function LandingPage() {
                   <th className="text-center py-4 px-4 font-semibold text-[#1E1B4B]">WhatsApp Groups</th>
                   <th className="text-center py-4 px-4 font-semibold text-[#1E1B4B]">Slack/Teams</th>
                   <th className="text-center py-4 px-4 font-semibold text-[#6366F1] bg-[#6366F1]/5 rounded-t-lg">
-                    Your Org Comms App
+                    Your Branded App
                   </th>
                 </tr>
               </thead>
@@ -766,7 +876,7 @@ function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-[#6366F1]/10 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mx-auto max-w-7xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-[#6366F1]">
               <Mail className="h-3 w-3 text-white" />
@@ -775,6 +885,19 @@ function LandingPage() {
               Org Comms
             </span>
           </div>
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link to="/docs" className="text-sm text-[#1E1B4B]/60 hover:text-[#6366F1] transition-colors">Docs</Link>
+            <Link to="/articles" className="text-sm text-[#1E1B4B]/60 hover:text-[#6366F1] transition-colors">Articles</Link>
+            <Link to="/docs/licensing" className="text-sm text-[#1E1B4B]/60 hover:text-[#6366F1] transition-colors">License</Link>
+            <a
+              href="https://github.com/Kieransaunders/convex-broadcast"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-[#1E1B4B]/60 hover:text-[#6366F1] transition-colors"
+            >
+              GitHub
+            </a>
+          </nav>
           <p className="text-sm text-[#1E1B4B]/60">
             © {new Date().getFullYear()} Org Comms. All rights reserved.
           </p>

@@ -24,6 +24,7 @@ import { Route as DocsGroupManagementRouteImport } from './routes/docs.group-man
 import { Route as DocsEventManagementRouteImport } from './routes/docs.event-management'
 import { Route as DocsDeliveryTrackingRouteImport } from './routes/docs.delivery-tracking'
 import { Route as DocsBroadcastMessagesRouteImport } from './routes/docs.broadcast-messages'
+import { Route as DocsLicensingRouteImport } from './routes/docs.licensing'
 import { Route as ArticlesSlugRouteImport } from './routes/articles/$slug'
 import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminRouteImport } from './routes/_authed/_admin'
@@ -133,6 +134,11 @@ const DocsDeliveryTrackingRoute = DocsDeliveryTrackingRouteImport.update({
 const DocsBroadcastMessagesRoute = DocsBroadcastMessagesRouteImport.update({
   id: '/docs/broadcast-messages',
   path: '/docs/broadcast-messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsLicensingRoute = DocsLicensingRouteImport.update({
+  id: '/docs/licensing',
+  path: '/docs/licensing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
   '/docs/event-management': typeof DocsEventManagementRoute
   '/docs/group-management': typeof DocsGroupManagementRoute
+  '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/settings': typeof AuthedSettingsLazyRoute
@@ -284,6 +291,7 @@ export interface FileRoutesByTo {
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
   '/docs/event-management': typeof DocsEventManagementRoute
   '/docs/group-management': typeof DocsGroupManagementRoute
+  '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/settings': typeof AuthedSettingsLazyRoute
@@ -316,6 +324,7 @@ export interface FileRoutesById {
   '/docs/delivery-tracking': typeof DocsDeliveryTrackingRoute
   '/docs/event-management': typeof DocsEventManagementRoute
   '/docs/group-management': typeof DocsGroupManagementRoute
+  '/docs/licensing': typeof DocsLicensingRoute
   '/docs/notifications': typeof DocsNotificationsRoute
   '/docs/role-based-access': typeof DocsRoleBasedAccessRoute
   '/_authed/settings': typeof AuthedSettingsLazyRoute
@@ -347,6 +356,7 @@ export interface FileRouteTypes {
     | '/docs/delivery-tracking'
     | '/docs/event-management'
     | '/docs/group-management'
+    | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
     | '/settings'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/docs/delivery-tracking'
     | '/docs/event-management'
     | '/docs/group-management'
+    | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
     | '/settings'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/docs/delivery-tracking'
     | '/docs/event-management'
     | '/docs/group-management'
+    | '/docs/licensing'
     | '/docs/notifications'
     | '/docs/role-based-access'
     | '/_authed/settings'
@@ -437,6 +449,7 @@ export interface RootRouteChildren {
   DocsDeliveryTrackingRoute: typeof DocsDeliveryTrackingRoute
   DocsEventManagementRoute: typeof DocsEventManagementRoute
   DocsGroupManagementRoute: typeof DocsGroupManagementRoute
+  DocsLicensingRoute: typeof DocsLicensingRoute
   DocsNotificationsRoute: typeof DocsNotificationsRoute
   DocsRoleBasedAccessRoute: typeof DocsRoleBasedAccessRoute
   ArticlesIndexRoute: typeof ArticlesIndexRoute
@@ -542,6 +555,13 @@ declare module '@tanstack/react-router' {
       path: '/docs/broadcast-messages'
       fullPath: '/docs/broadcast-messages'
       preLoaderRoute: typeof DocsBroadcastMessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/licensing': {
+      id: '/docs/licensing'
+      path: '/docs/licensing'
+      fullPath: '/docs/licensing'
+      preLoaderRoute: typeof DocsLicensingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/$slug': {
@@ -710,6 +730,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsDeliveryTrackingRoute: DocsDeliveryTrackingRoute,
   DocsEventManagementRoute: DocsEventManagementRoute,
   DocsGroupManagementRoute: DocsGroupManagementRoute,
+  DocsLicensingRoute: DocsLicensingRoute,
   DocsNotificationsRoute: DocsNotificationsRoute,
   DocsRoleBasedAccessRoute: DocsRoleBasedAccessRoute,
   ArticlesIndexRoute: ArticlesIndexRoute,
