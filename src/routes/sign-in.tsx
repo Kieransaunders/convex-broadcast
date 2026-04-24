@@ -1,4 +1,4 @@
-import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2, Lock, Mail } from "lucide-react";
 import {
@@ -23,7 +23,6 @@ export const Route = createFileRoute("/sign-in")({
 });
 
 function SignInPage() {
-  const router = useRouter();
   const { demo, redirect } = Route.useSearch();
   const [email, setEmail] = useState(demo ? "demo@orgcomms.test" : "");
   const [password, setPassword] = useState(demo ? "demopass123!" : "");
@@ -49,8 +48,10 @@ function SignInPage() {
         const destination = redirect && redirect !== "/sign-in"
           ? redirect
           : role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox";
-        await router.invalidate();
-        router.navigate({ to: destination });
+        // Hard navigation so the server processes a fresh request with the new
+        // session cookie — React.cache on the server memoises getToken per SSR
+        // pass and router.navigate/invalidate cannot bust it.
+        window.location.href = destination;
       }
     } catch (err) {
       console.error("Sign-in error:", err);
