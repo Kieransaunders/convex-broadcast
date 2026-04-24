@@ -7,12 +7,30 @@ import { ConvexProvider } from "convex/react";
 
 import { routeTree } from "./routeTree.gen";
 
+// On the server there is no WebSocket global, so we pass a no-op stub to satisfy
+// the ConvexReactClient constructor check. The ConvexQueryClient will use its
+// ConvexHttpClient for all SSR queries anyway.
+const isServer = typeof window === "undefined";
+class NoopWebSocket {
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+  readyState = NoopWebSocket.CLOSED;
+  addEventListener() {}
+  removeEventListener() {}
+  close() {}
+  send() {}
+}
+
 export function getRouter() {
   const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL!;
   if (!CONVEX_URL) {
     console.error("missing envar CONVEX_URL");
   }
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL);
+  const convexQueryClient = new ConvexQueryClient(CONVEX_URL, {
+    ...(isServer && { webSocketConstructor: NoopWebSocket as unknown as typeof WebSocket }),
+  });
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
