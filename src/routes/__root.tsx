@@ -11,7 +11,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import { authClient } from "~/lib/auth-client";
-import { getCachedAuth } from "~/lib/auth-helpers";
+import { getAuth, getCachedAuth } from "~/lib/auth-helpers";
 
 import { ImpersonationBanner } from "~/components/impersonation-banner";
 import appCss from "~/styles/app.css?url";
@@ -24,14 +24,20 @@ export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
 }>()({
-  beforeLoad: ({ context }) => {
-    // Only set auth on the client — ConvexReactClient requires WebSocket which doesn't exist on the server.
-    if (typeof window !== "undefined") {
+  beforeLoad: async ({ context }) => {
+    const token = await getAuth();
+    // On the server, set auth on the HTTP client used for SSR queries.
+    if (typeof window === "undefined") {
+      if (token && context.convexQueryClient.serverHttpClient) {
+        context.convexQueryClient.serverHttpClient.setAuth(token);
+      }
+    } else {
+      // On the client, wire up the reactive auth function for the WebSocket client.
       (context.convexQueryClient.convexClient as any).setAuth(() => {
         return getCachedAuth();
       });
     }
-    return {};
+    return { token };
   },
   head: () => ({
     meta: [
@@ -122,7 +128,7 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
-  const { queryClient, convexQueryClient } = Route.useRouteContext();
+  const { queryClient, convexQueryClient, token } = Route.useRouteContext();
 
   // App name is loaded with a default - no blocking query needed
   // Settings can be loaded later by specific routes that need them
@@ -156,6 +162,7 @@ function RootComponent() {
         <ConvexBetterAuthProvider
           client={convexQueryClient.convexClient}
           authClient={authClient}
+          initialToken={token ?? undefined}
         >
           <Outlet />
           <ImpersonationBanner />

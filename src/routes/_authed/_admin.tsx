@@ -1,4 +1,4 @@
-import { Link, Outlet, createFileRoute, redirect, useRouter } from "@tanstack/react-router";
+import { Link, Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { convexQuery } from "@convex-dev/react-query";
 import {
@@ -59,7 +59,6 @@ export const Route = createFileRoute("/_authed/_admin")({
 });
 
 function AdminLayout() {
-  const router = useRouter();
   const { adminUser } = Route.useRouteContext();
   const { data: user = adminUser } = useQuery(
     convexQuery(api.auth.getCurrentUser, {}),
@@ -77,7 +76,7 @@ function AdminLayout() {
   const handleSignOut = async () => {
     clearTokenCache();
     await authClient.signOut();
-    router.invalidate();
+    window.location.href = "/sign-in";
   };
 
   return (

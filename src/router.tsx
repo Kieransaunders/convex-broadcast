@@ -30,6 +30,7 @@ export function getRouter() {
   }
   const convexQueryClient = new ConvexQueryClient(CONVEX_URL, {
     ...(isServer && { webSocketConstructor: NoopWebSocket as unknown as typeof WebSocket }),
+    expectAuth: true,
   });
 
   const queryClient: QueryClient = new QueryClient({
