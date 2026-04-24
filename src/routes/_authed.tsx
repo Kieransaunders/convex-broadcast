@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authed")({
     if (!token)
       throw redirect({ 
         to: "/sign-in", 
-        search: { redirect: location.pathname + location.search } 
+        search: { redirect: location.pathname + location.searchStr }
       });
     return { token };
   },
