@@ -25,19 +25,18 @@ export const Route = createRootRouteWithContext<{
   convexQueryClient: ConvexQueryClient;
 }>()({
   beforeLoad: async ({ context }) => {
-    const token = await getAuth();
-    // On the server, set auth on the HTTP client used for SSR queries.
     if (typeof window === "undefined") {
+      // Server: fetch the token and set it on the HTTP client for SSR queries.
+      const token = await getAuth();
       if (token && context.convexQueryClient.serverHttpClient) {
         context.convexQueryClient.serverHttpClient.setAuth(token);
       }
+      return { token };
     } else {
-      // On the client, wire up the reactive auth function for the WebSocket client.
-      (context.convexQueryClient.convexClient as any).setAuth(() => {
-        return getCachedAuth();
-      });
+      // Client: wire up the reactive auth function — getCachedAuth handles caching.
+      (context.convexQueryClient.convexClient as any).setAuth(() => getCachedAuth());
+      return { token: undefined };
     }
-    return { token };
   },
   head: () => ({
     meta: [

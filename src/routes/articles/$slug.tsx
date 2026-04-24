@@ -277,7 +277,7 @@ function ArticlePage() {
               size="lg"
               className="bg-white text-[#6366F1] hover:bg-white/90 font-semibold"
             >
-              <Link to="/sign-up" className="flex items-center gap-2">
+              <Link to="/sign-up" search={{ invite: undefined }} className="flex items-center gap-2">
                 Get Started Free
                 <ArrowRight className="h-4 w-4" />
               </Link>

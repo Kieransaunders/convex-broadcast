@@ -137,6 +137,8 @@ function SignInPage() {
             Don&apos;t have an account?{" "}
             <Link
               to="/sign-up"
+              search={{ invite: undefined }}
+
               className="font-medium text-[#6366F1] hover:underline"
             >
               Sign up

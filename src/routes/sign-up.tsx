@@ -1,9 +1,4 @@
-import {
-  Link,
-  createFileRoute,
-  useRouter,
-  useSearch,
-} from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2, Lock, Mail, User } from "lucide-react";
 import {
@@ -20,13 +15,14 @@ import { authClient } from "~/lib/auth-client";
 import { clearTokenCache } from "~/lib/auth-helpers";
 
 export const Route = createFileRoute("/sign-up")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    invite: search.invite as string | undefined,
+  }),
   component: SignUpPage,
 });
 
 function SignUpPage() {
-  const router = useRouter();
-  const search = useSearch({ from: "/sign-up" });
-  const inviteId = (search as { invite?: string }).invite;
+  const { invite: inviteId } = Route.useSearch();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,11 +49,11 @@ function SignUpPage() {
         clearTokenCache();
         setSuccess(true);
         setTimeout(() => {
-          router.invalidate();
-          router.navigate({ to: "/inbox" });
+          window.location.href = "/inbox";
         }, 1500);
       }
-    } catch {
+    } catch (err) {
+      console.error("Sign-up error:", err);
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
