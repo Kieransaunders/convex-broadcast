@@ -5,6 +5,7 @@ import { Eye, Loader2, Mail, Plus, Shield, Trash2, User } from "lucide-react";
 import { useState } from "react";
 import { useConvex } from "convex/react";
 import { api } from "../../../../../convex/_generated/api.js";
+import type { Id } from "../../../../../convex/_generated/dataModel";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -76,13 +77,13 @@ function UsersPage() {
   });
 
   const revokeMutation = useMutation({
-    mutationFn: async (id: any) => {
+    mutationFn: async (id: Id<"invites">) => {
       return await convex.mutation(api.invites.revoke, { id });
     },
   });
 
   const deleteUserMutation = useMutation({
-    mutationFn: async (userId: any) => {
+    mutationFn: async (userId: Id<"users">) => {
       if (
         confirm(
           "Are you sure you want to delete this user? This action cannot be undone.",
@@ -94,10 +95,9 @@ function UsersPage() {
   });
 
   const impersonateMutation = useMutation({
-    mutationFn: async ({ userId, authUserId }: { userId: string; authUserId?: string }) => {
-      // Use Better Auth ID if available, otherwise fallback to project ID (though it likely won't work for Better Auth)
+    mutationFn: async ({ userId, authUserId }: { userId: Id<"users">; authUserId?: string }) => {
       await authClient.admin.impersonateUser({ userId: authUserId || userId });
-      await convex.mutation(api.impersonation.logStart, { impersonatedUserId: userId as any });
+      await convex.mutation(api.impersonation.logStart, { impersonatedUserId: userId });
     },
     onSuccess: () => {
       router.navigate({ to: "/" });
@@ -105,8 +105,8 @@ function UsersPage() {
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: "member" | "admin" | "super_admin" }) => {
-      return await convex.mutation(api.users.updateRole, { userId: userId as any, role });
+    mutationFn: async ({ userId, role }: { userId: Id<"users">; role: "member" | "admin" | "super_admin" }) => {
+      return await convex.mutation(api.users.updateRole, { userId, role });
     },
   });
 
