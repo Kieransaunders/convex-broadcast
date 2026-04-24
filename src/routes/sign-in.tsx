@@ -46,17 +46,14 @@ function SignInPage() {
       } else {
         clearTokenCache();
         const role = (result.data.user as any)?.role;
-        
-        // Respect redirect search param if present
-        if (redirect && redirect !== "/sign-in") {
-          router.navigate({ to: redirect });
-        } else {
-          router.navigate({
-            to: role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox",
-          });
-        }
+        const destination = redirect && redirect !== "/sign-in"
+          ? redirect
+          : role === "admin" || role === "super_admin" ? "/dashboard" : "/inbox";
+        await router.invalidate();
+        router.navigate({ to: destination });
       }
-    } catch {
+    } catch (err) {
+      console.error("Sign-in error:", err);
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
