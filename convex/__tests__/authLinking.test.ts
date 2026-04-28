@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { resolveProjectUserLink } from "../auth-linking";
+import { resolveProjectUserLink } from "../authLinking";
 
 test("resolveProjectUserLink falls back to email when the linked user is stale", async () => {
   const result = await resolveProjectUserLink({

@@ -7,7 +7,7 @@ import { components, internal } from "./_generated/api";
 import betterAuthSchema from "./betterAuth/schema";
 import { query } from "./_generated/server";
 import authConfig from "./auth.config";
-import { resolveProjectUserLink } from "./auth-linking";
+import { resolveProjectUserLink } from "./authLinking";
 import type { Doc, DataModel, Id } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import type { GenericCtx } from "@convex-dev/better-auth";

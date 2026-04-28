@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as authLinking from "../authLinking.js";
 import type * as crons from "../crons.js";
 import type * as debugAuth from "../debugAuth.js";
 import type * as email from "../email.js";
@@ -32,6 +33,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  authLinking: typeof authLinking;
   crons: typeof crons;
   debugAuth: typeof debugAuth;
   email: typeof email;
