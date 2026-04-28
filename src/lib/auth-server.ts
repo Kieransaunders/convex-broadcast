@@ -10,4 +10,10 @@ const { convexUrl, convexSiteUrl } = resolveAuthServerEnv(
 export const { handler, getToken } = convexBetterAuthReactStart({
   convexUrl,
   convexSiteUrl,
+  jwtCache: {
+    enabled: true,
+    expirationToleranceSeconds: 60,
+    isAuthError: (error: unknown) =>
+      error instanceof Error && error.message.includes("Unauthorized"),
+  },
 });

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getToken } from "~/lib/auth-server";
 
 export const getAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return await getToken();
+  return (await getToken()) ?? null;
 });
 
 // Client-side token cache — avoids a server round-trip on every navigation.
@@ -10,11 +10,9 @@ export const getAuth = createServerFn({ method: "GET" }).handler(async () => {
 let _tokenCache: string | null = null;
 
 export async function getCachedAuth(): Promise<string | null> {
-  // If we're on the server, we don't cache (or we cache per-request if we had a mechanism)
   if (typeof window === "undefined") {
     return (await getAuth()) ?? null;
   }
-  
   if (_tokenCache !== null) return _tokenCache;
   _tokenCache = (await getAuth()) ?? null;
   return _tokenCache;

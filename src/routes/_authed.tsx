@@ -10,12 +10,16 @@ import { MobileBottomNav } from "~/components/mobile-bottom-nav";
 
 export const Route = createFileRoute("/_authed")({
   beforeLoad: async ({ location }) => {
+    console.log("[_authed] beforeLoad running for:", location.pathname);
     const token = await getCachedAuth();
-    if (!token)
+    console.log("[_authed] token check result:", token ? "present" : "null");
+    if (!token) {
+      console.log("[_authed] redirecting to /sign-in");
       throw redirect({ 
         to: "/sign-in", 
         search: { redirect: location.pathname + location.searchStr }
       });
+    }
     return { token };
   },
   errorComponent: ({ error }) => {
