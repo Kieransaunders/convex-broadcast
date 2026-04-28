@@ -1,16 +1,17 @@
-import {  betterAuth } from "better-auth/minimal";
-import {  createClient } from "@convex-dev/better-auth";
+import { betterAuth } from "better-auth/minimal";
+import { createClient } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { admin } from "better-auth/plugins";
 import { ConvexError } from "convex/values";
 import { components, internal } from "./_generated/api";
 import betterAuthSchema from "./betterAuth/schema";
-import {  query } from "./_generated/server";
+import { query } from "./_generated/server";
 import authConfig from "./auth.config";
-import type {QueryCtx} from "./_generated/server";
-import type {GenericCtx} from "@convex-dev/better-auth";
-import type {BetterAuthOptions} from "better-auth/minimal";
-import type { DataModel, Id } from "./_generated/dataModel";
+import { resolveProjectUserLink } from "./auth-linking";
+import type { Doc, DataModel, Id } from "./_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "./_generated/server";
+import type { GenericCtx } from "@convex-dev/better-auth";
+import type { BetterAuthOptions } from "better-auth/minimal";
 
 export const authComponent: ReturnType<
   typeof createClient<DataModel, typeof betterAuthSchema>
@@ -42,7 +43,9 @@ export const authComponent: ReturnType<
           // Use the role from the invite
           role = pendingInvite.role;
           // Mark invite as accepted
-          await ctx.db.patch("invites", pendingInvite._id, { status: "accepted" });
+          await ctx.db.patch("invites", pendingInvite._id, {
+            status: "accepted",
+          });
         } else if (isFirstUser) {
           // First user to sign up becomes super_admin automatically
           role = "super_admin";
@@ -59,7 +62,7 @@ export const authComponent: ReturnType<
           createdAt: Date.now(),
         });
         await authComponent.setUserId(ctx, authUser._id, userId);
-        
+
         // Synchronize role to Better Auth user record for admin plugin
         // Better Auth uses its own 'user' table (singular)
         await ctx.runMutation(components.betterAuth.adapter.updateOne, {
@@ -108,14 +111,60 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth(createAuthOptions(ctx));
 
-export const getUser = async (ctx: QueryCtx) => {
+type AuthComponentUser = NonNullable<
+  Awaited<ReturnType<typeof authComponent.safeGetAuthUser>>
+>;
+type AuthCtx = QueryCtx | MutationCtx;
+
+const isMutationCtx = (ctx: AuthCtx): ctx is MutationCtx =>
+  "runMutation" in ctx;
+
+const repairUserLink = async (
+  ctx: MutationCtx,
+  authUser: AuthComponentUser,
+  user: Doc<"users">,
+) => {
+  await authComponent.setUserId(ctx, authUser._id, user._id);
+  if (user.authUserId !== authUser._id) {
+    await ctx.db.patch("users", user._id, { authUserId: authUser._id });
+  }
+};
+
+const resolveProjectUser = async (
+  ctx: AuthCtx,
+  authUser: AuthComponentUser,
+) => {
+  const result = await resolveProjectUserLink({
+    authUser: {
+      authRecordId: authUser._id,
+      linkedUserId: authUser.userId ?? null,
+      email: authUser.email ?? null,
+    },
+    getById: async (id) => {
+      return await ctx.db.get("users", id as Id<"users">);
+    },
+    getByEmail: async (email) => {
+      return await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", email))
+        .unique();
+    },
+    getUserId: (user) => user._id,
+    getUserAuthRecordId: (user) => user.authUserId,
+  });
+
+  if (result.user && result.needsRepair && isMutationCtx(ctx)) {
+    await repairUserLink(ctx, authUser, result.user);
+  }
+
+  return result.user;
+};
+
+export const getUser = async (ctx: AuthCtx) => {
   try {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) throw new ConvexError("Unauthenticated");
-    if (!authUser.userId) {
-      throw new ConvexError("User session found but not linked to a project user record");
-    }
-    const user = await ctx.db.get("users", authUser.userId as Id<"users">);
+    const user = await resolveProjectUser(ctx, authUser);
     if (!user) throw new ConvexError("User not found in project database");
     return user;
   } catch (error) {
@@ -127,18 +176,18 @@ export const getUser = async (ctx: QueryCtx) => {
 
 // Returns null instead of throwing — use for queries that should return empty data
 // during the brief auth initialization window (hydration race with ConvexBetterAuthProvider).
-export const safeGetUser = async (ctx: QueryCtx) => {
+export const safeGetUser = async (ctx: AuthCtx) => {
   let authUser;
   try {
     authUser = await authComponent.safeGetAuthUser(ctx);
   } catch {
     return null;
   }
-  if (!authUser?.userId) return null;
-  return ctx.db.get("users", authUser.userId as Id<"users">);
+  if (!authUser) return null;
+  return resolveProjectUser(ctx, authUser);
 };
 
-export const getAdminUser = async (ctx: QueryCtx) => {
+export const getAdminUser = async (ctx: AuthCtx) => {
   const user = await getUser(ctx);
   if (user.role !== "admin" && user.role !== "super_admin") {
     throw new ConvexError("Unauthorized: admin access required");
@@ -146,7 +195,7 @@ export const getAdminUser = async (ctx: QueryCtx) => {
   return user;
 };
 
-export const getSuperAdminUser = async (ctx: QueryCtx) => {
+export const getSuperAdminUser = async (ctx: AuthCtx) => {
   const user = await getUser(ctx);
   if (user.role !== "super_admin") {
     throw new ConvexError("Unauthorized: super admin access required");
@@ -159,6 +208,6 @@ export const getCurrentUser = query({
   handler: async (ctx) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) return null;
-    return await ctx.db.get("users", authUser.userId as Id<"users">);
+    return await resolveProjectUser(ctx, authUser);
   },
 });
