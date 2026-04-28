@@ -1,6 +1,6 @@
 import {  betterAuth } from "better-auth/minimal";
 import {  createClient } from "@convex-dev/better-auth";
-import { convex } from "@convex-dev/better-auth/plugins";
+import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { admin } from "better-auth/plugins";
 import { ConvexError } from "convex/values";
 import { components, internal } from "./_generated/api";
@@ -85,12 +85,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
   ({
     baseURL: process.env.SITE_URL,
     secret: process.env.BETTER_AUTH_SECRET,
-    trustedOrigins: process.env.SITE_URL ? [process.env.SITE_URL] : [],
     database: authComponent.adapter(ctx),
     emailAndPassword: { enabled: true },
     account: { accountLinking: { enabled: true } },
     plugins: [
       convex({ authConfig, jwksRotateOnTokenGenerationError: true }),
+      ...(process.env.SITE_URL ? [crossDomain({ siteUrl: process.env.SITE_URL })] : []),
       admin({
         ac: ((ac: any) => {
           const adminAc = ac.roles.admin;
