@@ -17,6 +17,7 @@ export const authComponent: ReturnType<
 > = createClient<DataModel, typeof betterAuthSchema>(components.betterAuth, {
   authFunctions: internal.auth,
   local: { schema: betterAuthSchema },
+  verbose: true,
   triggers: {
     user: {
       onCreate: async (ctx, authUser) => {
@@ -83,11 +84,13 @@ export const { getAuthUser } = authComponent.clientApi();
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
   ({
     baseURL: process.env.SITE_URL,
+    secret: process.env.BETTER_AUTH_SECRET,
+    trustedOrigins: process.env.SITE_URL ? [process.env.SITE_URL] : [],
     database: authComponent.adapter(ctx),
     emailAndPassword: { enabled: true },
     account: { accountLinking: { enabled: true } },
     plugins: [
-      convex({ authConfig }),
+      convex({ authConfig, jwksRotateOnTokenGenerationError: true }),
       admin({
         ac: ((ac: any) => {
           const adminAc = ac.roles.admin;
